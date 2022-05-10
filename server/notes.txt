@@ -1,0 +1,1 @@
+env path: source ~/.virtualenvs/emploi-univ-env/bin/activate
