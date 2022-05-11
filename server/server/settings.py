@@ -1,4 +1,4 @@
-
+from django.utils.translation import gettext_lazy as _
 from decouple import config, Csv
 from pathlib import Path
 
@@ -83,6 +83,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    
+    'rest_framework',
+    'djoser',
 
     'users',
     'time_table',
@@ -171,10 +174,23 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 ## rest_framework
 REST_FRAMEWORK = {
-    # Use Django's standard `django.contrib.auth` permissions,
-    # or allow read-only access for unauthenticated users.
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
-    ]
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
+    ],
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 15
+
+}
+
+## djoser
+DJOSER = {
+    'PASSWORD_RESET_CONFIRM_URL': _('#/password/reset/confirm/{uid}/{token}'),
+    'USERNAME_RESET_CONFIRM_URL': _('#/username/reset/confirm/{uid}/{token}'),
+    'ACTIVATION_URL': _('#/activate/{uid}/{token}'),
+	'USERNAME_RESET_CONFIRM_URL': _('#/username-reset/{uid}/{token}'),
+    'SEND_ACTIVATION_EMAIL': True,
 }
 
