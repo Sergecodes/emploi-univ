@@ -1,0 +1,123 @@
+/*carousel*/
+.text{
+    position:absolute;
+    top:0;
+    height: 100%;
+    width:100vw;
+    color:white;
+
+}
+.firstDiv, .secondDiv, .thirdDiv,.fourthDiv,.fourthDiv2,.fourthDiv3{
+    height: 100%;
+    width:100%;
+   margin-left:8%;
+}
+
+.contentDiv{
+    margin-left: 5%;
+}
+
+.firstDiv{
+    background: rgba(196, 129, 226, 0.58);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(2.4px);
+    -webkit-backdrop-filter: blur(2.4px);
+    border: 1px solid rgba(196, 129, 226, 0.18);
+    transform: skew(20deg);
+    margin-left:40%;
+}
+
+.secondDiv{
+    background: rgba(91, 37, 185, 0.42);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(2.4px);
+    -webkit-backdrop-filter: blur(2.4px);
+    border: 1px solid rgba(91, 37, 185, 0.18);
+    
+}
+
+.thirdDiv{
+    background: rgba(84, 154, 105, 0.52);
+box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+backdrop-filter: blur(2.4px);
+-webkit-backdrop-filter: blur(2.4px);
+border: 1px solid rgba(84, 130, 154, 0.18);
+}
+
+.fourthDiv{
+    background-color: var(--secondaryBlue);
+}
+.fourthDiv2{
+    background-color: rgb(99, 185, 99);
+}
+.fourthDiv3{
+    background-color:rgba(115, 58, 141, 0.58);
+}
+.contentDiv{
+    transform: skew(-19deg);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-bottom: 10%; 
+    padding-right:65%;
+    height: 100%;
+    text-align: center;
+}
+
+/* filiere*/
+.filiereElement>a>div{
+    padding:10px;
+    background-color: rgb(231, 227, 227);
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+}
+
+.filiereElement a{
+    text-decoration: none;
+}
+
+.filiereElement>a>div>p{
+    text-align: center;
+    padding:2px;
+    padding-top: 10px;
+    color:black;
+}
+
+.specialityImg{
+    height:130px;
+    width: 100%;
+}
+
+/*description*/
+
+.functionalityDescription{
+    font-family: 'Lora', serif;
+    font-weight: bold;
+}
+
+.description{
+    background-color: rgb(180, 180, 224);
+}
+
+@media (max-width:500px){
+    .functionalityDescription,.contactInfo{
+        text-align: center;
+    }
+    .functionalityButton{
+        display:flex;
+        justify-content: center;
+        width:100%;
+    }
+    .filiereElement>a>div{
+        margin:15px 20px!important;
+    }
+    .contentDiv{
+        padding-right:68%;
+        font-size: 15px;
+      }
+}
+
+/*map*/
+.contactInfo p{
+    font-weight: bold;
+    font-size: 18px;
+}
