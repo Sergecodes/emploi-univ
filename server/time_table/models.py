@@ -7,6 +7,15 @@ class Enseignant(models.Model):
     nom = models.CharField(max_length=50)
     prenom = models.CharField(max_length=50)
 
+    @classmethod
+    def get_enseignant(cls, matricule):
+        query = "SELECT * FROM enseignant WHERE matricule = %s LIMIT 1;"
+        obj = cls.objects.raw(query, [matricule])[0]
+        return obj if obj else None
+
+    def __str__(self):
+        return f'{self.prenom} {self.nom} - {self.matricule}'
+
     class Meta:
         db_table = 'enseignant'
 
@@ -14,6 +23,15 @@ class Enseignant(models.Model):
 class UE(models.Model):
     code = models.CharField(max_length=10, primary_key=True)
     intitule = models.CharField(max_length=50)
+
+    @classmethod
+    def get_ue(cls, code):
+        query = "SELECT * FROM ue WHERE code = %s LIMIT 1;"
+        obj = cls.objects.raw(query, [code])[0]
+        return obj if obj else None
+
+    def __str__(self):
+        return f'{self.code} - {self.intitule}'
     
     class Meta:
         db_table = 'ue'
@@ -23,6 +41,15 @@ class Salle(models.Model):
     nom = models.CharField(max_length=10, primary_key=True)
     capacite = models.PositiveSmallIntegerField()
 
+    @classmethod
+    def get_salle(cls, nom):
+        query = "SELECT * FROM salle WHERE nom = %s LIMIT 1;"
+        obj = cls.objects.raw(query, [nom])[0]
+        return obj if obj else None
+
+    def __str__(self):
+        return f'{self.nom} - {self.capacite} places'
+
     class Meta:
         db_table = 'salle'
 
@@ -31,6 +58,15 @@ class Niveau(models.Model):
     nom_bref = models.CharField(max_length=10, primary_key=True)
     nom_complet = models.CharField(max_length=20, unique=True)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
 
+    @classmethod
+    def get_niveau(cls, nom_bref):
+        query = "SELECT * FROM niveau WHERE nom_bref = %s LIMIT 1;"
+        obj = cls.objects.raw(query, [nom_bref])[0]
+        return obj if obj else None
+
+    def __str__(self):
+        return self.nom_bref
+        
     class Meta:
         db_table = 'niveau'
 
@@ -38,6 +74,15 @@ class Niveau(models.Model):
 class Groupe(models.Model):
     nom = models.CharField(max_length=20, primary_key=True)
 
+    @classmethod
+    def get_groupe(cls, nom):
+        query = "SELECT * FROM groupe WHERE nom = %s LIMIT 1;"
+        obj = cls.objects.raw(query, [nom])[0]
+        return obj if obj else None
+
+    def __str__(self):
+        return self.nom
+        
     class Meta:
         db_table = 'groupe'
 
@@ -45,6 +90,16 @@ class Groupe(models.Model):
 class Filiere(models.Model):
     nom = models.CharField(max_length=20, primary_key=True)
     
+    @classmethod
+    def get_filiere(cls, nom):
+        query = "SELECT * FROM filiere WHERE nom = %s LIMIT 1;"
+        obj = cls.objects.raw(query, [nom])[0]
+        return obj if obj else None
+
+
+    def __str__(self):
+        return self.nom
+        
     class Meta:
         db_table = 'filiere'
 
@@ -53,6 +108,15 @@ class Specialite(models.Model):
     nom = models.CharField(max_length=20, primary_key=True)
     effectif = models.PositiveSmallIntegerField()
     
+    @classmethod
+    def get_specialite(cls, nom):
+        query = "SELECT * FROM specialite WHERE nom = %s LIMIT 1;"
+        obj = cls.objects.raw(query, [nom])[0]
+        return obj if obj else None
+
+    def __str__(self):
+        return self.nom
+        
     class Meta:
         db_table = 'specialite'
 
@@ -93,6 +157,15 @@ class Cours(models.Model):
     heure_fin = models.TimeField()
     td = models.BooleanField(default=False)
 
+    @classmethod
+    def get_cours(cls, code_ue):
+        query = "SELECT * FROM cours WHERE code_ue = %s LIMIT 1;"
+        obj = cls.objects.raw(query, [code_ue])[0]
+        return obj if obj else None
+
+    def __str__(self):
+        return str(self.ue)
+        
     class Meta:
         db_table = 'cours'
 
@@ -136,6 +209,12 @@ class RegroupementUE(models.Model):
         related_name='regroupements',
         related_query_name='regroupement'
     )
+
+    @classmethod
+    def get_regroupement_ue(cls, id):
+        query = "SELECT * FROM regroupement_ue WHERE id_regroupement = %d LIMIT 1;"
+        obj = cls.objects.raw(query, [id])[0]
+        return obj if obj else None
 
     class Meta:
         constraints = [

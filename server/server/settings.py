@@ -85,6 +85,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     
     'rest_framework',
+    # We won't use token auth but we need this app. 
+    # See github.com/sunscrapers/djoser/issues/373#issuecomment-484547905
+    'rest_framework.authtoken',
     'djoser',
 
     'users',
@@ -187,6 +190,7 @@ REST_FRAMEWORK = {
 
 ## djoser
 DJOSER = {
+    'CREATE_SESSION_ON_LOGIN': True,
     'PASSWORD_RESET_CONFIRM_URL': _('#/password/reset/confirm/{uid}/{token}'),
     'USERNAME_RESET_CONFIRM_URL': _('#/username/reset/confirm/{uid}/{token}'),
     'ACTIVATION_URL': _('#/activate/{uid}/{token}'),
