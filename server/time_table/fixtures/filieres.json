@@ -1,0 +1,23 @@
+[
+	{
+		"model": "time_table.Filiere",  
+		"pk": "Informatique"
+	},
+	{
+		"model": "time_table.Filiere",  
+		"pk": "Physique"
+	},
+	{
+		"model": "time_table.Filiere",  
+		"pk": "Mathématiques"
+	},
+	{
+		"model": "time_table.Filiere",  
+		"pk": "BIOS"
+	},
+	{
+		"model": "time_table.Filiere",  
+		"pk": "Chimie"
+	}
+]
+

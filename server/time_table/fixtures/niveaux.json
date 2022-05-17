@@ -1,0 +1,38 @@
+[
+	{
+		"model": "time_table.Niveau",  
+		"pk": "L1",
+      "fields": {
+         "nom_complet": "Niveau 1"
+      }
+	},
+	{
+		"model": "time_table.Niveau",  
+		"pk": "L2",
+      "fields": {
+         "nom_complet": "Niveau 2"
+      }
+	},
+	{
+		"model": "time_table.Niveau",  
+		"pk": "L3",
+      "fields": {
+         "nom_complet": "Niveau 3"
+      }
+	},
+	{
+		"model": "time_table.Niveau",  
+		"pk": "M1",
+      "fields": {
+         "nom_complet": "Master 1"
+      }
+	},
+	{
+		"model": "time_table.Niveau",  
+		"pk": "M2",
+      "fields": {
+         "nom_complet": "Master 2"
+      }
+	}
+]
+
