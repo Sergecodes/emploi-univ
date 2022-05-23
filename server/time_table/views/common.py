@@ -28,8 +28,8 @@ def all_entries(request, model: str):
    valid_models = ['Enseignant', 'Filiere', 'Niveau', 'Salle', 'UE']
    if model not in valid_models:
       return Response(
-         data={'message': f'Invalid model, valid models are {valid_models}'}, 
-         status=status.HTTP_400_BAD_REQUEST
+         {'message': f'Invalid model, valid models are {valid_models}'}, 
+         status.HTTP_400_BAD_REQUEST
       )
 
    query = "SELECT * FROM %s;"
@@ -39,5 +39,5 @@ def all_entries(request, model: str):
    result = Model.objects.raw(query, [table_name])
    serializer = SerializerClass(result, many=True)
 
-   return Response(data=serializer.data)
+   return Response(serializer.data)
 

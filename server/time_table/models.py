@@ -209,15 +209,6 @@ class RegroupementUE(models.Model):
         related_name='regroupements',
         related_query_name='regroupement'
     )
-    groupe = models.ForeignKey(
-        Groupe, 
-        on_delete=models.SET_NULL,
-        db_column='nom_groupe',
-        related_name='regroupements',
-        related_query_name='regroupement',
-        blank=True, 
-        null=True
-    )
     filiere = models.ForeignKey(
         Filiere,
         on_delete=models.RESTRICT,
@@ -234,15 +225,26 @@ class RegroupementUE(models.Model):
     )
     specialite = models.ForeignKey(
         Specialite, 
-        on_delete=models.RESTRICT,
+        on_delete=models.SET_NULL,
         db_column='nom_specialite',
         related_name='regroupements',
-        related_query_name='regroupement'
+        related_query_name='regroupement',
+        blank=True,
+        null=True
+    )
+    groupe = models.ForeignKey(
+        Groupe, 
+        on_delete=models.SET_NULL,
+        db_column='nom_groupe',
+        related_name='regroupements',
+        related_query_name='regroupement',
+        blank=True, 
+        null=True
     )
 
     @classmethod
     def get_regroupement_ue(cls, id):
-        query = "SELECT * FROM regroupement_ue WHERE id_regroupement = %d LIMIT 1;"
+        query = "SELECT * FROM regroupement_ue WHERE id_regroupement = %s LIMIT 1;"
         
         try:
             obj = cls.objects.raw(query, [id])[0]

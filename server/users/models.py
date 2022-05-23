@@ -2,6 +2,10 @@ from django.contrib.auth.models import AbstractUser
 from django.db import connection
 from django.db.utils import IntegrityError
 
+from time_table.serializers import (
+	FiliereSerializer
+)
+
 
 class FiliereOps:
 	def ajouter_filiere(self, nom):
@@ -160,7 +164,7 @@ class CoursOps:
 		query = """
 			INSERT INTO cours 
 			(code_ue, matricule_ens, nom_salle, jour, heure_debut, heure_fin, td) 
-			VALUES (%s, %s, %s, %s, %s, %s, %d);
+			VALUES (%s, %s, %s, %s, %s, %s, %s);
 		"""
 		
 		try:
@@ -186,10 +190,9 @@ class CoursOps:
 		new_jour, new_heure_debut, new_heure_fin, new_is_td
 	):
 		query = """
-			UPDATE cours SET code_ue = %s,
-			matricule_ens = %s, nom_salle = %s,
-			jour = %s, heure_debut = %s, heure_fin = %s,
-			td = %d
+			UPDATE cours SET 
+			code_ue = %s, matricule_ens = %s, nom_salle = %s,
+			jour = %s, heure_debut = %s, heure_fin = %s, is_td = %s
 			WHERE code_ue = %s;
 		"""
 

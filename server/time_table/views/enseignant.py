@@ -1,12 +1,13 @@
+from django.db.utils import IntegrityError
 from rest_framework import status
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from ..forms import EnseignantForm
 from ..models import Enseignant
 from ..serializers import EnseignantSerializer
-from ..utils import get_cud_response, get_read_response
+from ..utils import get_cud_response, get_read_response, is_valid_request
 
 
 @api_view(['GET'])
@@ -24,7 +25,7 @@ def enseignants_by_filiere(request, nom_filiere):
    result = Enseignant.objects.raw(query, [nom_filiere])
    serializer = EnseignantSerializer(result, many=True)
    
-   return Response(data=serializer.data)
+   return Response(serializer.data)
 
 
 @api_view(['GET'])
@@ -42,7 +43,7 @@ def enseignants_by_niveau(request, nom_niveau):
    result = Enseignant.objects.raw(query, [nom_niveau])
    serializer = EnseignantSerializer(result, many=True)
    
-   return Response(data=serializer.data)
+   return Response(serializer.data)
 
 
 class EnseignantCRUD(APIView):
@@ -50,28 +51,34 @@ class EnseignantCRUD(APIView):
    def post(self, request):
       user, POST = request.user, request.POST
       form = EnseignantForm(POST)
+      valid_req = is_valid_request(POST, ['matricule', 'nom', 'prenom'])
+
+      if valid_req[0] == False:
+         return valid_req[1]
 
       if form.is_valid():
          res = user.ajouter_enseignant(POST['matricule'], POST['nom'], POST['prenom'])
-         return get_cud_response(res)
+         return get_cud_response(res, status.HTTP_201_CREATED)
       
-      return Response(data=form.errors, status=status.HTTP_400_BAD_REQUEST)
+      return Response(form.errors, status.HTTP_400_BAD_REQUEST)
 
    def get(self, request, matricule):
       res = Enseignant.get_enseignant(matricule)
       return get_read_response(res, EnseignantSerializer)
 
    def put(self, request):
-      # request body should contain: matricule, new_matricule, new_nom, new_prenom
       user, POST = request.user, request.POST
-      matricule, new_matricule = POST.matricule, POST.new_matricule
-      new_nom, new_prenom = POST.new_nom, POST.new_prenom
-      
-      # # Verify if enseignant exists
-      # matricule = POST.matricule
-      # if Enseignant.get_enseignant(POST.matricule) is None:
-      #    return Response(status=status.HTTP_404_NOT_FOUND)
+      valid_req = is_valid_request(
+         POST, 
+         ['matricule', 'new_matricule', 'new_prenom', 'new_nom']
+      )
 
+      if valid_req[0] == False:
+         return valid_req[1]
+
+      matricule, new_matricule = POST['matricule'], POST['new_matricule']
+      new_nom, new_prenom = POST['new_nom'], POST['new_prenom']
+      
       form = EnseignantForm({
          'matricule': new_matricule,
          'nom': new_nom,
@@ -82,11 +89,21 @@ class EnseignantCRUD(APIView):
          res = user.modifier_enseignant(matricule, new_matricule, new_nom, new_prenom)
          return get_cud_response(res, status.HTTP_404_NOT_FOUND)
 
-      return Response(data=form.errors, status=status.HTTP_400_BAD_REQUEST)
+      return Response(form.errors, status.HTTP_400_BAD_REQUEST)
 
    def delete(self, request):
       user, POST = request.user, request.POST
-      res = user.supprimer_enseignant(POST.matricule)
-      return get_cud_response(res, status.HTTP_404_NOT_FOUND)
+      valid_req = is_valid_request(POST, ['matricule'])
+
+      if valid_req[0] == False:
+         return valid_req[1]
+
+      try:
+         res = user.supprimer_enseignant(POST['matricule'])
+      except IntegrityError as err:
+         # Use 404 cause we assume it's the only error we can have here
+         return Response(str(err), status.HTTP_404_NOT_FOUND)
+
+      return get_cud_response(return_code=status.HTTP_204_NO_CONTENT)
 
 
