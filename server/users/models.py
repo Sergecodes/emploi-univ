@@ -11,10 +11,7 @@ class FiliereOps:
 			with connection.cursor() as cursor:
 				cursor.execute(query, [nom])
 		except IntegrityError as err:
-			print(err)
-			return False
-		
-		return True
+			return err
 
 	def supprimer_filiere(self, nom):
 		query = "DELETE FROM filiere WHERE nom = %s;"
@@ -22,10 +19,8 @@ class FiliereOps:
 		try: 
 			with connection.cursor() as cursor:
 				cursor.execute(query, [nom])
-		except IntegrityError:
-			return False
-		
-		return True
+		except IntegrityError as err:
+			return err
 
 	def renommer_filiere(self, nom, new_nom):
 		query = "UPDATE filiere SET nom = %s WHERE nom = %s;"
@@ -33,10 +28,8 @@ class FiliereOps:
 		try: 
 			with connection.cursor() as cursor:
 				cursor.execute(query, [new_nom, nom])
-		except IntegrityError:
-			return False
-		
-		return True
+		except IntegrityError as err:
+			return err
 
 
 class SpecialiteOps:
@@ -47,10 +40,7 @@ class SpecialiteOps:
 			with connection.cursor() as cursor:
 				cursor.execute(query, [nom])
 		except IntegrityError as err:
-			print(err)
-			return False
-		
-		return True
+			return err
 
 	def supprimer_specialite(self, nom):
 		query = "DELETE FROM specialite WHERE nom = %s;"
@@ -58,10 +48,8 @@ class SpecialiteOps:
 		try: 
 			with connection.cursor() as cursor:
 				cursor.execute(query, [nom])
-		except IntegrityError:
-			return False
-		
-		return True
+		except IntegrityError as err:
+			return err
 
 	def renommer_specialite(self, nom, new_nom):
 		query = "UPDATE specialite SET nom = %s WHERE nom = %s;"
@@ -69,10 +57,8 @@ class SpecialiteOps:
 		try: 
 			with connection.cursor() as cursor:
 				cursor.execute(query, [new_nom, nom])
-		except IntegrityError:
-			return False
-		
-		return True
+		except IntegrityError as err:
+			return err
 
 
 class GroupeOps:
@@ -83,10 +69,7 @@ class GroupeOps:
 			with connection.cursor() as cursor:
 				cursor.execute(query, [nom])
 		except IntegrityError as err:
-			print(err)
-			return False
-		
-		return True
+			return err
 
 	def supprimer_groupe(self, nom):
 		query = "DELETE FROM groupe WHERE nom = %s;"
@@ -94,10 +77,8 @@ class GroupeOps:
 		try: 
 			with connection.cursor() as cursor:
 				cursor.execute(query, [nom])
-		except IntegrityError:
-			return False
-		
-		return True
+		except IntegrityError as err:
+			return err
 
 	def renommer_groupe(self, nom, new_nom):
 		query = "UPDATE groupe SET nom = %s WHERE nom = %s;"
@@ -105,10 +86,8 @@ class GroupeOps:
 		try: 
 			with connection.cursor() as cursor:
 				cursor.execute(query, [new_nom, nom])
-		except IntegrityError:
-			return False
-		
-		return True
+		except IntegrityError as err:
+			return err
 
 
 class EnseignantOps:
@@ -119,21 +98,16 @@ class EnseignantOps:
 			with connection.cursor() as cursor:
 				cursor.execute(query, [matricule, nom, prenom])
 		except IntegrityError as err:
-			print(err)
-			return False
-		
-		return True
-
+			return err	
+			
 	def supprimer_enseignant(self, matricule):
 		query = "DELETE FROM enseignant WHERE matricule = %s;"
 
 		try: 
 			with connection.cursor() as cursor:
 				cursor.execute(query, [matricule])
-		except IntegrityError:
-			return False
-		
-		return True
+		except IntegrityError as err:
+			return err
 
 	def modifier_enseignant(self, matricule, new_matricule, new_nom, new_prenom):
 		query = """
@@ -145,10 +119,8 @@ class EnseignantOps:
 		try: 
 			with connection.cursor() as cursor:
 				cursor.execute(query, [new_matricule, new_nom, new_prenom, matricule])
-		except IntegrityError:
-			return False
-		
-		return True
+		except IntegrityError as err:
+			return err
 
 
 class UEOps:
@@ -159,10 +131,7 @@ class UEOps:
 			with connection.cursor() as cursor:
 				cursor.execute(query, [code, intitule])
 		except IntegrityError as err:
-			print(err)
-			return False
-		
-		return True
+			return err
 
 	def supprimer_ue(self, code):
 		query = "DELETE FROM ue WHERE code = %s;"
@@ -170,10 +139,8 @@ class UEOps:
 		try: 
 			with connection.cursor() as cursor:
 				cursor.execute(query, [code])
-		except IntegrityError:
-			return False
-		
-		return True
+		except IntegrityError as err:
+			return err
 
 	def modifier_ue(self, code, new_code, new_intitule):
 		query = "UPDATE ue SET code = %s, intitule = %s, WHERE code = %s;"
@@ -181,17 +148,18 @@ class UEOps:
 		try: 
 			with connection.cursor() as cursor:
 				cursor.execute(query, [new_code, new_intitule, code])
-		except IntegrityError:
-			return False
-		
-		return True
+		except IntegrityError as err:
+			return err
 
 
 class CoursOps:
-	def ajouter_cours(self, code_ue, matricule_ens, nom_salle, jour, heure_debut, heure_fin, is_td):
+	def ajouter_cours(
+		self, code_ue, matricule_ens, nom_salle, jour, 
+		heure_debut, heure_fin, is_td=False
+	):
 		query = """
-			INSERT INTO 
-			cours (code_ue, matricule_enseignant, nom_salle, jour, heure_debut, heure_fin, td) 
+			INSERT INTO cours 
+			(code_ue, matricule_ens, nom_salle, jour, heure_debut, heure_fin, td) 
 			VALUES (%s, %s, %s, %s, %s, %s, %d);
 		"""
 		
@@ -202,10 +170,7 @@ class CoursOps:
 					[code_ue, matricule_ens, nom_salle, jour, heure_debut, heure_fin, is_td]
 				)
 		except IntegrityError as err:
-			print(err)
-			return False
-		
-		return True
+			return err
 
 	def supprimer_cours(self, code_ue):
 		query = "DELETE FROM cours WHERE code_ue = %s;"
@@ -213,10 +178,8 @@ class CoursOps:
 		try: 
 			with connection.cursor() as cursor:
 				cursor.execute(query, [code_ue])
-		except IntegrityError:
-			return False
-		
-		return True
+		except IntegrityError as err:
+			return err
 
 	def modifier_cours(
 		self, code_ue, new_code_ue, new_matricule_ens, new_nom_salle, 
@@ -224,7 +187,7 @@ class CoursOps:
 	):
 		query = """
 			UPDATE cours SET code_ue = %s,
-			matricule_enseignant = %s, nom_salle = %s,
+			matricule_ens = %s, nom_salle = %s,
 			jour = %s, heure_debut = %s, heure_fin = %s,
 			td = %d
 			WHERE code_ue = %s;
@@ -239,10 +202,8 @@ class CoursOps:
 						new_heure_debut, new_heure_fin, new_is_td, code_ue
 					]
 				)
-		except IntegrityError:
-			return False
-		
-		return True
+		except IntegrityError as err:
+			return err
 
 
 class User(AbstractUser, FiliereOps, SpecialiteOps, GroupeOps, EnseignantOps, UEOps, CoursOps):

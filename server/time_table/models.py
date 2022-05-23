@@ -10,8 +10,11 @@ class Enseignant(models.Model):
     @classmethod
     def get_enseignant(cls, matricule):
         query = "SELECT * FROM enseignant WHERE matricule = %s LIMIT 1;"
-        obj = cls.objects.raw(query, [matricule])[0]
-        return obj if obj else None
+        try:
+            obj = cls.objects.raw(query, [matricule])[0]
+        except IndexError:
+            return None
+        return obj 
 
     def __str__(self):
         return f'{self.prenom} {self.nom} - {self.matricule}'
@@ -27,8 +30,12 @@ class UE(models.Model):
     @classmethod
     def get_ue(cls, code):
         query = "SELECT * FROM ue WHERE code = %s LIMIT 1;"
-        obj = cls.objects.raw(query, [code])[0]
-        return obj if obj else None
+        
+        try:
+            obj = cls.objects.raw(query, [code])[0]
+        except IndexError:
+            return None
+        return obj
 
     def __str__(self):
         return f'{self.code} - {self.intitule}'
@@ -44,8 +51,12 @@ class Salle(models.Model):
     @classmethod
     def get_salle(cls, nom):
         query = "SELECT * FROM salle WHERE nom = %s LIMIT 1;"
-        obj = cls.objects.raw(query, [nom])[0]
-        return obj if obj else None
+        
+        try:
+            obj = cls.objects.raw(query, [nom])[0]
+        except IndexError:
+            return None
+        return obj
 
     def __str__(self):
         return f'{self.nom} - {self.capacite} places'
@@ -61,8 +72,12 @@ class Niveau(models.Model):
     @classmethod
     def get_niveau(cls, nom_bref):
         query = "SELECT * FROM niveau WHERE nom_bref = %s LIMIT 1;"
-        obj = cls.objects.raw(query, [nom_bref])[0]
-        return obj if obj else None
+        
+        try:
+            obj = cls.objects.raw(query, [nom_bref])[0]
+        except IndexError:
+            return None
+        return obj
 
     def __str__(self):
         return self.nom_bref
@@ -77,8 +92,12 @@ class Groupe(models.Model):
     @classmethod
     def get_groupe(cls, nom):
         query = "SELECT * FROM groupe WHERE nom = %s LIMIT 1;"
-        obj = cls.objects.raw(query, [nom])[0]
-        return obj if obj else None
+        
+        try:
+            obj = cls.objects.raw(query, [nom])[0]
+        except IndexError:
+            return None
+        return obj
 
     def __str__(self):
         return self.nom
@@ -93,9 +112,12 @@ class Filiere(models.Model):
     @classmethod
     def get_filiere(cls, nom):
         query = "SELECT * FROM filiere WHERE nom = %s LIMIT 1;"
-        obj = cls.objects.raw(query, [nom])[0]
-        return obj if obj else None
-
+        
+        try:
+            obj = cls.objects.raw(query, [nom])[0]
+        except IndexError:
+            return None
+        return obj
 
     def __str__(self):
         return self.nom
@@ -111,8 +133,12 @@ class Specialite(models.Model):
     @classmethod
     def get_specialite(cls, nom):
         query = "SELECT * FROM specialite WHERE nom = %s LIMIT 1;"
-        obj = cls.objects.raw(query, [nom])[0]
-        return obj if obj else None
+        
+        try:
+            obj = cls.objects.raw(query, [nom])[0]
+        except IndexError:
+            return None
+        return obj
 
     def __str__(self):
         return self.nom
@@ -123,13 +149,13 @@ class Specialite(models.Model):
 
 class Cours(models.Model):
     DAYS_OF_THE_WEEK = (
-        ('MON', _('Monday')),
-        ('TUE', _('Tuesday')),
-        ('WED', _('Wednesday')),
-        ('THU', _('Thursday')),
-        ('FRI', _('Friday')),
-        ('SAT', _('Saturday')),
-        ('SUN', _('Sunday')),
+        ('LUN', _('Lundi')),
+        ('MAR', _('Mardi')),
+        ('MER', _('Mercredi')),
+        ('JEU', _('Jeudi')),
+        ('VEN', _('Vendredi')),
+        ('SAM', _('Samedi')),
+        ('DIM', _('Dimanche')),
     )
 
     ue = models.OneToOneField(
@@ -141,7 +167,7 @@ class Cours(models.Model):
     enseignant = models.ForeignKey(
         Enseignant,
         on_delete=models.RESTRICT,
-        db_column='matricule_enseignant',
+        db_column='matricule_ens',
         related_name='cours',
         related_query_name='cours'
     )
@@ -160,8 +186,12 @@ class Cours(models.Model):
     @classmethod
     def get_cours(cls, code_ue):
         query = "SELECT * FROM cours WHERE code_ue = %s LIMIT 1;"
-        obj = cls.objects.raw(query, [code_ue])[0]
-        return obj if obj else None
+        
+        try:
+            obj = cls.objects.raw(query, [code_ue])[0]
+        except IndexError:
+            return None
+        return obj
 
     def __str__(self):
         return str(self.ue)
@@ -213,8 +243,12 @@ class RegroupementUE(models.Model):
     @classmethod
     def get_regroupement_ue(cls, id):
         query = "SELECT * FROM regroupement_ue WHERE id_regroupement = %d LIMIT 1;"
-        obj = cls.objects.raw(query, [id])[0]
-        return obj if obj else None
+        
+        try:
+            obj = cls.objects.raw(query, [id])[0]
+        except IndexError:
+            return None
+        return obj
 
     class Meta:
         constraints = [

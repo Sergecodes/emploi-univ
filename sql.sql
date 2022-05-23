@@ -47,7 +47,7 @@ ALTER TABLE `regroupement_ue` ADD CONSTRAINT `unique_ue_grp_fil_niv_spec` UNIQUE
 --
 -- Add field enseignant to cours
 --
-ALTER TABLE `cours` ADD COLUMN `matricule_enseignant` varchar(15) NOT NULL , ADD CONSTRAINT `cours_matricule_enseignant_a1e15eb7_fk_enseignant_matricule` FOREIGN KEY (`matricule_enseignant`) REFERENCES `enseignant`(`matricule`);
+ALTER TABLE `cours` ADD COLUMN `matricule_ens` varchar(15) NOT NULL , ADD CONSTRAINT `cours_matricule_ens_a1e15eb7_fk_enseignant_matricule` FOREIGN KEY (`matricule_ens`) REFERENCES `enseignant`(`matricule`);
 --
 -- Add field salle to cours
 --

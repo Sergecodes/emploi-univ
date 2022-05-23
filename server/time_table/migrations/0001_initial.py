@@ -115,7 +115,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='cours',
             name='enseignant',
-            field=models.ForeignKey(db_column='matricule_enseignant', on_delete=django.db.models.deletion.RESTRICT, related_name='cours', related_query_name='cours', to='time_table.enseignant'),
+            field=models.ForeignKey(db_column='matricule_ens', on_delete=django.db.models.deletion.RESTRICT, related_name='cours', related_query_name='cours', to='time_table.enseignant'),
         ),
         migrations.AddField(
             model_name='cours',
