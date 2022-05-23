@@ -2,12 +2,12 @@ import React from "react";
 import filter from "../../assets/filter.png";
 import pdf from "../../assets/pdf.png";
 import png from "../../assets/png-format.png";
-import { BsArrowRight } from "react-icons/bs";
+import { RiMenuUnfoldLine} from "react-icons/ri";
 import { Link } from "react-router-dom";
 
 const Description = () => {
   return (
-    <section className="mt-5  description border border-none">
+    <section className="mt-5  description ">
       <div className="row">
         <div className="col-12 col-sm-6 pt-5 pb-3">
           <div className="d-flex justify-content-center ">
@@ -52,17 +52,18 @@ const Description = () => {
               based on your need
               <br />
             </p>
-            <div className=" functionalityButton">
+            <div className=" functionalityButton ">
               <Link to="/filter">
                 <button
                   type="button"
-                  className="btn "
+                  className="btn filt d-flex align-items-center"
                   style={{
                     backgroundColor: "var(--secondaryBlue)",
                     color: "white",
                   }}
                 >
-                  <BsArrowRight /> Filter
+
+                  <RiMenuUnfoldLine className="me-2" /> Filter
                 </button>
               </Link>
             </div>

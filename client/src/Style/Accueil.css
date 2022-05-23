@@ -52,6 +52,7 @@ border: 1px solid rgba(84, 130, 154, 0.18);
 }
 .fourthDiv3{
     background-color:rgba(115, 58, 141, 0.58);
+    
 }
 .contentDiv{
     transform: skew(-19deg);
@@ -95,7 +96,11 @@ border: 1px solid rgba(84, 130, 154, 0.18);
 }
 
 .description{
-    background-color: rgb(180, 180, 224);
+    background-image:white;
+    border:1px solid darkgrey ;
+    border-left: none ;
+    border-right: none ;
+    
 }
 
 @media (max-width:500px){
@@ -120,4 +125,8 @@ border: 1px solid rgba(84, 130, 154, 0.18);
 .contactInfo p{
     font-weight: bold;
     font-size: 18px;
+}
+
+.filt:hover{
+    opacity: 0.8;
 }

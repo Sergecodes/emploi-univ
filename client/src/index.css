@@ -4,6 +4,9 @@
   padding:8px 50px;
   padding-right:10px;
   width:100%;
+  position:sticky;
+  top:0;
+  z-index: 500;
 }
 .row{
   margin: 0 !important;
@@ -27,7 +30,7 @@
 }
 .logo>a>img{
   height:60px;
-  width: 60px;
+  width: 80px;
   
 }
 
@@ -68,6 +71,6 @@
 
  .headerLinks ul li{
   list-style-type: none;
-  margin:0px 13px;
+  margin:0px 10px;
  }
 }
