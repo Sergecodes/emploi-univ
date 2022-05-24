@@ -2,7 +2,7 @@ from rest_framework.serializers import ModelSerializer
 
 from .models import (
    Enseignant, Cours, Filiere,
-   Groupe, RegroupementUE, Salle, 
+   Groupe, Regroupement, Salle, 
    Specialite, UE, Niveau
 )
 
@@ -56,9 +56,9 @@ class SalleSerializer(ModelSerializer):
       fields = '__all__'
 
 
-# class RegroupementUESerializer(ModelSerializer):
+# class RegroupementSerializer(ModelSerializer):
 #    class Meta:
-#       model = RegroupementUE
+#       model = Regroupement
 #       fields = '__all__'
 
 

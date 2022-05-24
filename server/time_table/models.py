@@ -200,14 +200,16 @@ class Cours(models.Model):
         db_table = 'cours'
 
 
-class RegroupementUE(models.Model):
+class Regroupement(models.Model):
     id_regroupement = models.BigAutoField(primary_key=True)
     ue = models.ForeignKey(
         UE,
-        on_delete=models.RESTRICT,
+        on_delete=models.SET_NULL,
         db_column='code_ue',
         related_name='regroupements',
-        related_query_name='regroupement'
+        related_query_name='regroupement',
+        blank=True,
+        null=True
     )
     filiere = models.ForeignKey(
         Filiere,
@@ -243,8 +245,8 @@ class RegroupementUE(models.Model):
     )
 
     @classmethod
-    def get_regroupement_ue(cls, id):
-        query = "SELECT * FROM regroupement_ue WHERE id_regroupement = %s LIMIT 1;"
+    def get_regroupement(cls, id):
+        query = "SELECT * FROM regroupement WHERE id_regroupement = %s LIMIT 1;"
         
         try:
             obj = cls.objects.raw(query, [id])[0]
@@ -259,5 +261,5 @@ class RegroupementUE(models.Model):
                 name='unique_ue_grp_fil_niv_spec'
             )
         ]
-        db_table = 'regroupement_ue'
+        db_table = 'regroupement'
 

@@ -13,12 +13,12 @@ from ..utils import get_cud_response, get_read_response, is_valid_request
 @api_view(['GET'])
 def enseignants_by_filiere(request, nom_filiere):
    # Pour relier une filiere a ses enseignants, on suit la voie
-   # filiere -> regroupement_ue -> cours -> enseignant
+   # filiere -> regroupement -> cours -> enseignant
    #     (nom_filiere)     (code_ue)   (matricule)
    # puis on filtre par le nom de la filiere
    query = """
       SELECT ens.matricule, ens.nom, ens.prenom 
-      FROM filiere fil, regroupement_ue reg, cours, enseignants ens WHERE 
+      FROM filiere fil, regroupement reg, cours, enseignants ens WHERE 
       fil.nom = reg.nom_filiere AND reg.code_ue = cours.code_ue AND
       cours.matricule_ens = ens.matricule AND fil.nom = %s;
    """
@@ -31,12 +31,12 @@ def enseignants_by_filiere(request, nom_filiere):
 @api_view(['GET'])
 def enseignants_by_niveau(request, nom_niveau):
    # Pour relier une niveau a ses enseignants, on suit la voie
-   # niveau -> regroupement_ue -> cours -> enseignant
+   # niveau -> regroupement -> cours -> enseignant
    #  (nom_bref = nom_niveau) (code_ue)  (matricule)
    # puis on filtre par le nom du niveau
    query = """
       SELECT ens.matricule, ens.nom, ens.prenom 
-      FROM niveau niv, regroupement_ue reg, cours, enseignants ens WHERE 
+      FROM niveau niv, regroupement reg, cours, enseignants ens WHERE 
       niv.nom_bref = reg.nom_niveau AND reg.code_ue = cours.code_ue AND
       cours.matricule_ens = ens.matricule AND niv.nom_bref = %s;
    """

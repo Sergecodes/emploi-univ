@@ -15,7 +15,7 @@ from ..utils import get_cud_response, get_read_response, is_valid_request
 @api_view(['GET'])
 def cours_by_niveau_filiere(request, nom_niveau, nom_filiere):
    query = """
-      SELECT * FROM cours, regroupement_ue reg WHERE
+      SELECT * FROM cours, regroupement reg WHERE
       cours.code_ue = reg.code_ue AND 
       reg.nom_niveau = %s AND reg.nom_filiere = %s;
    """
@@ -57,7 +57,7 @@ class CoursCRUD(APIView):
                )
 
                query = """
-                  INSERT INTO regroupement_ue 
+                  INSERT INTO regroupement 
                   (code_ue, nom_filiere, nom_niveau, nom_specialite, nom_groupe) 
                   VALUES (%s, %s, %s, %s, %s)
                """   
@@ -121,7 +121,7 @@ class CoursCRUD(APIView):
                )
 
                query = """
-                  UPDATE regroupement_ue SET
+                  UPDATE regroupement SET
                   code_ue = %s, nom_filiere = %s, nom_niveau = %s,
                   nom_specialite = %s, nom_groupe = %s WHERE
                   code_ue = %s, nom_filiere = %s, nom_niveau = %s
@@ -166,7 +166,7 @@ class CoursCRUD(APIView):
          with transaction.atomic():
             res = user.supprimer_cours(POST.code_ue)
             query = """
-               DELETE FROM regroupement_ue WHERE nom_filiere = %s, code_ue = %s,
+               DELETE FROM regroupement WHERE nom_filiere = %s, code_ue = %s,
                nom_niveau = %s, nom_groupe = %s, nom_specialite = %s;
             """
 

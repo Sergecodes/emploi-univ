@@ -37,24 +37,24 @@ CREATE TABLE `ue` (`code` varchar(10) NOT NULL PRIMARY KEY, `intitule` varchar(5
 --
 CREATE TABLE `cours` (`code_ue` varchar(10) NOT NULL PRIMARY KEY, `jour` varchar(3) NOT NULL, `heure_debut` time(6) NOT NULL, `heure_fin` time(6) NOT NULL, `td` bool NOT NULL);
 --
--- Create model RegroupementUE
+-- Create model Regroupement
 --
-CREATE TABLE `regroupement_ue` (`id_regroupement` bigint AUTO_INCREMENT NOT NULL PRIMARY KEY, `nom_filiere` varchar(20) NOT NULL, `nom_groupe` varchar(20) NULL, `nom_niveau` varchar(10) NOT NULL, `nom_specialite` varchar(20) NOT NULL, `code_ue` varchar(10) NOT NULL);
+CREATE TABLE `regroupement` (`id_regroupement` bigint AUTO_INCREMENT NOT NULL PRIMARY KEY, `nom_filiere` varchar(20) NOT NULL, `nom_groupe` varchar(20) NULL, `nom_niveau` varchar(10) NOT NULL, `nom_specialite` varchar(20) NULL, `code_ue` varchar(10) NULL);
 --
--- Create constraint unique_ue_grp_fil_niv_spec on model regroupementue
+-- Create constraint unique_ue_grp_fil_niv_spec on model regroupement
 --
-ALTER TABLE `regroupement_ue` ADD CONSTRAINT `unique_ue_grp_fil_niv_spec` UNIQUE (`code_ue`, `nom_groupe`, `nom_filiere`, `nom_niveau`, `nom_specialite`);
+ALTER TABLE `regroupement` ADD CONSTRAINT `unique_ue_grp_fil_niv_spec` UNIQUE (`code_ue`, `nom_groupe`, `nom_filiere`, `nom_niveau`, `nom_specialite`);
 --
 -- Add field enseignant to cours
 --
-ALTER TABLE `cours` ADD COLUMN `matricule_ens` varchar(15) NOT NULL , ADD CONSTRAINT `cours_matricule_ens_a1e15eb7_fk_enseignant_matricule` FOREIGN KEY (`matricule_ens`) REFERENCES `enseignant`(`matricule`);
+ALTER TABLE `cours` ADD COLUMN `matricule_ens` varchar(15) NOT NULL , ADD CONSTRAINT `cours_matricule_ens_7a7bd320_fk_enseignant_matricule` FOREIGN KEY (`matricule_ens`) REFERENCES `enseignant`(`matricule`);
 --
 -- Add field salle to cours
 --
 ALTER TABLE `cours` ADD COLUMN `nom_salle` varchar(10) NOT NULL , ADD CONSTRAINT `cours_nom_salle_64ca790b_fk_salle_nom` FOREIGN KEY (`nom_salle`) REFERENCES `salle`(`nom`);
 ALTER TABLE `cours` ADD CONSTRAINT `cours_code_ue_4eab98b4_fk_ue_code` FOREIGN KEY (`code_ue`) REFERENCES `ue` (`code`);
-ALTER TABLE `regroupement_ue` ADD CONSTRAINT `regroupement_ue_nom_filiere_37ad6178_fk_filiere_nom` FOREIGN KEY (`nom_filiere`) REFERENCES `filiere` (`nom`);
-ALTER TABLE `regroupement_ue` ADD CONSTRAINT `regroupement_ue_nom_groupe_858b3c38_fk_groupe_nom` FOREIGN KEY (`nom_groupe`) REFERENCES `groupe` (`nom`);
-ALTER TABLE `regroupement_ue` ADD CONSTRAINT `regroupement_ue_nom_niveau_68e563eb_fk_niveau_nom_bref` FOREIGN KEY (`nom_niveau`) REFERENCES `niveau` (`nom_bref`);
-ALTER TABLE `regroupement_ue` ADD CONSTRAINT `regroupement_ue_nom_specialite_05c46171_fk_specialite_nom` FOREIGN KEY (`nom_specialite`) REFERENCES `specialite` (`nom`);
-ALTER TABLE `regroupement_ue` ADD CONSTRAINT `regroupement_ue_code_ue_d28157f7_fk_ue_code` FOREIGN KEY (`code_ue`) REFERENCES `ue` (`code`);
+ALTER TABLE `regroupement` ADD CONSTRAINT `regroupement_nom_filiere_32af357c_fk_filiere_nom` FOREIGN KEY (`nom_filiere`) REFERENCES `filiere` (`nom`);
+ALTER TABLE `regroupement` ADD CONSTRAINT `regroupement_nom_groupe_0400cbf3_fk_groupe_nom` FOREIGN KEY (`nom_groupe`) REFERENCES `groupe` (`nom`);
+ALTER TABLE `regroupement` ADD CONSTRAINT `regroupement_nom_niveau_f894a562_fk_niveau_nom_bref` FOREIGN KEY (`nom_niveau`) REFERENCES `niveau` (`nom_bref`);
+ALTER TABLE `regroupement` ADD CONSTRAINT `regroupement_nom_specialite_3e864e1b_fk_specialite_nom` FOREIGN KEY (`nom_specialite`) REFERENCES `specialite` (`nom`);
+ALTER TABLE `regroupement` ADD CONSTRAINT `regroupement_code_ue_11d1b045_fk_ue_code` FOREIGN KEY (`code_ue`) REFERENCES `ue` (`code`);

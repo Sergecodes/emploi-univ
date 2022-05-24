@@ -1,3 +1,7 @@
 env path: source ~/.virtualenvs/emploi-univ-env/bin/activate
 
-- 
+-- 
+-- Create database
+--
+CREATE DATABASE emploi_univ_bd CHARACTER SET utf8;
+
