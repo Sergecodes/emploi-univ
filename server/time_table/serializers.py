@@ -13,6 +13,12 @@ class EnseignantSerializer(ModelSerializer):
       fields = '__all__'
 
 
+class RegroupementSerializer(ModelSerializer):
+   class Meta:
+      model = Regroupement
+      fields = '__all__'
+
+
 class NiveauSerializer(ModelSerializer):
    class Meta:
       model = Niveau

@@ -4,10 +4,18 @@ from rest_framework.response import Response
 from typing import Iterable
 
 
-def dictfetchall(cursor):
+def dict_fetchone(cursor):
    """
-   Return all rows from a cursor as a dict, 
-   taken from https://docs.djangoproject.com/en/4.0/topics/db/sql. 
+   Return all rows from a cursor as a dict.
+   """
+   columns = [col[0] for col in cursor.description]
+   return dict(zip(columns, cursor.fetchone())) 
+
+
+def dict_fetchall(cursor):
+   """
+   Return all rows from a cursor as a dict.
+   Taken from https://docs.djangoproject.com/en/4.0/topics/db/sql. 
    """
    columns = [col[0] for col in cursor.description]
    return [dict(zip(columns, row)) for row in cursor.fetchall()]

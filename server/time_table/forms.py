@@ -2,7 +2,8 @@ from django.forms import ModelForm
 
 from .models import (
    Enseignant, Cours, Filiere,
-   Groupe, Salle, Specialite, UE
+   Groupe, Salle, Specialite, UE,
+   Niveau, 
 )
 
 
@@ -21,6 +22,12 @@ class CoursForm(ModelForm):
 class FiliereForm(ModelForm):
    class Meta:
       model = Filiere
+      fields = '__all__'
+
+
+class NiveauForm(ModelForm):
+   class Meta:
+      model = Niveau
       fields = '__all__'
 
 

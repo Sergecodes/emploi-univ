@@ -2,10 +2,6 @@ from django.contrib.auth.models import AbstractUser
 from django.db import connection
 from django.db.utils import IntegrityError
 
-from time_table.serializers import (
-	FiliereSerializer
-)
-
 
 class FiliereOps:
 	def ajouter_filiere(self, nom):
