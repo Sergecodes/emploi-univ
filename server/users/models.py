@@ -2,7 +2,7 @@ from django.contrib.auth.models import AbstractUser
 from django.db import connection, transaction
 from django.db.utils import IntegrityError
 
-from time_table.models import UE, Cours, Enseignant
+from time_table.models import UE, Cours, Enseignant, Niveau
 
 
 class FiliereOps:
@@ -33,6 +33,47 @@ class FiliereOps:
 		try: 
 			with connection.cursor() as cursor:
 				cursor.execute(query, [new_nom, nom])
+		except IntegrityError as err:
+			return err
+
+
+class NiveauOps:
+	def ajouter_niveau(self, nom_bref, nom_complet):
+		query = "INSERT INTO niveau (nom_bref, nom_complet) VALUES (%s, %s);"
+		
+		try:
+			with connection.cursor() as cursor:
+				cursor.execute(query, [nom_bref, nom_complet])
+		except IntegrityError as err:
+			return err
+
+	def supprimer_niveau(self, nom_bref):
+		query = "DELETE FROM niveau WHERE nom_bref = %s;"
+
+		try: 
+			with connection.cursor() as cursor:
+				cursor.execute(query, [nom_bref])
+		except IntegrityError as err:
+			return err
+
+	def renommer_niveau(self, nom_bref, new_nom_bref='', new_nom_complet=''):
+		if not new_nom_bref and new_nom_complet:
+			return 
+
+		select_niveau = "SELECT * FROM niveau WHERE nom_bref = %s LIMIT 1;"
+		try:
+			niveau = Niveau.objects.raw(select_niveau, [nom_bref])[0]
+		except IndexError:
+			return IndexError(f"Niveau with nom_bref {nom_bref} not found")
+
+		query = "UPDATE niveau SET nom_bref = %s, nom_complet = %s WHERE nom_bref = %s;"
+
+		try: 
+			with connection.cursor() as cursor:
+				cursor.execute(
+					query, 
+					[new_nom_bref or niveau.nom_bref, new_nom_complet or niveau.nom_complet, nom_bref]
+				)
 		except IntegrityError as err:
 			return err
 
@@ -214,7 +255,7 @@ class UEOps:
 		except IndexError:
 			return IndexError(f"UE with code {code} not found")
 
-		query = "UPDATE ue SET code = %s, intitule = %s, WHERE code = %s;"
+		query = "UPDATE ue SET code = %s, intitule = %s WHERE code = %s;"
 
 		try: 
 			with connection.cursor() as cursor:
