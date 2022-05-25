@@ -16,11 +16,16 @@ class FiliereOps:
 			return err
 
 	def supprimer_filiere(self, nom):
-		query = "DELETE FROM filiere WHERE nom = %s;"
+		query1 = "DELETE FROM regroupement WHERE nom_filiere = %s;"
+		query2 = "DELETE FROM filiere WHERE nom = %s;"
 
 		try: 
-			with connection.cursor() as cursor:
-				cursor.execute(query, [nom])
+			with transaction.atomic():
+				with connection.cursor() as cursor:
+					cursor.execute(query1, [nom])
+
+				with connection.cursor() as cursor:
+					cursor.execute(query2, [nom])
 		except IntegrityError as err:
 			return err
 
@@ -48,15 +53,20 @@ class NiveauOps:
 			return err
 
 	def supprimer_niveau(self, nom_bref):
-		query = "DELETE FROM niveau WHERE nom_bref = %s;"
+		query1 = "DELETE FROM regroupement WHERE nom_niveau = %s;"
+		query2 = "DELETE FROM niveau WHERE nom_bref = %s;"
 
 		try: 
-			with connection.cursor() as cursor:
-				cursor.execute(query, [nom_bref])
+			with transaction.atomic():
+				with connection.cursor() as cursor:
+					cursor.execute(query1, [nom_bref])
+				
+				with connection.cursor() as cursor:
+					cursor.execute(query2, [nom_bref])
 		except IntegrityError as err:
 			return err
 
-	def renommer_niveau(self, nom_bref, new_nom_bref='', new_nom_complet=''):
+	def modifier_niveau(self, nom_bref, new_nom_bref='', new_nom_complet=''):
 		if not new_nom_bref and new_nom_complet:
 			return 
 
@@ -158,6 +168,43 @@ class GroupeOps:
 			return err
 
 
+class SalleOps:
+	def ajouter_salle(self, nom):
+		query = "INSERT INTO salle (nom) VALUES (%s);"
+		
+		try:
+			with connection.cursor() as cursor:
+				cursor.execute(query, [nom])
+		except IntegrityError as err:
+			return err
+
+	def supprimer_salle(self, nom):
+		query1 = "DELETE FROM cours WHERE nom_salle = %s;"
+		query2 = "DELETE FROM salle WHERE nom = %s;"
+
+		try: 
+			with transaction.atomic():
+				with connection.cursor() as cursor:
+					cursor.execute(query1, [nom])
+				
+				with connection.cursor() as cursor:
+					cursor.execute(query2, [nom])
+		except IntegrityError as err:
+			return err
+
+	def renommer_salle(self, nom, new_nom):
+		if nom == new_nom:
+			return
+
+		query = "UPDATE salle SET nom = %s WHERE nom = %s;"
+
+		try: 
+			with connection.cursor() as cursor:
+				cursor.execute(query, [new_nom, nom])
+		except IntegrityError as err:
+			return err
+
+
 class EnseignantOps:
 	def ajouter_enseignant(self, matricule, nom, prenom):
 		query = "INSERT INTO enseignant (matricule, nom, prenom) VALUES (%s, %s, %s);"
@@ -169,11 +216,16 @@ class EnseignantOps:
 			return err	
 			
 	def supprimer_enseignant(self, matricule):
-		query = "DELETE FROM enseignant WHERE matricule = %s;"
+		query1 = "DELETE FROM cours WHERE matricule_ens = %s;"
+		query2 = "DELETE FROM enseignant WHERE matricule = %s;"
 
 		try: 
-			with connection.cursor() as cursor:
-				cursor.execute(query, [matricule])
+			with transaction.atomic():
+				with connection.cursor() as cursor:
+					cursor.execute(query1, [matricule])
+					
+				with connection.cursor() as cursor:
+					cursor.execute(query2, [matricule])
 		except IntegrityError as err:
 			return err
 
@@ -236,12 +288,20 @@ class UEOps:
 			return err
 
 	def supprimer_ue(self, code):
-		# Cours and Regroupement instances are automatically deleted by CASCADE.
-		query = "DELETE FROM ue WHERE code = %s;"
+		query1 = "DELETE FROM cours WHERE code_ue = %s;"
+		query2 = "DELETE FROM regroupement WHERE code_ue = %s;"
+		query3 = "DELETE FROM ue WHERE code = %s;"
 
 		try: 
-			with connection.cursor() as cursor:
-				cursor.execute(query, [code])
+			with transaction.atomic():
+				with connection.cursor() as cursor:
+					cursor.execute(query1, [code])
+
+				with connection.cursor() as cursor:
+					cursor.execute(query2, [code])
+
+				with connection.cursor() as cursor:
+					cursor.execute(query3, [code])
 		except IntegrityError as err:
 			return err
 

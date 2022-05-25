@@ -171,18 +171,18 @@ class Cours(models.Model):
         UE, 
         db_column='code_ue', 
         primary_key=True, 
-        on_delete=models.CASCADE
+        on_delete=models.RESTRICT
     )
     enseignant = models.ForeignKey(
         Enseignant,
-        on_delete=models.CASCADE,
+        on_delete=models.RESTRICT,
         db_column='matricule_ens',
         related_name='cours',
         related_query_name='cours'
     )
     salle = models.ForeignKey(
         Salle,
-        on_delete=models.CASCADE,
+        on_delete=models.RESTRICT,
         db_column='nom_salle',
         related_name='cours',
         related_query_name='cours',
@@ -215,7 +215,7 @@ class Regroupement(models.Model):
     id_regroupement = models.BigAutoField(primary_key=True)
     ue = models.ForeignKey(
         UE,
-        on_delete=models.CASCADE,
+        on_delete=models.RESTRICT,
         db_column='code_ue',
         related_name='regroupements',
         related_query_name='regroupement',

@@ -41,8 +41,7 @@ class NiveauCRUD(APIView):
 
       # Or use `if res`
       if isinstance(res, IntegrityError):
-         # Error could be a 404 or caused by a models.RESTRICT 
-         return get_cud_response(str(res))
+         return get_cud_response(res, status.HTTP_404_NOT_FOUND)
 
       return get_cud_response(return_code=status.HTTP_204_NO_CONTENT)
 
