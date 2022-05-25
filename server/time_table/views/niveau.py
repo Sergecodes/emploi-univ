@@ -24,8 +24,8 @@ class NiveauCRUD(APIView):
       
       return Response(form.errors, status.HTTP_400_BAD_REQUEST)
 
-   def get(self, request, nom):
-      res = Niveau.get_niveau(nom)
+   def get(self, request, nom_bref):
+      res = Niveau.get_niveau(nom_bref)
       return get_read_response(res, NiveauSerializer)
 
    def put(self, request, nom_bref):

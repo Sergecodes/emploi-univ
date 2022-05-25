@@ -1,3 +1,4 @@
+from django.db import connection
 from django.db.utils import IntegrityError
 from rest_framework import status
 from rest_framework.decorators import api_view
@@ -7,26 +8,68 @@ from rest_framework.views import APIView
 from ..forms import CoursForm 
 from ..models import Cours
 from ..serializers import CoursSerializer
-from ..utils import get_cud_response, get_read_response, is_valid_request
-
+from ..utils import (
+   get_cud_response, get_read_response, 
+   is_valid_request, dict_fetchall
+)
 
 
 @api_view(['GET'])
-def cours_by_niveau_filiere(request, nom_niveau, nom_filiere):
-   query = """
-      SELECT * FROM cours, regroupement reg WHERE
-      cours.code_ue = reg.code_ue AND 
-      reg.nom_niveau = %s AND reg.nom_filiere = %s;
+def cours_by_filiere(request, nom_filiere):
    """
-
-   result = Cours.objects.raw(query, [nom_niveau, nom_filiere])
-   serializer = CoursSerializer(result, many=True)
+   Get cours info. i.e. code_ue, intitule, matricule_ens, nom_ens, prenom_ens,
+   nom_salle, heure_debut, heure_fin, jour, is_td, nom_niveau, nom_specialite. \n
+   Use tables: cours, ue, enseignant, regroupement, filiere.
+   """
    
-   return Response(serializer.data)
+   query = """
+      SELECT code_ue, intitule, matricule_ens, ens.nom AS nom_ens, 
+      ens.prenom AS prenom_ens, salle.nom AS nom_salle, jour, is_td
+      heure_debut, heure_fin, nom_niveau, nom_specialite 
+      FROM regroupement AS reg, cours, ue, enseignant AS ens, filiere WHERE
+      cours.code_ue = ue.code AND cours.matricule_ens = ens.matricule AND
+      cours.code_ue = reg.code_ue AND ue.code = reg.code_ue AND 
+      reg.nom_filiere = filiere.nom AND filiere.nom = %s;
+   """
+   
+   with connection.cursor() as cursor:
+      cursor.execute(query, [nom_filiere])
+      res = dict_fetchall(cursor)
+      return Response(res)
+
+
+@api_view(['GET'])
+def cours_by_fil_niv_special(request, nom_filiere, nom_niveau, nom_specialite=None):
+   if not nom_specialite:
+      query = """
+         SELECT code_ue, intitule, matricule_ens, ens.nom AS nom_ens, 
+         ens.prenom AS prenom_ens, salle.nom AS nom_salle, jour, is_td
+         heure_debut, heure_fin FROM cours, ue, enseignant AS ens, filiere, niveau 
+         WHERE cours.code_ue = ue.code AND cours.matricule_ens = ens.matricule AND
+         filiere.nom = %s AND niveau.nom = %s;
+      """
+
+      with connection.cursor() as cursor:
+         cursor.execute(query, [nom_filiere, nom_niveau])
+         res = dict_fetchall(cursor)
+         return Response(res)      
+   else:
+      query = """
+         SELECT code_ue, intitule, matricule_ens, ens.nom AS nom_ens, 
+         ens.prenom AS prenom_ens, salle.nom AS nom_salle, jour, is_td
+         heure_debut, heure_fin FROM cours, ue, enseignant AS ens, filiere, niveau, 
+         specialite AS spec WHERE cours.code_ue = ue.code AND 
+         cours.matricule_ens = ens.matricule AND filiere.nom = %s AND niveau.nom = %s 
+         AND spec.nom = %s;
+      """
+   
+      with connection.cursor() as cursor:
+         cursor.execute(query, [nom_filiere, nom_niveau, nom_specialite])
+         res = dict_fetchall(cursor)
+         return Response(res)
 
 
 class CoursCRUD(APIView):
-
    def post(self, request):
       user, POST = request.user, request.POST
       valid_req = is_valid_request(
