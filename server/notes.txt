@@ -1,3 +1,4 @@
 env path: source ~/.virtualenvs/emploi-univ-env/bin/activate
 
-- 
+- verify PUT and DELETE METHODS. params and unrequired POST['']
+- update all put methds(from req bodies...)

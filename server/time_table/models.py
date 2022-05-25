@@ -1,5 +1,7 @@
-from django.db import models
+from django.db import models, connection
 from django.utils.translation import gettext_lazy as _
+
+from .utils import dict_fetchone
 
 
 class Enseignant(models.Model):
@@ -29,13 +31,18 @@ class UE(models.Model):
 
     @classmethod
     def get_ue(cls, code):
-        query = "SELECT * FROM ue WHERE code = %s LIMIT 1;"
+        query = """
+            SELECT code_ue, intitule, matricule_ens, ens.nom AS nom_ens, 
+            ens.prenom AS prenom_ens, nom_filiere, nom_niveau, nom_specialite
+            FROM regroupement AS reg, cours, ue WHERE ue.code = %s AND
+            cours.code_ue = reg.code_ue AND reg.code_ue = ue.code_ue 
+            LIMIT 1;
+        """
         
-        try:
-            obj = cls.objects.raw(query, [code])[0]
-        except IndexError:
-            return None
-        return obj
+        with connection.cursor() as cursor:
+            cursor.execute(query, [code])
+            res = dict_fetchone(cursor)
+            return res
 
     def __str__(self):
         return f'{self.code} - {self.intitule}'
@@ -132,10 +139,12 @@ class Specialite(models.Model):
     
     @classmethod
     def get_specialite(cls, nom):
-        query = "SELECT * FROM specialite WHERE nom = %s LIMIT 1;"
-        
+        query = """
+            SELECT DISTINCT nom_specialite, nom_filiere, nom_niveau FROM regroupement
+            WHERE nom_specialite = %s LIMIT 1;
+        """
         try:
-            obj = cls.objects.raw(query, [nom])[0]
+            obj = Regroupement.objects.raw(query, [nom])[0]
         except IndexError:
             return None
         return obj
@@ -162,26 +171,28 @@ class Cours(models.Model):
         UE, 
         db_column='code_ue', 
         primary_key=True, 
-        on_delete=models.RESTRICT
+        on_delete=models.CASCADE
     )
     enseignant = models.ForeignKey(
         Enseignant,
-        on_delete=models.RESTRICT,
+        on_delete=models.CASCADE,
         db_column='matricule_ens',
         related_name='cours',
         related_query_name='cours'
     )
     salle = models.ForeignKey(
         Salle,
-        on_delete=models.RESTRICT,
+        on_delete=models.CASCADE,
         db_column='nom_salle',
         related_name='cours',
-        related_query_name='cours'
+        related_query_name='cours',
+        blank=True,
+        null=True
     )
-    jour = models.CharField(max_length=3, choices=DAYS_OF_THE_WEEK)
-    heure_debut = models.TimeField()
-    heure_fin = models.TimeField()
-    td = models.BooleanField(default=False)
+    jour = models.CharField(max_length=3, choices=DAYS_OF_THE_WEEK, blank=True)
+    heure_debut = models.TimeField(blank=True, null=True)
+    heure_fin = models.TimeField(blank=True, null=True)
+    is_td = models.BooleanField(blank=True, null=True)
 
     @classmethod
     def get_cours(cls, code_ue):
@@ -204,7 +215,7 @@ class Regroupement(models.Model):
     id_regroupement = models.BigAutoField(primary_key=True)
     ue = models.ForeignKey(
         UE,
-        on_delete=models.SET_NULL,
+        on_delete=models.CASCADE,
         db_column='code_ue',
         related_name='regroupements',
         related_query_name='regroupement',

@@ -1,4 +1,3 @@
-from django.db import connection, transaction
 from django.db.utils import IntegrityError
 from rest_framework import status
 from rest_framework.decorators import api_view
@@ -6,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from ..forms import FiliereForm, SpecialiteForm, NiveauForm
-from ..models import Regroupement
+from ..models import Regroupement, Specialite
 from ..serializers import RegroupementSerializer
 from ..utils import get_cud_response, is_valid_request
 
@@ -21,7 +20,6 @@ def all_specialites(request):
 
 
 class SpecialiteCRUD(APIView):
-
    def post(self, request):
       user, POST = request.user, request.POST
       valid_req = is_valid_request(POST, ['nom_specialite', 'nom_niveau', 'nom_filiere'])
@@ -31,61 +29,10 @@ class SpecialiteCRUD(APIView):
 
       nom_filiere, nom_niveau = POST['nom_filiere'], POST['nom_niveau']
       nom_specialite = POST['nom_specialite']
-      form = SpecialiteForm(POST)
 
-      if form.is_valid():
-         try:
-            with transaction.atomic():
-               res = user.ajouter_specialite(nom_specialite)
-
-               query = """
-                  INSERT INTO regroupement 
-                  (nom_filiere, nom_niveau, nom_specialite) 
-                  VALUES (%s, %s, %s)
-               """   
-
-               with connection.cursor() as cursor:
-                  cursor.execute(query, [nom_filiere, nom_niveau, nom_specialite])
-
-         except IntegrityError as err:
-            return Response(str(err), status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-         return get_cud_response(return_code=status.HTTP_201_CREATED)
-      
-      return Response(form.errors, status.HTTP_400_BAD_REQUEST)
-
-   def get(self, request, nom):
-      query = """
-         SELECT nom_specialite, nom_filiere, nom_niveau FROM regroupement
-         WHERE nom_specialite = %s LIMIT 1;
-      """
-      try:
-         res = Regroupement.objects.raw(query, [nom])[0]
-      except IndexError:
-         return Response({}, status.HTTP_404_NOT_FOUND)
-         
-      return Response(res)
-
-   def put(self, request):
-      user, POST = request.user, request.POST
-      valid_req = is_valid_request(
-         POST, 
-         [
-            'nom_specialite', 'new_nom_specialite',
-            'new_nom_filiere', 'new_nom_niveau'
-         ]
-      )
-
-      if valid_req[0] == False:
-         return valid_req[1]
-
-      nom_specialite = POST['nom_specialite']
-      new_nom_specialite = POST['new_nom_specialite']
-      new_nom_filiere, new_nom_niveau = POST['new_nom_filiere'], POST['new_nom_niveau']
-      
-      spec_form = SpecialiteForm({ 'nom': new_nom_specialite })
-      fil_form = FiliereForm({ 'nom': new_nom_filiere })
-      niv_form = NiveauForm({ 'nom': new_nom_niveau })
+      spec_form = SpecialiteForm({ 'nom': nom_specialite })
+      fil_form = FiliereForm({ 'nom': nom_filiere })
+      niv_form = NiveauForm({ 'nom': nom_niveau })
 
       if not spec_form.is_valid():
          return Response(
@@ -114,53 +61,59 @@ class SpecialiteCRUD(APIView):
             status.HTTP_400_BAD_REQUEST
          )
 
-      try:
-         with transaction.atomic():
-            res = user.renommer_specialite(nom_specialite, new_nom_specialite)
+      res = user.ajouter_specialite(nom_specialite, nom_niveau, nom_filiere)
+      return get_cud_response(res, return_code=status.HTTP_201_CREATED)
 
-            query = """
-               UPDATE regroupement SET nom_specialite = %s
-               WHERE nom_specialite = %s
-            """   
+   def get(self, request, nom):
+      res = Specialite.get_specialite(nom)
+      if res:
+         data = {
+            'nom_specialite': res.nom_specialite,
+            'nom_filiere': res.nom_filiere,
+            'nom_niveau': res.nom_niveau
+         }
+         return Response(data)
 
-            with connection.cursor() as cursor:
-               cursor.execute(query, [new_nom_specialite, nom_specialite])
+      return Response(status=status.HTTP_404_NOT_FOUND)
 
-      except IntegrityError as err:
-         return Response(str(err), status.HTTP_500_INTERNAL_SERVER_ERROR)
+   def put(self, request, nom):
+      user, POST = request.user, request.POST
+      valid_req = is_valid_request(POST, ['new_nom_specialite'])
 
-      return get_cud_response()
+      if valid_req[0] == False:
+         return valid_req[1]
 
+      new_nom_specialite = POST['new_nom_specialite']
+      spec_form = SpecialiteForm({ 'nom': new_nom_specialite })
 
-   def delete(self, request):
+      if not spec_form.is_valid():
+         return Response(
+            {
+               'message': 'Specialite form has errors',
+               **spec_form.errors
+            }, 
+            status.HTTP_400_BAD_REQUEST
+         )
+
+      res = user.renommer_specialite(nom, new_nom_specialite)
+      return get_cud_response(res, status.HTTP_404_NOT_FOUND)
+
+   def delete(self, request, nom):
       user, POST = request.user, request.POST
       valid_req = is_valid_request(
          POST, 
-         ['nom_filiere', 'nom_specialite', 'nom_niveau']
+         ['nom_filiere', 'nom_niveau']
       )
 
       if valid_req[0] == False:
          return valid_req[1]
 
       nom_niveau, nom_filiere = POST['nom_niveau'], POST['nom_filiere']
-      nom_specialite = POST['nom_specialite']
+      res = user.supprimer_specialite(nom, nom_niveau, nom_filiere)
 
-      try:
-         with transaction.atomic():
-            res = user.supprimer_specialite(POST['nom_specialite'])
-            query = """
-               DELETE FROM regroupement WHERE nom_filiere = %s, 
-               nom_niveau = %s, nom_specialite = %s;
-            """
-
-            with connection.cursor() as cursor:
-               cursor.execute(
-                  query, 
-                  [nom_filiere, nom_niveau, nom_specialite]
-               )
-      except IntegrityError as err:
+      if isinstance(res, IntegrityError):
          # Use 404 cause it's the only error we can have here
-         return Response(str(err), status.HTTP_404_NOT_FOUND)
+         return Response(str(res), status.HTTP_404_NOT_FOUND)
 
       return get_cud_response(return_code=status.HTTP_204_NO_CONTENT)
 
