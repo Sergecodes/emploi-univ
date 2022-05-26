@@ -1,6 +1,3 @@
 env path: source ~/.virtualenvs/emploi-univ-env/bin/activate
 
--Avoir la liste de tous les enseignants de chaque filière*
-
-
-- create forms(model forms)
+- create link to td and groupe
