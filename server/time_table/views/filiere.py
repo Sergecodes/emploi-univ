@@ -30,16 +30,16 @@ class FiliereCRUD(APIView):
 
    def put(self, request, nom):
       user, POST = request.user, request.POST
-      valid_req = is_valid_request(POST, ['new_nom_filiere'])
+      valid_req = is_valid_request(POST, ['new_nom'])
 
       if valid_req[0] == False:
          return valid_req[1]
 
-      new_nom_filiere = POST['new_nom_filiere']
+      new_nom = POST['new_nom']
 
-      form = FiliereForm({ 'nom': new_nom_filiere })
+      form = FiliereForm({ 'nom': new_nom })
       if form.is_valid():
-         res = user.renommer_filiere(nom, new_nom_filiere)
+         res = user.renommer_filiere(nom, new_nom)
          return get_cud_response(res, status.HTTP_404_NOT_FOUND)
       
       return Response(form.errors, status.HTTP_400_BAD_REQUEST)

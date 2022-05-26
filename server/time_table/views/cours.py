@@ -21,32 +21,50 @@ def cours_by_filiere(request, nom_filiere):
    nom_salle, heure_debut, heure_fin, jour, is_td, nom_niveau, nom_specialite. \n
    Use tables: cours, ue, enseignant, regroupement, filiere.
    """
+
+   def group_by_niveau(cursor):
+      """
+      Return cours grouped by niveau i.e each key of the dict should be a niveau.
+      `cursor` should have used a GROUP BY clause.
+      """
+      columns = [col[0] for col in cursor.description]
+      result_1 = [dict(zip(columns, row)) for row in cursor.fetchall()]
+      result = {"L1": [], "L2": [], "L3": [], "M1": []}
+
+      for res_dict in result_1:
+         # Get and remove `nom_niveau` from dict
+         nom_niveau = res_dict.pop('nom_niveau')
+
+         arr = result[nom_niveau].append(res_dict)
+         result[nom_niveau] = arr
+
+      return result
+   
    
    query = """
-      SELECT code_ue, intitule, matricule_ens, ens.nom AS nom_ens, 
+      SELECT DISTINCT nom_niveau, code_ue, intitule, matricule_ens, ens.nom AS nom_ens, 
       ens.prenom AS prenom_ens, salle.nom AS nom_salle, jour, is_td
-      heure_debut, heure_fin, nom_niveau, nom_specialite 
-      FROM regroupement AS reg, cours, ue, enseignant AS ens, filiere WHERE
-      cours.code_ue = ue.code AND cours.matricule_ens = ens.matricule AND
-      cours.code_ue = reg.code_ue AND ue.code = reg.code_ue AND 
-      reg.nom_filiere = filiere.nom AND filiere.nom = %s;
+      heure_debut, heure_fin, nom_specialite FROM regroupement AS reg, 
+      cours, ue, enseignant AS ens, filiere WHERE cours.code_ue = ue.code AND 
+      cours.matricule_ens = ens.matricule AND cours.code_ue = reg.code_ue AND 
+      ue.code = reg.code_ue AND reg.nom_filiere = filiere.nom AND 
+      filiere.nom = %s GROUP BY nom_niveau;
    """
    
    with connection.cursor() as cursor:
       cursor.execute(query, [nom_filiere])
-      res = dict_fetchall(cursor)
-      return Response(res)
+      return Response(group_by_niveau(cursor))
 
 
 @api_view(['GET'])
 def cours_by_fil_niv_special(request, nom_filiere, nom_niveau, nom_specialite=None):
    if not nom_specialite:
       query = """
-         SELECT code_ue, intitule, matricule_ens, ens.nom AS nom_ens, 
-         ens.prenom AS prenom_ens, salle.nom AS nom_salle, jour, is_td
-         heure_debut, heure_fin FROM cours, ue, enseignant AS ens, filiere, niveau 
-         WHERE cours.code_ue = ue.code AND cours.matricule_ens = ens.matricule AND
-         filiere.nom = %s AND niveau.nom = %s;
+         SELECT DISTINCT nom_specialite, code_ue, intitule, matricule_ens, is_td,
+         ens.nom AS nom_ens, ens.prenom AS prenom_ens, salle.nom AS nom_salle, jour, 
+         heure_debut, heure_fin FROM cours, ue, enseignant AS ens, filiere, niveau,
+         specialite AS spec WHERE cours.code_ue = ue.code AND 
+         cours.matricule_ens = ens.matricule AND filiere.nom = %s AND niveau.nom = %s;
       """
 
       with connection.cursor() as cursor:
@@ -55,7 +73,7 @@ def cours_by_fil_niv_special(request, nom_filiere, nom_niveau, nom_specialite=No
          return Response(res)      
    else:
       query = """
-         SELECT code_ue, intitule, matricule_ens, ens.nom AS nom_ens, 
+         SELECT DISTINCT code_ue, intitule, matricule_ens, ens.nom AS nom_ens, 
          ens.prenom AS prenom_ens, salle.nom AS nom_salle, jour, is_td
          heure_debut, heure_fin FROM cours, ue, enseignant AS ens, filiere, niveau, 
          specialite AS spec WHERE cours.code_ue = ue.code AND 
@@ -74,29 +92,20 @@ class CoursCRUD(APIView):
       user, POST = request.user, request.POST
       valid_req = is_valid_request(
          POST, 
-         [
-            'code_ue', 'matricule_ens', 'nom_salle', 'jour', 
-            'heure_fin', 'nom_filiere', 'nom_niveau', 'heure_debut',
-         ]
+         ['code_ue', 'nom_salle', 'jour', 'heure_fin', 'heure_debut']
       )
 
       if valid_req[0] == False:
          return valid_req[1]
 
-      code_ue, matricule_ens  = POST['code_ue'], POST['matricule_ens']
+      code_ue, jour = POST['code_ue'], POST['jour']
       nom_salle, is_td = POST['nom_salle'], POST.get('is_td', False)
-      jour, heure_debut, heure_fin = POST['jour'], POST['heure_debut'], POST['heure_fin']
-      nom_filiere, nom_niveau = POST['nom_filiere'], POST['nom_niveau']
-      nom_specialite = POST.get('nom_specialite')
+      heure_debut, heure_fin = POST['heure_debut'], POST['heure_fin']
       
       form = CoursForm(POST)
 
       if form.is_valid():
-         res = user.ajouter_cours(
-            code_ue, matricule_ens, nom_salle, jour, heure_debut, heure_fin, 
-            nom_filiere, nom_niveau, nom_specialite, is_td
-         )
-
+         res = user.ajouter_cours(code_ue, nom_salle, jour, heure_debut, heure_fin, is_td)
          return get_cud_response(res, return_code=status.HTTP_201_CREATED)
       
       return Response(form.errors, status.HTTP_400_BAD_REQUEST)
@@ -107,38 +116,18 @@ class CoursCRUD(APIView):
 
    def put(self, request, code_ue):
       user, POST = request.user, request.POST
-
-      new_nom_specialite = POST.get('new_nom_specialite', '')
       new_nom_salle, new_is_td = POST.get('new_nom_salle', ''), POST.get('new_is_td')
       new_jour, new_heure_debut = POST.get('new_jour', ''), POST.get('new_heure_debut')
-      nom_filiere, nom_niveau = POST.get('nom_filiere', ''), POST.get('nom_niveau', '')
-      nom_specialite, new_heure_fin = POST.get('nom_specialite'), POST.get('new_heure_fin')
-      new_nom_filiere, new_nom_niveau = POST.get('new_nom_filiere', ''), POST.get('new_nom_niveau', '')
-      new_matricule_ens, new_code_ue  = POST.get('new_matricule_ens', ''), POST.get('new_code_ue', '')
+      new_heure_fin, new_code_ue = POST.get('new_heure_fin'), POST.get('new_code_ue', '')
 
       res = user.modifier_cours(
-         code_ue, nom_filiere, nom_niveau, nom_specialite,
-         new_nom_filiere, new_nom_niveau, new_nom_specialite,
-         new_code_ue, new_matricule_ens, new_nom_salle, 
-         new_jour, new_heure_debut, new_heure_fin, new_is_td
+         code_ue, new_code_ue, new_nom_salle, new_jour, 
+         new_heure_debut, new_heure_fin, new_is_td
       )
       return get_cud_response(res, status.HTTP_404_NOT_FOUND)
 
    def delete(self, request, code_ue):
-      user, POST = request.user, request.POST
-      valid_req = is_valid_request(
-         POST, ['nom_filiere', 'nom_niveau']
-      )
-
-      if valid_req[0] == False:
-         return valid_req[1]
-
-      nom_niveau, nom_filiere = POST['nom_niveau'], POST['nom_filiere']
-      nom_specialite = POST.get('nom_specialite')
-
-      res = user.supprimer_cours(
-         code_ue, nom_filiere, nom_niveau, nom_specialite
-      )
+      res = request.user.supprimer_cours(code_ue)
             
       if isinstance(res, IntegrityError):
          # Use 404 cause it's the only error we can have here

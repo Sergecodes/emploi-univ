@@ -67,7 +67,7 @@ class EnseignantCRUD(APIView):
 
    def put(self, request, matricule):
       user, POST = request.user, request.POST
-      matricule, new_matricule = POST.get('new_matricule', '')
+      new_matricule = POST.get('new_matricule', '')
       new_nom, new_prenom = POST.get('new_nom', ''), POST.get('new_prenom', '')
 
       res = user.modifier_enseignant(matricule, new_matricule, new_nom, new_prenom)
