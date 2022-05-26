@@ -29,7 +29,7 @@ class UECRUD(APIView):
       valid_req = is_valid_request(
          POST, 
          [
-            'code_ue', 'intitule', 'matricule_ens', 
+            'code', 'intitule', 'matricule_ens', 
             'nom_filiere', 'nom_niveau'
          ]
       )
@@ -39,7 +39,7 @@ class UECRUD(APIView):
 
       nom_filiere, nom_niveau = POST['nom_filiere'], POST['nom_niveau']
       intitule, matricule_ens = POST['intitule'], POST['matricule_ens']
-      code_ue, nom_specialite = POST['code_ue'], POST.get('nom_specialite')
+      code, nom_specialite = POST['code'], POST.get('nom_specialite')
 
       if nom_specialite:
          spec_form = SpecialiteForm({ 'nom': nom_specialite })
@@ -75,7 +75,7 @@ class UECRUD(APIView):
          )
 
       res = user.ajouter_ue(
-         code_ue, intitule, matricule_ens, nom_filiere,
+         code, intitule, matricule_ens, nom_filiere,
          nom_niveau, nom_specialite
       )
       return get_cud_response(res, return_code=status.HTTP_201_CREATED)

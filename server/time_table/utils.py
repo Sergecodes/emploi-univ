@@ -18,7 +18,10 @@ def dict_fetchall(cursor):
    Taken from https://docs.djangoproject.com/en/4.0/topics/db/sql. 
    """
    columns = [col[0] for col in cursor.description]
-   return [dict(zip(columns, row)) for row in cursor.fetchall()]
+   return [
+      dict(zip(columns, row)) 
+      for row in cursor.fetchall()
+   ]
    
 
 def is_valid_request(query_dict, params: Iterable[str]):

@@ -13,13 +13,13 @@ class SalleCRUD(APIView):
    def post(self, request):
       user, POST = request.user, request.POST
       form = SalleForm(POST)
-      valid_req = is_valid_request(POST, ['nom'])
+      valid_req = is_valid_request(POST, ['nom', 'capacite'])
 
       if valid_req[0] == False:
          return valid_req[1]
 
       if form.is_valid():
-         res = user.ajouter_salle(POST['nom'])
+         res = user.ajouter_salle(POST['nom', 'capacite'])
          return get_cud_response(res, status.HTTP_201_CREATED)
       
       return Response(form.errors, status.HTTP_400_BAD_REQUEST)
@@ -30,19 +30,10 @@ class SalleCRUD(APIView):
 
    def put(self, request, nom):
       user, POST = request.user, request.POST
-      valid_req = is_valid_request(POST, ['new_nom_salle'])
+      new_nom, new_capacite = POST.get('new_nom'), POST.get('new_capacite')
 
-      if valid_req[0] == False:
-         return valid_req[1]
-
-      new_nom_salle = POST['new_nom_salle']
-
-      form = SalleForm({ 'nom': new_nom_salle })
-      if form.is_valid():
-         res = user.renommer_salle(nom, new_nom_salle)
-         return get_cud_response(res, status.HTTP_404_NOT_FOUND)
-      
-      return Response(form.errors, status.HTTP_400_BAD_REQUEST)
+      res = user.modifier_salle(nom, new_nom, new_capacite)
+      return get_cud_response(res, status.HTTP_404_NOT_FOUND)
 
    def delete(self, request, nom):
       res = request.user.supprimer_salle(nom)

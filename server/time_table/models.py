@@ -98,10 +98,12 @@ class Groupe(models.Model):
 
     @classmethod
     def get_groupe(cls, nom):
-        query = "SELECT * FROM groupe WHERE nom = %s LIMIT 1;"
-        
+        query = """
+            SELECT nom_groupe, code_ue, nom_specialite, nom_filiere, nom_niveau 
+            FROM regroupement WHERE nom_groupe = %s LIMIT 1;
+        """
         try:
-            obj = cls.objects.raw(query, [nom])[0]
+            obj = Regroupement.objects.raw(query, [nom])[0]
         except IndexError:
             return None
         return obj
@@ -236,9 +238,11 @@ class Regroupement(models.Model):
         related_name='regroupements',
         related_query_name='regroupement'
     )
+    # Use CASCADE here rather than setting to null so as not to
+    # liberate space and not to confuse with fields that initially had null values.
     specialite = models.ForeignKey(
         Specialite, 
-        on_delete=models.SET_NULL,
+        on_delete=models.CASCADE,
         db_column='nom_specialite',
         related_name='regroupements',
         related_query_name='regroupement',
@@ -247,7 +251,7 @@ class Regroupement(models.Model):
     )
     groupe = models.ForeignKey(
         Groupe, 
-        on_delete=models.SET_NULL,
+        on_delete=models.CASCADE,
         db_column='nom_groupe',
         related_name='regroupements',
         related_query_name='regroupement',

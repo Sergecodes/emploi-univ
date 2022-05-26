@@ -78,13 +78,13 @@ class SpecialiteCRUD(APIView):
 
    def put(self, request, nom):
       user, POST = request.user, request.POST
-      valid_req = is_valid_request(POST, ['new_nom_specialite'])
+      valid_req = is_valid_request(POST, ['new_nom'])
 
       if valid_req[0] == False:
          return valid_req[1]
 
-      new_nom_specialite = POST['new_nom_specialite']
-      spec_form = SpecialiteForm({ 'nom': new_nom_specialite })
+      new_nom = POST['new_nom']
+      spec_form = SpecialiteForm({ 'nom': new_nom })
 
       if not spec_form.is_valid():
          return Response(
@@ -95,21 +95,11 @@ class SpecialiteCRUD(APIView):
             status.HTTP_400_BAD_REQUEST
          )
 
-      res = user.renommer_specialite(nom, new_nom_specialite)
+      res = user.renommer_specialite(nom, new_nom)
       return get_cud_response(res, status.HTTP_404_NOT_FOUND)
 
    def delete(self, request, nom):
-      user, POST = request.user, request.POST
-      valid_req = is_valid_request(
-         POST, 
-         ['nom_filiere', 'nom_niveau']
-      )
-
-      if valid_req[0] == False:
-         return valid_req[1]
-
-      nom_niveau, nom_filiere = POST['nom_niveau'], POST['nom_filiere']
-      res = user.supprimer_specialite(nom, nom_niveau, nom_filiere)
+      res = request.user.supprimer_specialite(nom)
 
       if isinstance(res, IntegrityError):
          # Use 404 cause it's the only error we can have here
