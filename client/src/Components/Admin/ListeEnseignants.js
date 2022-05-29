@@ -11,34 +11,39 @@ import Paper from "@material-ui/core/Paper";
 import { Delete } from "@material-ui/icons";
 import { BsPenFill } from "react-icons/bs";
 
-export default function ListeSalles() {
+export default function ListeEnseignants() {
   const [open, setOpen] = useState(false);
   const [openConfirmation, setOpenConfirmation] = useState(false);
-   //pagination
-   const [page, setPage] = React.useState(0);
-   const [rowsPerPage, setRowsPerPage] = React.useState(2);
- 
-   const handleChangePage = (event, newPage) => {
-     setPage(newPage);
-   };
- 
-   const handleChangeRowsPerPage = (event) => {
-     setRowsPerPage(+event.target.value);
-     setPage(0);
-   };
- 
-   //fin pagination
-  const salles = [{nom:"AMPHI 502",capacite:500},{nom:"AMPHI 350",capacite:350},{nom:"AMPHI 250",capacite:250}, {nom:"AMPHI 1001",capacite:1001}, {nom:"S006",capacite:70}];
-  function createData(nom,capacite, modif, suppression) {
-    return { nom,capacite, modif,suppression };
+  //pagination
+  const [page, setPage] = React.useState(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(2);
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(+event.target.value);
+    setPage(0);
+  };
+
+  //fin pagination
+  const enseignants = [
+    { nom: "Nom 1", prenom: "Prenom 1", matricule: "mat 1" },
+    { nom: "Nom 2", prenom: "Prenom 2", matricule: "mat 2" },
+    { nom: "Nom 3", prenom: "Prenom 3", matricule: "mat 3" },
+  ];
+  function createData(nom, prenom, matricule, modif, suppression) {
+    return { nom, prenom, matricule, modif, suppression };
   }
   function insertion() {
     let temp = [];
-    for (let i in salles) {
+    for (let i in enseignants) {
       temp.push(
         createData(
-          salles[i].nom,
-          salles[i].capacite,
+          enseignants[i].nom,
+          enseignants[i].prenom,
+          enseignants[i].matricule,
           <button
             type="button"
             className="btn modifyButton "
@@ -58,49 +63,50 @@ export default function ListeSalles() {
             <Delete /> Supprimer
           </button>
         )
-      )
+      );
     }
     return temp;
- 
   }
   const rows = insertion();
   return (
     <section className="my-3 mx-2  listeTableau">
       <h4 className="text-center mx-2 my-3 fw-bold fs-5">
-        LISTE DES DIFFERENTES SALLES DE COURS DE LA FACULTE DES SCIENCES DE
-        L'UNVERSITE DE YAOUNDE 1
+        LISTE DES DIFFERENTS ENSEIGNANTS DISPENSANT LES COURS AU SEIN DE LA
+        FACULTE DES SCIENCES DE L'UNVERSITE DE YAOUNDE 1
       </h4>
       <Paper sx={{ width: '100%', overflow: 'hidden' }}>
-      <TableContainer component={Paper}>
-        <Table sx={{ minWidth: 650 }} aria-label="simple table">
-          <TableHead>
-            <TableRow>
-              <TableCell>Nom de la salle</TableCell>
-              <TableCell >Capacité</TableCell>
-              <TableCell align="right">Modifier la salle</TableCell>
-              <TableCell align="right">Supprimer la salle</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {rows
-            .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-            .map((row) => (
-              <TableRow
-                key={row.nom}
-                sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-              >
-                <TableCell component="th" scope="row">
-                  {row.nom}
-                </TableCell>
-                <TableCell >{row.capacite}</TableCell>
-                <TableCell align="right">{row.modif}</TableCell>
-                <TableCell align="right">{row.suppression}</TableCell>
+        <TableContainer component={Paper}>
+          <Table sx={{ minWidth: 650 }} aria-label="simple table">
+            <TableHead>
+              <TableRow>
+                <TableCell>Nom </TableCell>
+                <TableCell>Prenom</TableCell>
+                <TableCell align="left">Matricule</TableCell>
+                <TableCell align="left">Modifier l'enseignant</TableCell>
+                <TableCell align="left">Supprimer l'enseignant</TableCell>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-      <TablePagination
+            </TableHead>
+            <TableBody>
+              {rows
+                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                .map((row) => (
+                <TableRow
+                  key={row.nom}
+                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                >
+                  <TableCell component="th" scope="row">
+                    {row.nom}
+                  </TableCell>
+                  <TableCell>{row.prenom}</TableCell>
+                  <TableCell align="left">{row.matricule}</TableCell>
+                  <TableCell align="left">{row.modif}</TableCell>
+                  <TableCell align="left">{row.suppression}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+        <TablePagination
           rowsPerPageOptions={[2,5,10]}
           component="div"
           count={rows.length}
@@ -110,7 +116,6 @@ export default function ListeSalles() {
           onRowsPerPageChange={handleChangeRowsPerPage}
         />
       </Paper>
-
       {/*Modal pour la modification d'une salle*/}
       <div>
         <Modal open={open} onClose={() => setOpen(false)}>
@@ -121,11 +126,11 @@ export default function ListeSalles() {
             >
               <div className="ajout mt-5  px-3 py-2 col-12 col-md-9 col-lg-6">
                 <h4 className="fs-5 fw-light text-center">
-                  Modification des informations concernant une salle
+                  Modification des informations concernant un enseignant
                 </h4>
                 <div className="mt-4">
                   <div className="my-3">
-                    <label htmlFor="nom">Nom de la salle :</label>
+                    <label htmlFor="nom">Nom :</label>
                     <input
                       type="text"
                       name="nom"
@@ -133,9 +138,21 @@ export default function ListeSalles() {
                     ></input>
                   </div>
                   <div className="my-3">
-                    <label htmlFor="capacite">Capacité :</label>
-                    <input type="number" name="capacite" min="1"></input>
-                </div>
+                    <label htmlFor="prenom">Prenom :</label>
+                    <input
+                      type="text"
+                      name="prenom"
+                      style={{ minWidth: "70%" }}
+                    ></input>
+                  </div>
+                  <div className="my-3">
+                    <label htmlFor="matricule">Matricule :</label>
+                    <input
+                      type="text"
+                      name="matricule"
+                      style={{ minWidth: "80px" }}
+                    ></input>
+                  </div>
                 </div>
                 <div
                   className="my-3 d-flex justify-content-end "
@@ -171,7 +188,7 @@ export default function ListeSalles() {
             >
               <div className="ajout mt-5  px-3 py-2 col-12 col-md-9 col-lg-6">
                 <h4 className="fs-5 fw-light text-center">
-                  Voulez vous vraiment Supprimer la salle?
+                  Voulez vous vraiment Supprimer cet enseignant?
                 </h4>
                 <div
                   className="my-4 d-flex justify-content-center "

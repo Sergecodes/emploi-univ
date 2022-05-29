@@ -1,8 +1,8 @@
-import React,{useState} from "react";
+import React, { useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import ListSubheader from "@material-ui/core/ListSubheader";
 import List from "@material-ui/core/List";
-import ListItem from "@material-ui/core/ListItem";  
+import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
 import Collapse from "@material-ui/core/Collapse";
 import ExpandLess from "@material-ui/icons/ExpandLess";
@@ -15,11 +15,10 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
     maxWidth: 360,
     backgroundColor: "transparent",
-    color:"white",
+    color: "white",
   },
   nested: {
     paddingLeft: theme.spacing(4),
-   
   },
 }));
 
@@ -31,18 +30,23 @@ const Sidenav = () => {
     open === nom ? setOpen("") : setOpen(nom);
   };
 
-  const recognize=(name)=>{
-    if(name==="DASHBOARD") return "dashboard";
-    else if (name==="Ajout d'un enseignant") return "ajout-enseignant"
-    else if (name==="Ajout d'une salle") return "ajout-salle"
-    else if (name==="Ajout d'une filière") return "ajout-filiere"
-    else if (name==="Ajout d'une UE") return "ajout-ue"
-    else if (name==="Salles de cours") return "liste-salles"
-    else if (name==="mode formulaire") return "ajout-cours-formulaire"
-    else return "autre"
-  }
+  const recognize = (name) => {
+    if (name === "DASHBOARD") return "dashboard";
+    else if (name === "Ajout d'un enseignant") return "ajout-enseignant";
+    else if (name === "Ajout d'une salle") return "ajout-salle";
+    else if (name === "Ajout d'une filière") return "ajout-filiere";
+    else if (name === "Ajout d'une UE") return "ajout-ue";
+    else if (name === "Salles de cours") return "liste-salles";
+    else if (name === "mode formulaire") return "ajout-cours-formulaire";
+    else if (name === "mode graphique") return "ajout-cours-graphique";
+    else if (name === "Enseignants") return "liste-enseignants";
+    else if (name === "Filieres") return "liste-filieres";
+    else if (name === "Unite d'enseignement") return "liste-ue";
+
+
+    else return "autre";
+  };
   const handleRedirect = (name) => {
-    
     navigate("/admin/" + recognize(name));
   };
   return (

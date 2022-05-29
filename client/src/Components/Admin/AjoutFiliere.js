@@ -47,19 +47,20 @@ const AjoutFiliere = () => {
           {
               specialite.map(elt=>{
                   return(
-                      <div className="d-flex justify-content-between  align-items-center mx-1 my-2" key={elt.id}>
+                      <div className="d-flex justify-content-between  align-items-center mx-1 my-3" key={elt.id}>
                           <div>
                             <label htmlFor={elt.id}>Spécialité :</label>
                             <input type="text" id={elt.id}></input>
                           </div>
-                        <div >
-                            <label for="niveau">Niveau:</label>
-                            <select name="niveau">
-                                <option name="master">master</option>
-                                <option name="doctorat">doctorat</option>
-                                <option name="doctorat">Les deux</option>
-
-                            </select>
+                        <div className="d-flex ">
+                            <div className="me-2">
+                              <input type="checkbox" id="master" name="master" value="master"></input>
+                              <label htmlFor='master' >Master</label>
+                            </div>
+                           <div>
+                            <input type="checkbox" id="license" name="license" value="license"></input>
+                              <label htmlFor='license'>License</label>
+                           </div>
                         </div>
                         <button type="button" className="btn btn-danger deleteSpeciality" onClick={e=>handleDelete(e,elt.id)}><BsTrash/></button>
                       </div>

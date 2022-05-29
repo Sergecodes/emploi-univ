@@ -118,12 +118,12 @@
 }
 
 /*liste salles*/
-.listeSalles .MuiTableCell-alignRight ,.MuiTableCell-head{
+.listeTableau .MuiTableCell-alignRight ,.MuiTableCell-head{
     font-size:16px !important;
    
     color:white !important;
 }
-.listeSalles .MuiTableHead-root{
+.listeTableau .MuiTableHead-root{
     background-color:#0e0c28;
    
 }
@@ -162,4 +162,58 @@
 }
 .deleteSpeciality :hover, .buttonSpecialityAdd:hover{
     opacity: 0.8;
+}
+
+/*Ajout cours graphique*/
+
+.horaires{
+    background-color: #0e0c28;
+    color:white !important;
+    font-size: 50px;
+}
+
+.dataHeader, .horaires, .dataCell{
+    border:1px solid rgb(201, 201, 201);
+}
+
+.dataCell{
+    position:relative;
+}
+/* .ajouterUe:hover, .supprimerUe:hover{
+    opacity: 1;
+    cursor:pointer;
+ } */
+.dataCell:hover .ajouterUe,
+.dataCell:hover .supprimerUe {
+    opacity: 1;
+    cursor:pointer;
+}
+
+.ajouterUe{
+    opacity:0;
+    position:absolute;
+    right:25px;
+    top:5px;
+}
+
+
+
+.supprimerUe{
+    opacity:0;
+    position:absolute;
+    right:2px;
+    top:5px;
+}
+
+
+/* .ajouterUe:hover, .supprimerUe:hover{
+    opacity: 1;
+    cursor:pointer;
+ } */
+
+.affichageEmploi p{
+    font-weight: bold;
+    margin:0;
+    padding:0;
+    text-align:center
 }

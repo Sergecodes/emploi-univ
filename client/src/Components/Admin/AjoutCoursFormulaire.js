@@ -19,15 +19,11 @@ const AjoutCoursFormulaire = () => {
             <input type="text" name="nom" ></input>
           </div>
           <div className="my-3">
-            <label htmlFor="nom">Nom enseignant :</label>
-            <input type="text" name="nom" style={{ minWidth: "60%" }}></input>
-          </div>
-          <div className="my-3">
             <label htmlFor="nom-salle">Nom de la salle :</label>
             <input type="text" name="nom-salle"></input>
           </div>
           <div className="my-3">
-            <label for="jour">Jour :</label>
+            <label htmlFor="jour">Jour :</label>
             <select name="jour">
               <option name="lundi">Lundi</option>
               <option name="mardi">Mardi</option>
@@ -38,11 +34,11 @@ const AjoutCoursFormulaire = () => {
             </select>
           </div>
           <div className="my-3">
-            <label for="heure-debut">Heure debut :</label>
+            <label htmlFor="heure-debut">Heure debut :</label>
             <input type="time" name="heure-debut"  min="07:00" max="20:55"></input>
           </div>
           <div className="my-3">
-            <label for="heure-fin">Heure fin :</label>
+            <label htmlFor="heure-fin">Heure fin :</label>
             <input type="time" name="heure-fin"  min="08:00" max="21:55"></input>
           </div>
         </div>

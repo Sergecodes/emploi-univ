@@ -6,10 +6,16 @@ import Admin from "./Screen/Admin";
 import ComputerScience from "./Components/Consultation/ComputerScience";
 import AjoutEnseignant from "./Components/Admin/AjoutEnseignant";
 import AjoutSalle from "./Components/Admin/AjoutSalle";
-import ListeSalles from "./Components/Admin/ListeSalles";
 import AjoutFiliere from "./Components/Admin/AjoutFiliere";
 import AjoutUe from "./Components/Admin/AjoutUe";
 import AjoutCoursFormulaire from "./Components/Admin/AjoutCoursFormulaire";
+import AjoutCoursGraphique from "./Components/Admin/AjoutCoursGraphique";
+import ListeSalles from "./Components/Admin/ListeSalles";
+import ListeEnseignants from "./Components/Admin/ListeEnseignants";
+import ListeFilieres from "./Components/Admin/ListeFilieres";
+
+import ListeUe from "./Components/Admin/ListeUe";
+
 
 
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
@@ -32,7 +38,11 @@ const App = () => {
             <Route path="/admin/ajout-salle" element={<AjoutSalle/>}/>
             <Route path="/admin/ajout-ue" element={<AjoutUe/>}/>
             <Route path="/admin/ajout-cours-formulaire" element={<AjoutCoursFormulaire/>}/>
+            <Route path="/admin/ajout-cours-graphique" element={<AjoutCoursGraphique/>}/>
             <Route path="/admin/liste-salles" element={<ListeSalles/>}/>
+            <Route path="/admin/liste-enseignants" element={<ListeEnseignants/>}/>
+            <Route path="/admin/liste-filieres" element={<ListeFilieres/>}/>
+            <Route path="/admin/liste-ue" element={<ListeUe/>}/>
 
           </Route>
         </Routes>

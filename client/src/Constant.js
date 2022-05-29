@@ -191,7 +191,12 @@ export const adminSidenavElements=[
                 id:"4",
                 icon:<BsBookFill  className="ms-1"/>,
                 name:"Salles de cours"
-            }
+            },
+            {
+              id:"5",
+              icon:<BsBookFill  className="ms-1"/>,
+              name:"Unite d'enseignement"
+          }
            
         ]
     }
