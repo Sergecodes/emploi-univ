@@ -10,6 +10,8 @@ from ..utils import get_cud_response, get_read_response, is_valid_request
 
 
 class SalleCRUD(APIView):
+   queryset = Salle.objects.all()
+   
    def post(self, request):
       user, POST = request.user, request.POST
       form = SalleForm(POST)

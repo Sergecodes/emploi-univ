@@ -84,7 +84,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     
-    'corsheaders,',
+    'corsheaders',
     'rest_framework',
     # We won't use token auth but we need this app. 
     # See github.com/sunscrapers/djoser/issues/373#issuecomment-484547905
