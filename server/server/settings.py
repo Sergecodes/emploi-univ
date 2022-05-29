@@ -84,6 +84,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     
+    'corsheaders,',
     'rest_framework',
     # We won't use token auth but we need this app. 
     # See github.com/sunscrapers/djoser/issues/373#issuecomment-484547905
@@ -95,6 +96,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -197,4 +199,11 @@ DJOSER = {
 	'USERNAME_RESET_CONFIRM_URL': _('#/username-reset/{uid}/{token}'),
     'SEND_ACTIVATION_EMAIL': True,
 }
+
+## cors headers
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3001",
+]
+
+CORS_ALLOW_CREDENTIALS = True
 
