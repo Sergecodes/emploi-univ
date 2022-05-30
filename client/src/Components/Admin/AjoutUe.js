@@ -36,7 +36,7 @@ const AjoutUe = () => {
             ></input>
           </div>
           <div className="my-3">
-            <label for="filiere">Filiere :</label>
+            <label htmlFor="filiere">Filiere :</label>
             <select name="filiere">
                 {
                     filiere.map(elt=>{
@@ -48,7 +48,7 @@ const AjoutUe = () => {
             </select>
           </div>
           <div className="my-3">
-            <label for="niveau">Niveau :</label>
+            <label htmlFor="niveau">Niveau :</label>
             <select name="niveau">
             <option name="master">License 1</option>
               <option name="doctorat">License 2</option>
@@ -58,7 +58,7 @@ const AjoutUe = () => {
             </select>
           </div>
           <div className="my-3">
-            <label for="specialite">Specialite :</label>
+            <label htmlFor="specialite">Specialite :</label>
             <select name="specialite">
               <option name="data-science">Data Science</option>
               <option name="genie-logiciel">doctorat</option>

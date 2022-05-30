@@ -48,7 +48,7 @@ def enseignants_by_niveau(request, nom_niveau):
 
 class EnseignantCRUD(APIView):
    def post(self, request):
-      user, POST = request.user, request.POST
+      user, POST = request.user, request.data
       form = EnseignantForm(POST)
       valid_req = is_valid_request(POST, ['matricule', 'nom', 'prenom'])
 
@@ -66,7 +66,7 @@ class EnseignantCRUD(APIView):
       return get_read_response(res, EnseignantSerializer)
 
    def put(self, request, matricule):
-      user, POST = request.user, request.POST
+      user, POST = request.user, request.data
       new_matricule = POST.get('new_matricule', '')
       new_nom, new_prenom = POST.get('new_nom', ''), POST.get('new_prenom', '')
 

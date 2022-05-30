@@ -89,7 +89,7 @@ def cours_by_fil_niv_special(request, nom_filiere, nom_niveau, nom_specialite=No
 
 class CoursCRUD(APIView):
    def post(self, request):
-      user, POST = request.user, request.POST
+      user, POST = request.user, request.data
       valid_req = is_valid_request(
          POST, 
          ['code_ue', 'nom_salle', 'jour', 'heure_fin', 'heure_debut']
@@ -115,7 +115,7 @@ class CoursCRUD(APIView):
       return get_read_response(res, CoursSerializer)
 
    def put(self, request, code_ue):
-      user, POST = request.user, request.POST
+      user, POST = request.user, request.data
       new_nom_salle, new_is_td = POST.get('new_nom_salle', ''), POST.get('new_is_td')
       new_jour, new_heure_debut = POST.get('new_jour', ''), POST.get('new_heure_debut')
       new_heure_fin, new_code_ue = POST.get('new_heure_fin'), POST.get('new_code_ue', '')
