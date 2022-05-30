@@ -3,6 +3,7 @@ import Caroussel from "../Components/Accueil/Caroussel";
 import Filiere from "../Components/Accueil/Filiere";
 import Description from "../Components/Accueil/Description";
 import Map from "../Components/Accueil/Map";
+import "../Style/Accueil.css"
 
 const Accueil=()=>{
     return(

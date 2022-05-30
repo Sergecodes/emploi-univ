@@ -11,7 +11,7 @@ from ..utils import get_cud_response, get_read_response, is_valid_request
 
 class FiliereCRUD(APIView):
    def post(self, request):
-      user, POST = request.user, request.POST
+      user, POST = request.user, request.data
       form = FiliereForm(POST)
       valid_req = is_valid_request(POST, ['nom'])
 
@@ -29,7 +29,7 @@ class FiliereCRUD(APIView):
       return get_read_response(res, FiliereSerializer)
 
    def put(self, request, nom):
-      user, POST = request.user, request.POST
+      user, POST = request.user, request.data
       valid_req = is_valid_request(POST, ['new_nom'])
 
       if valid_req[0] == False:
