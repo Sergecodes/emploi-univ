@@ -40,14 +40,9 @@ const AjoutFiliere = () => {
 
     const handleAjout=()=>{
 
-      //nom , nom_niveau , nom_filiere
-      var formData = new FormData();
-    
-      formData.append("sujet","rapport presoutenance");
-      formData.append("niveau","MASTER 2");
       
-      console.log(formData)
-      /*axios({
+      
+      axios({
         method:'post',
         url:"http://localhost:8000/api/filieres/",
         data:{"nom":filiere},
@@ -55,7 +50,7 @@ const AjoutFiliere = () => {
         withCredentials:true
       })
       .then(res=>console.log(res))
-      .catch(err=>console.error(err))*/
+      .catch(err=>console.error(err))
 
 
 

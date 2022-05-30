@@ -1,9 +1,36 @@
 import React from "react";
 import { filiere } from "../../Constant";
 import { useNavigate } from "react-router";
+import Cookies from "js-cookie";
+import axios from "axios";
+
+
 
 const AjoutUe = () => {
     const navigate = useNavigate();
+     const csrftoken = Cookies.get('csrftoken');
+
+    const headers={
+      'X-CSRFToken': csrftoken
+    }
+
+    const handleAjout=()=>{
+
+      
+      
+      axios({
+        method:'post',
+        url:"http://localhost:8000/api/filieres/",
+        data:{"nom":filiere},
+        headers:headers,
+        withCredentials:true
+      })
+      .then(res=>console.log(res))
+      .catch(err=>console.error(err))
+
+
+
+    }
   return (
     <section
       className="d-flex justify-content-center row"
@@ -76,7 +103,7 @@ const AjoutUe = () => {
           >
             Annuler{" "}
           </button>
-          <button className="btn addButton" type="button">
+          <button className="btn addButton" type="button" onClick={handleAjout}>
             Ajouter
           </button>
         </div>
