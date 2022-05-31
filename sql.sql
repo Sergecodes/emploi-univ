@@ -19,7 +19,7 @@ CREATE TABLE `groupe` (`nom` varchar(20) NOT NULL PRIMARY KEY);
 --
 -- Create model Niveau
 --
-CREATE TABLE `niveau` (`nom_bref` varchar(10) NOT NULL PRIMARY KEY, `nom_complet` varchar(20) NOT NULL UNIQUE);
+CREATE TABLE `niveau` (`nom_bref` varchar(10) NOT NULL PRIMARY KEY, `nom_complet` varchar(20) NOT NULL UNIQUE, `nb_max` int UNSIGNED NOT NULL CHECK (`nb_max` >= 0));
 --
 -- Create model Salle
 --
