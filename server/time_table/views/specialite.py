@@ -1,10 +1,9 @@
-from django.db.utils import IntegrityError
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from ..forms import FiliereForm, SpecialiteForm, NiveauForm
+from ..forms import SpecialiteForm
 from ..models import Regroupement, Specialite
 from ..serializers import RegroupementSerializer
 from ..utils import get_cud_response, is_valid_request
@@ -49,12 +48,7 @@ class SpecialiteCRUD(APIView):
       if valid_req[0] == False:
          return valid_req[1]
 
-
-      nom_filiere, specials = POST['nom_filiere'], POST['specialites']
-
-      # TODO call right method (user.ajouter_multiple_specialites)
-
-      res = user.ajouter_specialite(nom_specialite, nom_niveau, nom_filiere)
+      res = user.ajouter_multiple_specialites(POST['nom_filiere'], POST['specialites'])
       return get_cud_response(res, success_code=status.HTTP_201_CREATED)
 
    def get(self, request, nom):

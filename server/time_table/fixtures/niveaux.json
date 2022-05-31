@@ -26,13 +26,6 @@
       "fields": {
          "nom_complet": "Master 1"
       }
-	},
-	{
-		"model": "time_table.Niveau",  
-		"pk": "M2",
-      "fields": {
-         "nom_complet": "Master 2"
-      }
 	}
 ]
 
