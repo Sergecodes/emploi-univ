@@ -43,6 +43,34 @@ class FiliereOps:
 
 
 class SpecialiteOps:
+	def ajouter_multiple_specialites(self, nom_filiere, specialites):
+		"""`specialites` is an array with `nom`, `bool master` and `bool licence`."""
+
+		line0 = "INSERT INTO regroupement (nom_filiere, nom_specialite, nom_niveau) VALUES "
+		next_line = "(%s, %s, %s), "
+		query = line0
+		params = []
+
+		for special in specialites:
+			nom_special = special['nom']
+
+			if special.get('master'):
+				query += next_line
+				params.extend([nom_filiere, nom_special, 'M1'])
+
+			if special.get('licence'):
+				query += next_line
+				params.extend([nom_filiere, nom_special, 'L3'])
+
+		# Remove last ', ' from query string (last two characters of `next_line`)
+		query = query[:-2]
+
+		try:
+			with connection.cursor() as cursor:
+				cursor.execute(query, params)
+		except IntegrityError as err:
+			return err
+
 	def ajouter_specialite(self, nom, nom_niveau, nom_filiere):
 		query1 = "INSERT INTO specialite (nom) VALUES (%s);"
 		query2 = """

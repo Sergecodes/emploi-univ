@@ -78,7 +78,7 @@ class UECRUD(APIView):
          code, intitule, matricule_ens, nom_filiere,
          nom_niveau, nom_specialite
       )
-      return get_cud_response(res, return_code=status.HTTP_201_CREATED)
+      return get_cud_response(res, success_code=status.HTTP_201_CREATED)
       
    def get(self, request, code):
       return Response(UE.get_ue(code))
@@ -87,15 +87,10 @@ class UECRUD(APIView):
       user, POST = request.user, request.data
       new_code, new_intitule = POST.get('new_code', ''), POST.get('intitule', '')
       res = user.modifier_ue(code, new_code, new_intitule)
-      return get_cud_response(res, status.HTTP_404_NOT_FOUND)
+      return get_cud_response(res)
 
    def delete(self, request, code):
       res = request.user.supprimer_specialite(code)
-   
-      if isinstance(res, IntegrityError):
-         # Use 404 cause it's the only error we can have here
-         return Response(str(res), status.HTTP_404_NOT_FOUND)
-
-      return get_cud_response(return_code=status.HTTP_204_NO_CONTENT)
+      return get_cud_response(res, success_code=status.HTTP_204_NO_CONTENT)
 
 

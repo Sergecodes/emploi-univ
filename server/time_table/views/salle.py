@@ -1,6 +1,4 @@
-from django.db.utils import IntegrityError
 from rest_framework import status
-from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from ..forms import SalleForm
@@ -19,10 +17,11 @@ class SalleCRUD(APIView):
          return valid_req[1]
 
       if form.is_valid():
-         res = user.ajouter_salle(POST['nom'], POST['capacite'])
-         return get_cud_response(res, status.HTTP_201_CREATED)
+         res = user.ajouter_salle(POST['nom', 'capacite'])
+      else:
+         res = form.errors
       
-      return Response(form.errors, status.HTTP_400_BAD_REQUEST)
+      return get_cud_response(res, status_code=status.HTTP_201_CREATED)
 
    def get(self, request, nom):
       res = Salle.get_salle(nom)
@@ -33,15 +32,10 @@ class SalleCRUD(APIView):
       new_nom, new_capacite = POST.get('new_nom'), POST.get('new_capacite')
 
       res = user.modifier_salle(nom, new_nom, new_capacite)
-      return get_cud_response(res, status.HTTP_404_NOT_FOUND)
+      return get_cud_response(res)
 
    def delete(self, request, nom):
       res = request.user.supprimer_salle(nom)
-
-      # Or use `if res`
-      if isinstance(res, IntegrityError):
-         return get_cud_response(str(res), status.HTTP_404_NOT_FOUND)
-
-      return get_cud_response(return_code=status.HTTP_204_NO_CONTENT)
+      return get_cud_response(res, success_code=status.HTTP_204_NO_CONTENT)
 
 

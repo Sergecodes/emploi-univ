@@ -1,4 +1,3 @@
-from django.db.utils import IntegrityError
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -68,7 +67,7 @@ class GroupeCRUD(APIView):
       res = user.ajouter_groupe(
          nom_groupe, code_ue, nom_filiere, nom_niveau, nom_specialite
       )
-      return get_cud_response(res, return_code=status.HTTP_201_CREATED)
+      return get_cud_response(res, success_code=status.HTTP_201_CREATED)
 
    def get(self, request, nom):
       res = Groupe.get_groupe(nom)
@@ -104,15 +103,10 @@ class GroupeCRUD(APIView):
          )
 
       res = user.renommer_groupe(nom, new_nom)
-      return get_cud_response(res, status.HTTP_404_NOT_FOUND)
+      return get_cud_response(res)
 
    def delete(self, request, nom):
       res = request.user.supprimer_groupe(nom)
-
-      if isinstance(res, IntegrityError):
-         # Use 404 cause it's the only error we can have here
-         return Response(str(res), status.HTTP_404_NOT_FOUND)
-
-      return get_cud_response(return_code=status.HTTP_204_NO_CONTENT)
+      return get_cud_response(res, success_code=status.HTTP_204_NO_CONTENT)
 
 

@@ -74,7 +74,8 @@ class Salle(models.Model):
 
 class Niveau(models.Model):
     nom_bref = models.CharField(max_length=10, primary_key=True)
-    nom_complet = models.CharField(max_length=20, unique=True)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
+    nom_complet = models.CharField(max_length=20, unique=True)  
+    nb_max = models.PositiveIntegerField()
 
     @classmethod
     def get_niveau(cls, nom_bref):
