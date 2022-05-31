@@ -1,5 +1,4 @@
 from django.db import connection
-from django.db.utils import IntegrityError
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -106,9 +105,10 @@ class CoursCRUD(APIView):
 
       if form.is_valid():
          res = user.ajouter_cours(code_ue, nom_salle, jour, heure_debut, heure_fin, is_td)
-         return get_cud_response(res, return_code=status.HTTP_201_CREATED)
-      
-      return Response(form.errors, status.HTTP_400_BAD_REQUEST)
+      else:
+         res = form.errors
+
+      return get_cud_response(res, success_code=status.HTTP_201_CREATED)
 
    def get(self, request, code_ue):
       res = Cours.get_cours(code_ue)
@@ -124,15 +124,10 @@ class CoursCRUD(APIView):
          code_ue, new_code_ue, new_nom_salle, new_jour, 
          new_heure_debut, new_heure_fin, new_is_td
       )
-      return get_cud_response(res, status.HTTP_404_NOT_FOUND)
+      return get_cud_response(res)
 
    def delete(self, request, code_ue):
-      res = request.user.supprimer_cours(code_ue)
-            
-      if isinstance(res, IntegrityError):
-         # Use 404 cause it's the only error we can have here
-         return Response(str(res), status.HTTP_404_NOT_FOUND)
-
-      return get_cud_response(return_code=status.HTTP_204_NO_CONTENT)
+      res = request.user.supprimer_cours(code_ue)  
+      return get_cud_response(res, success_code=status.HTTP_204_NO_CONTENT)
 
 

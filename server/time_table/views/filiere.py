@@ -1,6 +1,4 @@
-from django.db.utils import IntegrityError
 from rest_framework import status
-from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from ..forms import FiliereForm
@@ -20,9 +18,10 @@ class FiliereCRUD(APIView):
 
       if form.is_valid():
          res = user.ajouter_filiere(POST['nom'])
-         return get_cud_response(res, status.HTTP_201_CREATED)
-      
-      return Response(form.errors, status.HTTP_400_BAD_REQUEST)
+      else:
+         res = form.errors
+
+      return get_cud_response(res, success_code=status.HTTP_201_CREATED)
 
    def get(self, request, nom):
       res = Filiere.get_filiere(nom)
@@ -40,17 +39,13 @@ class FiliereCRUD(APIView):
       form = FiliereForm({ 'nom': new_nom })
       if form.is_valid():
          res = user.renommer_filiere(nom, new_nom)
-         return get_cud_response(res, status.HTTP_404_NOT_FOUND)
+      else:
+         res = form.errors
       
-      return Response(form.errors, status.HTTP_400_BAD_REQUEST)
+      return get_cud_response(res)
 
    def delete(self, request, nom):
       res = request.user.supprimer_filiere(nom)
-
-      # Or use `if res`
-      if isinstance(res, IntegrityError):
-         return get_cud_response(res, status.HTTP_404_NOT_FOUND)
-
-      return get_cud_response(return_code=status.HTTP_204_NO_CONTENT)
+      return get_cud_response(res, success_code=status.HTTP_204_NO_CONTENT)
 
 

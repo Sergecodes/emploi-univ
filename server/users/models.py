@@ -43,6 +43,17 @@ class FiliereOps:
 
 
 class SpecialiteOps:
+	def ajouter_multiple_specialites(self, nom_filiere, specialites):
+		"""
+		`specialites` is an array with `nom`, `bool master` and `bool licence`.
+		"""
+		# insert one by one or multiple if possible 
+		# set niveau to l3 or master 1 ...
+		#is it possible to group all master and insert then all l3 ??
+		
+		pass
+
+
 	def ajouter_specialite(self, nom, nom_niveau, nom_filiere):
 		query1 = "INSERT INTO specialite (nom) VALUES (%s);"
 		query2 = """

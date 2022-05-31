@@ -39,10 +39,11 @@
 #    def delete(self, request, nom_bref):
 #       res = request.user.supprimer_niveau(nom_bref)
 
-#       # Or use `if res`
-#       if isinstance(res, IntegrityError):
-#          return get_cud_response(res, status.HTTP_404_NOT_FOUND)
-
-#       return get_cud_response(return_code=status.HTTP_204_NO_CONTENT)
+#       return get_cud_response(
+ #        op_result=res,
+#        # error_code=status.HTTP_404_NOT_FOUND, 
+#         success_code=status.HTTP_204_NO_CONTENT,
+#        success_message="Deleted successfully!"
+#      )
 
 

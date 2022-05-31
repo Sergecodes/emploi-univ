@@ -1,4 +1,5 @@
 from django.db.utils import IntegrityError
+from django.forms.utils import ErrorDict
 from rest_framework import status
 from rest_framework.response import Response
 from typing import Any, Iterable
@@ -38,29 +39,32 @@ def is_valid_request(query_dict, params: Iterable[str]):
 
    return True, None
 
+
 def get_cud_response(
    op_result: IntegrityError | IndexError | None = None, 
-   return_code=None, 
-   message=''
+   success_code=None, 
+   error_code=None,
+   success_message=''
 ):
    """Get response to send after performing a CUD Operation"""
 
    if isinstance(op_result, IntegrityError):
-      return Response(
-         str(op_result), 
-         return_code or status.HTTP_500_INTERNAL_SERVER_ERROR
-      )
+      return Response(str(op_result), error_code or status.HTTP_500_INTERNAL_SERVER_ERROR)
 
    # Index error means no element was found in the results set,
    # so return 404 code
    elif isinstance(op_result, IndexError):
-      return Response(str(op_result), status.HTTP_404_NOT_FOUND)
+      return Response(str(op_result), error_code or status.HTTP_404_NOT_FOUND)
 
-   return Response(message, return_code or status.HTTP_200_OK)
+   # ErrorDict happens if error was from form validation (form.errors was passed)
+   elif isinstance(op_result, ErrorDict):
+      return Response(op_result, error_code or status.HTTP_400_BAD_REQUEST)
+
+   return Response(op_result or success_message or "Success", success_code or status.HTTP_200_OK)
 
 
 def get_read_response(r_result: Any | None, serializer_cls):
-   """Get response to send after performin a Read (select/find) operation"""
+   """Get response to send after performing a Read (select/find) operation"""
    if r_result is None:
       return Response({}, status.HTTP_404_NOT_FOUND)
 
