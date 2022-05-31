@@ -20,7 +20,7 @@ from ..utils import get_cud_response, is_valid_request
 
 class GroupeCRUD(APIView):
    def post(self, request):
-      user, POST = request.user, request.POST
+      user, POST = request.user, request.data
       valid_req = is_valid_request(
          POST, 
          ['nom_groupe', 'code_ue' 'nom_niveau', 'nom_filiere']
@@ -84,7 +84,7 @@ class GroupeCRUD(APIView):
       return Response(status=status.HTTP_404_NOT_FOUND)
 
    def put(self, request, nom):
-      user, POST = request.user, request.POST
+      user, POST = request.user, request.data
       valid_req = is_valid_request(POST, ['new_nom'])
 
       if valid_req[0] == False:

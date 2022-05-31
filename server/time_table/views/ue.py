@@ -25,7 +25,7 @@ def all_ue(request):
 
 class UECRUD(APIView):
    def post(self, request):
-      user, POST = request.user, request.POST
+      user, POST = request.user, request.data
       valid_req = is_valid_request(
          POST, 
          [
@@ -84,7 +84,7 @@ class UECRUD(APIView):
       return Response(UE.get_ue(code))
 
    def put(self, request, code):
-      user, POST = request.user, request.POST
+      user, POST = request.user, request.data
       new_code, new_intitule = POST.get('new_code', ''), POST.get('intitule', '')
       res = user.modifier_ue(code, new_code, new_intitule)
       return get_cud_response(res)

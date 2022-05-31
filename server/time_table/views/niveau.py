@@ -11,7 +11,7 @@
 
 # class NiveauCRUD(APIView):
 #    def post(self, request):
-#       user, POST = request.user, request.POST
+#       user, POST = request.user, request.data
 #       form = NiveauForm(POST)
 #       valid_req = is_valid_request(POST, ['nom'])
 
@@ -29,7 +29,7 @@
 #       return get_read_response(res, NiveauSerializer)
 
 #    def put(self, request, nom_bref):
-#       user, POST = request.user, request.POST
+#       user, POST = request.user, request.data
 #       new_nom_bref = POST.get('new_nom_bref', '')
 #       new_nom_complet = POST.get('new_nom_complet', '')
 

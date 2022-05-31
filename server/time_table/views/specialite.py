@@ -42,7 +42,7 @@ class SpecialiteCRUD(APIView):
 
          return True, None
 
-      user, POST = request.user, request.POST
+      user, POST = request.user, request.data
       valid_req = check_valid_request()
 
       if valid_req[0] == False:
@@ -64,7 +64,7 @@ class SpecialiteCRUD(APIView):
       return Response(status=status.HTTP_404_NOT_FOUND)
 
    def put(self, request, nom):
-      user, POST = request.user, request.POST
+      user, POST = request.user, request.data
       valid_req = is_valid_request(POST, ['new_nom'])
 
       if valid_req[0] == False:

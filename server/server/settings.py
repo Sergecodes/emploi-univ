@@ -180,7 +180,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 ## rest_framework
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticatedOrReadOnly'
+       'rest_framework.permissions.IsAuthenticatedOrReadOnly'
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.SessionAuthentication',
@@ -203,6 +203,7 @@ DJOSER = {
 ## cors headers
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3001",
+    "http://localhost:3000"
 ]
 
 CORS_ALLOW_CREDENTIALS = True
