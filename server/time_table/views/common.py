@@ -13,8 +13,8 @@ from ..serializers import (
 @api_view(['GET'])
 def all_entries(request, model: str):
    def get_serializer_cls_and_table(model: str):
-      # if model == 'Enseignant':
-      #    return EnseignantSerializer, 'enseignant'
+      if model == 'Enseignant':
+         return EnseignantSerializer, 'enseignant'
       if model == 'Filiere':
          return FiliereSerializer, 'filiere'
       elif model == 'Niveau':
@@ -32,11 +32,11 @@ def all_entries(request, model: str):
          status.HTTP_400_BAD_REQUEST
       )
 
-   query = "SELECT * FROM %s;"
+   
    Model = apps.get_model('time_table', model)
    SerializerClass, table_name = get_serializer_cls_and_table(model)
-
-   result = Model.objects.raw(query, [table_name])
+   query = "SELECT * FROM %s;" % table_name
+   result = Model.objects.raw(query)
    serializer = SerializerClass(result, many=True)
 
    return Response(serializer.data)

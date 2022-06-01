@@ -9,6 +9,7 @@ import ExpandLess from "@material-ui/icons/ExpandLess";
 import ExpandMore from "@material-ui/icons/ExpandMore";
 import { adminSidenavElements } from "../../Constant";
 import { useNavigate } from "react-router";
+import {useSelector} from "react-redux"
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -30,6 +31,8 @@ const Sidenav = () => {
     open === nom ? setOpen("") : setOpen(nom);
   };
 
+  const files= useSelector(state=>state.SidenavDisplay);
+
   const recognize = (name) => {
     if (name === "DASHBOARD") return "dashboard";
     else if (name === "Ajout d'un enseignant") return "ajout-enseignant";
@@ -50,7 +53,7 @@ const Sidenav = () => {
     navigate("/admin/" + recognize(name));
   };
   return (
-    <section className="adminSidenav  ">
+    <section className="adminSidenav  "  style={files.open===false?{display:"none"}:{}}>
       <p className=" adminName text-center" style={{ color: "white" }}>
         ADMIN DASHBOARD
       </p>

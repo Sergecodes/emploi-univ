@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState ,useEffect} from "react";
 import { Modal, Box } from "@material-ui/core";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
@@ -10,10 +10,25 @@ import { TablePagination } from "@material-ui/core";
 import Paper from "@material-ui/core/Paper";
 import { Delete } from "@material-ui/icons";
 import { BsPenFill } from "react-icons/bs";
+import Alert from '@mui/material/Alert';
+import Cookies from "js-cookie";
+import axios from "axios";
 
 export default function ListeEnseignants() {
+  
+  const [listeEnseignants,setListeEnseignants]=useState([{}])
   const [open, setOpen] = useState(false);
+  const [alert ,setAlert]=useState("none")
   const [openConfirmation, setOpenConfirmation] = useState(false);
+   const [actual,setActual]=useState({})
+  const [updateEnseignant, setUpdateEnseignant] = useState({ });
+  
+  const rows = insertion();
+  const csrftoken = Cookies.get('csrftoken');
+
+  const headers={
+    'X-CSRFToken': csrftoken
+  }
   //pagination
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(2);
@@ -28,46 +43,78 @@ export default function ListeEnseignants() {
   };
 
   //fin pagination
-  const enseignants = [
-    { nom: "Nom 1", prenom: "Prenom 1", matricule: "mat 1" },
-    { nom: "Nom 2", prenom: "Prenom 2", matricule: "mat 2" },
-    { nom: "Nom 3", prenom: "Prenom 3", matricule: "mat 3" },
-  ];
+
+  useEffect(()=>{
+    axios
+    .get("http://localhost:8000/api/Enseignant/all/")
+    .then((res) => setListeEnseignants(res.data))
+    .catch((err) => console.log(err));
+  },[])
+
   function createData(nom, prenom, matricule, modif, suppression) {
     return { nom, prenom, matricule, modif, suppression };
   }
   function insertion() {
     let temp = [];
-    for (let i in enseignants) {
+    for (let i in listeEnseignants) {
       temp.push(
         createData(
-          enseignants[i].nom,
-          enseignants[i].prenom,
-          enseignants[i].matricule,
-          <button
-            type="button"
-            className="btn modifyButton "
-            style={{
-              backgroundColor: "var(--secondaryBlue)",
-              color: "white",
-            }}
-            onClick={() => setOpen(true)}
-          >
-            <BsPenFill className="me-1" /> Modifier
-          </button>,
-          <button
-            type="button"
-            className="btn btn-danger"
-            onClick={() => setOpenConfirmation(true)}
-          >
-            <Delete /> Supprimer
-          </button>
+          listeEnseignants[i].nom,
+          listeEnseignants[i].prenom,
+          listeEnseignants[i].matricule,
+          "Modifier",
+          "Supprimer"
         )
       );
     }
     return temp;
   }
-  const rows = insertion();
+
+  function handleOpen(matricule) {
+    let temp = [...listeEnseignants];
+    temp = temp.filter((elt) => elt.matricule === matricule);
+    setUpdateEnseignant(temp[0]);
+    setActual(temp[0])
+    setOpen(true);
+    setAlert("none")
+
+  }
+
+  
+  const handleChange = (e) => {
+    const name = e.target.name;
+    const value = e.target.value;
+    setUpdateEnseignant({ ...updateEnseignant, [name]: value });
+  };
+
+  const handleUpdate=()=>{
+    if(actual.nom===updateEnseignant.nom && actual.prenom===updateEnseignant.prenom &&actual.matricule===updateEnseignant.matricule){
+      setAlert("warning")
+    }
+    else{
+      axios({
+        method:'put',
+        url:`http://localhost:8000/api/enseignants/${actual.matricule}/`,
+        data:updateEnseignant,
+        headers:headers,
+        withCredentials:true
+      })
+      .then(res=>console.log(res))
+      .catch(err=>console.error(err))
+    }
+  }
+
+  const handleDelete=()=>{
+    axios({
+      method:'delete',
+      url:`http://localhost:8000/api/enseignants/${actual.matricule}/`,
+      headers:headers,
+      withCredentials:true
+    })
+    .then(res=>console.log(res))
+    .catch(err=>console.error(err))
+  }
+
   return (
     <section className="my-3 mx-2  listeTableau">
       <h4 className="text-center mx-2 my-3 fw-bold fs-5">
@@ -89,9 +136,9 @@ export default function ListeEnseignants() {
             <TableBody>
               {rows
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((row) => (
+                .map((row,index) => (
                 <TableRow
-                  key={row.nom}
+                  key={index}
                   sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                 >
                   <TableCell component="th" scope="row">
@@ -99,8 +146,28 @@ export default function ListeEnseignants() {
                   </TableCell>
                   <TableCell>{row.prenom}</TableCell>
                   <TableCell align="left">{row.matricule}</TableCell>
-                  <TableCell align="left">{row.modif}</TableCell>
-                  <TableCell align="left">{row.suppression}</TableCell>
+                  <TableCell align="left">
+                      <button
+                        type="button"
+                        className="btn modifyButton "
+                        style={{
+                          backgroundColor: "var(--secondaryBlue)",
+                          color: "white",
+                        }}
+                        onClick={() => handleOpen(row.matricule)}
+                      >
+                        <BsPenFill className="me-1" /> {row.modif}
+                      </button>
+                    </TableCell>
+                    <TableCell align="left">
+                      <button
+                        type="button"
+                        className="btn btn-danger"
+                        onClick={() => setOpenConfirmation(true)}
+                      >
+                        <Delete /> {row.suppression}
+                      </button>
+                    </TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -128,6 +195,9 @@ export default function ListeEnseignants() {
                 <h4 className="fs-5 fw-light text-center">
                   Modification des informations concernant un enseignant
                 </h4>
+                <div className="my-2">
+                  <Alert severity="warning" style={alert!=="warning"?{display:"none"}:{}}>Veuillez effectuez un changement avant de cliquer sur modifier</Alert>
+                 </div>
                 <div className="mt-4">
                   <div className="my-3">
                     <label htmlFor="nom">Nom :</label>
@@ -135,6 +205,8 @@ export default function ListeEnseignants() {
                       type="text"
                       name="nom"
                       style={{ minWidth: "70%" }}
+                      value={updateEnseignant.nom}
+                      onChange={handleChange}
                     ></input>
                   </div>
                   <div className="my-3">
@@ -143,6 +215,8 @@ export default function ListeEnseignants() {
                       type="text"
                       name="prenom"
                       style={{ minWidth: "70%" }}
+                      value={updateEnseignant.prenom}
+                      onChange={handleChange}
                     ></input>
                   </div>
                   <div className="my-3">
@@ -151,6 +225,8 @@ export default function ListeEnseignants() {
                       type="text"
                       name="matricule"
                       style={{ minWidth: "80px" }}
+                      value={updateEnseignant.matricule}
+                      onChange={handleChange}
                     ></input>
                   </div>
                 </div>
@@ -165,7 +241,7 @@ export default function ListeEnseignants() {
                   >
                     Annuler{" "}
                   </button>
-                  <button className="btn addButton" type="button">
+                  <button className="btn addButton" type="button" onClick={handleUpdate}>
                     Modifier
                   </button>
                 </div>
@@ -201,7 +277,7 @@ export default function ListeEnseignants() {
                   >
                     Annuler{" "}
                   </button>
-                  <button className="btn btn-danger " type="button">
+                  <button className="btn btn-danger " type="button" onClick={handleDelete}>
                     <Delete /> Supprimer
                   </button>
                 </div>

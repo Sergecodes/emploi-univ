@@ -167,10 +167,11 @@ class SalleOps:
 		try: 
 			with transaction.atomic():
 				with connection.cursor() as cursor:
-					cursor.execute(query1, [nom])
-				
+					a = cursor.execute(query1, [nom])
+					print(a)
 				with connection.cursor() as cursor:
-					cursor.execute(query2, [nom])
+					b = cursor.execute(query2, [nom])
+					print(b)
 		except IntegrityError as err:
 			return err
 

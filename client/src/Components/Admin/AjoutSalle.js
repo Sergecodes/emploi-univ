@@ -23,6 +23,7 @@ const AjoutSalle = () => {
     'X-CSRFToken': csrftoken
   }
   const handleAjout = () => {
+    console.log(ajoutSalle)
     axios({
       method:'post',
       url:"http://localhost:8000/api/salles/",

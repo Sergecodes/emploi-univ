@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import { useNavigate } from 'react-router';
 import {BsTrash, BsPlus} from "react-icons/bs";
+import Alert from '@mui/material/Alert';
 import axios from "axios";
 import Cookies from "js-cookie"
 
@@ -10,6 +11,7 @@ const AjoutFiliere = () => {
     const [specialite,setSpecialite]= useState([])
     const [filiere,setFiliere]=useState("");
     const navigate = useNavigate();
+    const [alert,setAlert]=useState("none");
     const csrftoken = Cookies.get('csrftoken');
 
     const headers={
@@ -17,7 +19,7 @@ const AjoutFiliere = () => {
     }
 
     const handleClick=()=>{
-        setSpecialite([...specialite,{id:specialite.length ,nom:" ",license:false, master:false}])
+        setSpecialite([...specialite,{id:specialite.length ,nom:" ",licence:false, master:false}])
     }
 
     const handleDelete=(e,id)=>{
@@ -38,11 +40,55 @@ const AjoutFiliere = () => {
       setSpecialite(new_specialite)
     }
 
-    const handleAjout=()=>{
+    const verification=()=>{
+      let valeur=true;
+      if(specialite.length===0 || filiere.trim().length===0){
+        return false;
+      }
+      else{
+        for(let i in specialite){
+          if((specialite[i].licence===false &&specialite[i].master===false) ||specialite[i].nom.trim().length ===0 ){
+            valeur =false;
+          }
+        }
+        if(valeur===true &&filiere.trim().length===0){
+          valeur =false;
+        }
+        return valeur;
+      }
+     
+    }
 
+    const handleAjout=()=>{
       
-      
-      axios({
+      if(verification()===true){
+        setAlert("none")
+        /*let axiosDataSend={ nom_filiere:filiere, specialites:specialite}
+        console.log(axiosDataSend)*/
+       /* axios({
+          method:'post',
+          url:"http://localhost:8000/api/filieres/",
+          data:{"nom":filiere},
+          headers:headers,
+          withCredentials:true
+        })
+        .then(res=>console.log(res))
+        .catch(err=>console.error(err))
+        
+        axios({
+          method:'post',
+          url:"http://localhost:8000/api/specialites/",
+          data:{"nom_filiere":"Chimie","specialites":[{nom:"Chimie appliquée",master:true, licence:true}]},
+          headers:headers,
+          withCredentials:true
+        })
+        .then(res=>console.log(res))
+        .catch(err=>console.error(err))*/
+      }
+      else{
+        setAlert('input')
+      }
+    /* axios({
         method:'post',
         url:"http://localhost:8000/api/filieres/",
         data:{"nom":filiere},
@@ -50,7 +96,24 @@ const AjoutFiliere = () => {
         withCredentials:true
       })
       .then(res=>console.log(res))
+      .catch(err=>console.error(err))*/
+      
+
+   /*   axios({
+        method:'post',
+        url:"http://localhost:8000/api/specialites/",
+        data:{"nom_filiere":"Chimie","specialites":[{nom:"Chimie appliquée",master:true, licence:true}]},
+        headers:headers,
+        withCredentials:true
+      })
+      .then(res=>console.log(res))
       .catch(err=>console.error(err))
+      axios.get('http://localhost:8000/api/specialites/')
+      .then(res=>console.log(res))
+      .catch(err=>console.error(err))*/
+     
+     
+      
 
 
 
@@ -68,6 +131,13 @@ const AjoutFiliere = () => {
         <h4 className="fs-5 fw-light text-center">
           Vous ètes sur le point d'ajouter des informations relatives à une nouvelle filière dans votre emploi de temps
         </h4>
+        <div className="my-2">
+                   {/* <Alert severity="error">This is an error alert — check it out!</Alert>
+<Alert severity="warning">This is a warning alert — check it out!</Alert>
+<Alert severity="info">This is an info alert — check it out!</Alert>
+<Alert severity="success">This is a success alert — check it out!</Alert> */}
+                  <Alert severity="warning" style={alert!=="input"?{display:"none"}:{}}>Veuillez renseigner tous les champs qui vont été demandé</Alert>
+        </div>
         <div className="mt-4">
           <div className="my-3">
             <label htmlFor="nom">Nom filiere :</label>
@@ -93,8 +163,8 @@ const AjoutFiliere = () => {
                               <label htmlFor='master' >Master</label>
                             </div>
                            <div>
-                            <input type="checkbox" id="license" name="license" value="license" checked={specialite[elt.id].license} onChange={()=>handleCheckboxChange("license",elt.id)}></input>
-                              <label htmlFor='license'>License</label>
+                            <input type="checkbox" id="licence" name="licence" value="licence" checked={specialite[elt.id].licence} onChange={()=>handleCheckboxChange("licence",elt.id)}></input>
+                              <label htmlFor='licence'>licence</label>
                            </div>
                         </div>
                         <button type="button" className="btn btn-danger deleteSpeciality" onClick={e=>handleDelete(e,elt.id)}><BsTrash/></button>

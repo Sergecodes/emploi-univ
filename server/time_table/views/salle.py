@@ -9,6 +9,7 @@ from ..utils import get_cud_response, get_read_response, is_valid_request
 
 class SalleCRUD(APIView):
    def post(self, request):
+      
       user, POST = request.user, request.data
       form = SalleForm(POST)
       valid_req = is_valid_request(POST, ['nom', 'capacite'])
@@ -17,17 +18,19 @@ class SalleCRUD(APIView):
          return valid_req[1]
 
       if form.is_valid():
-         res = user.ajouter_salle(POST['nom', 'capacite'])
+        res = user.ajouter_salle(POST['nom'], POST['capacite'])
       else:
          res = form.errors
-      
-      return get_cud_response(res, status_code=status.HTTP_201_CREATED)
+      print(res)
+      return get_cud_response(res, success_code=status.HTTP_201_CREATED)
 
    def get(self, request, nom):
       res = Salle.get_salle(nom)
       return get_read_response(res, SalleSerializer)
 
    def put(self, request, nom):
+      print(request.data)
+      print('dans le post')
       user, POST = request.user, request.data
       new_nom, new_capacite = POST.get('new_nom'), POST.get('new_capacite')
 
