@@ -68,13 +68,13 @@ class SpecialiteDetail(APIView):
       return Response(status=status.HTTP_404_NOT_FOUND)
 
    def put(self, request, nom):
-      user, POST = request.user, request.data
-      valid_req = is_valid_request(POST, ['new_nom'])
+      user, PUT = request.user, request.data
+      valid_req = is_valid_request(PUT, ['new_nom'])
 
       if valid_req[0] == False:
          return valid_req[1]
 
-      new_nom = POST['new_nom']
+      new_nom = PUT['new_nom']
       spec_form = SpecialiteForm({ 'nom': new_nom })
 
       if not spec_form.is_valid():
