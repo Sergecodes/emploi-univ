@@ -2,8 +2,8 @@ import React, {useState} from 'react';
 import { useNavigate } from 'react-router';
 import {BsTrash, BsPlus} from "react-icons/bs";
 import Alert from '@mui/material/Alert';
-import axios from "axios";
-import Cookies from "js-cookie"
+//import axios from "axios";
+//import Cookies from "js-cookie"
 
 
 const AjoutFiliere = () => {
@@ -12,11 +12,11 @@ const AjoutFiliere = () => {
     const [filiere,setFiliere]=useState("");
     const navigate = useNavigate();
     const [alert,setAlert]=useState("none");
-    const csrftoken = Cookies.get('csrftoken');
+    /*const csrftoken = Cookies.get('csrftoken');
 
     const headers={
       'X-CSRFToken': csrftoken
-    }
+    }*/
 
     const handleClick=()=>{
         setSpecialite([...specialite,{id:specialite.length ,nom:" ",licence:false, master:false}])

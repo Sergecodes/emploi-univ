@@ -124,7 +124,7 @@
 }
 
 /*liste salles*/
-.listeTableau .MuiTableCell-alignRight ,.MuiTableCell-head{
+.listeTableau .MuiTableCell-alignRight ,.listeTableau .MuiTableCell-head{
     font-size:16px !important;
    
     color:white !important;
