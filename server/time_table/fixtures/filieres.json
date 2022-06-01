@@ -1,23 +1,28 @@
 [
 	{
 		"model": "time_table.Filiere",  
-		"pk": "Informatique"
+		"pk": "Informatique",
+		"fields": {}
 	},
 	{
 		"model": "time_table.Filiere",  
-		"pk": "Physique"
+		"pk": "Physique",
+		"fields": {}
 	},
 	{
 		"model": "time_table.Filiere",  
-		"pk": "Mathématiques"
+		"pk": "Mathématiques",
+		"fields": {}
 	},
 	{
 		"model": "time_table.Filiere",  
-		"pk": "BIOS"
+		"pk": "BIOS",
+		"fields": {}
 	},
 	{
 		"model": "time_table.Filiere",  
-		"pk": "Chimie"
+		"pk": "Chimie",
+		"fields": {}
 	}
 ]
 

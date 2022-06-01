@@ -1,24 +1,14 @@
 from rest_framework import status
-from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from ..forms import FiliereForm, GroupeForm, NiveauForm
-from ..models import Regroupement, Groupe
-from ..serializers import RegroupementSerializer
+from ..models import Groupe
+from ..serializers import GroupeSerializer
 from ..utils import get_cud_response, is_valid_request
 
 
-# @api_view(['GET'])
-# def all_specialites(request):
-#    query = "SELECT DISTINCT nom_specialite, nom_filiere, nom_niveau FROM regroupement;"
-#    res = Regroupement.objects.raw(query)
-#    serializer = RegroupementSerializer(res, many=True)
-
-#    return Response(serializer.data)
-
-
-class GroupeCRUD(APIView):
+class GroupeList(APIView):
    def post(self, request):
       user, POST = request.user, request.data
       valid_req = is_valid_request(
@@ -69,6 +59,14 @@ class GroupeCRUD(APIView):
       )
       return get_cud_response(res, success_code=status.HTTP_201_CREATED)
 
+   def get(self, request):
+      query = "SELECT * FROM groupe;"
+      res = Groupe.objects.raw(query)
+      serializer = GroupeSerializer(res, many=True)
+
+      return Response(serializer.data)
+
+class GroupeDetail(APIView):
    def get(self, request, nom):
       res = Groupe.get_groupe(nom)
       if res:
@@ -84,13 +82,13 @@ class GroupeCRUD(APIView):
       return Response(status=status.HTTP_404_NOT_FOUND)
 
    def put(self, request, nom):
-      user, POST = request.user, request.data
-      valid_req = is_valid_request(POST, ['new_nom'])
+      user, PUT = request.user, request.data
+      valid_req = is_valid_request(PUT, ['new_nom'])
 
       if valid_req[0] == False:
          return valid_req[1]
 
-      new_nom = POST['new_nom']
+      new_nom = PUT['new_nom']
       groupe_form = GroupeForm({ 'nom': new_nom })
 
       if not groupe_form.is_valid():

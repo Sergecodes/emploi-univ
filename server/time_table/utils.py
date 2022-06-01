@@ -1,3 +1,4 @@
+from django.core.exceptions import ObjectDoesNotExist
 from django.db.utils import IntegrityError
 from django.forms.utils import ErrorDict
 from rest_framework import status
@@ -41,7 +42,7 @@ def is_valid_request(query_dict, params: Iterable[str]):
 
 
 def get_cud_response(
-   op_result: IntegrityError | IndexError | None = None, 
+   op_result: IntegrityError | IndexError | ErrorDict | str | ObjectDoesNotExist | None = None, 
    success_code=None, 
    error_code=None,
    success_message=''
@@ -59,6 +60,11 @@ def get_cud_response(
    # ErrorDict happens if error was from form validation (form.errors was passed)
    elif isinstance(op_result, ErrorDict):
       return Response(op_result, error_code or status.HTTP_400_BAD_REQUEST)
+
+   # ObjectDoesNotExist is raised when the object was not found during an
+   # update or delete query
+   elif isinstance(op_result, ObjectDoesNotExist):
+      return Response(str(op_result), error_code or status.HTTP_404_NOT_FOUND)
 
    return Response(op_result or success_message or "Success", success_code or status.HTTP_200_OK)
 
