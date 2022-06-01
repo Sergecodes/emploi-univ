@@ -17,11 +17,11 @@ class SalleCRUD(APIView):
          return valid_req[1]
 
       if form.is_valid():
-         res = user.ajouter_salle(POST['nom', 'capacite'])
+         res = user.ajouter_salle(POST['nom'], POST['capacite'])
       else:
          res = form.errors
       
-      return get_cud_response(res, status_code=status.HTTP_201_CREATED)
+      return get_cud_response(res, success_code=status.HTTP_201_CREATED)
 
    def get(self, request, nom):
       res = Salle.get_salle(nom)

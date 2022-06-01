@@ -31,7 +31,16 @@ if PRODUCTION:
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
 if USE_PROD_DB:
-	pass
+	DATABASES = {
+		'default': {
+			'ENGINE': 'django.db.backends.oracle',
+			'NAME': DB_NAME,
+			'USER': DB_USER,
+			'PASSWORD': DB_PASSWORD,
+			# 'HOST': DB_HOST,
+			# 'PORT': DB_PORT,
+		}
+    }
 else:
 	DATABASES = {
 		'default': {

@@ -41,7 +41,7 @@ def is_valid_request(query_dict, params: Iterable[str]):
 
 
 def get_cud_response(
-   op_result: IntegrityError | IndexError | None = None, 
+   op_result: IntegrityError | IndexError | ErrorDict | str | None = None, 
    success_code=None, 
    error_code=None,
    success_message=''
