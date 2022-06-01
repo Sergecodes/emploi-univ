@@ -19,17 +19,10 @@ class SalleList(APIView):
          return valid_req[1]
 
       if form.is_valid():
-<<<<<<< HEAD
-        res = user.ajouter_salle(POST['nom'], POST['capacite'])
-      else:
-         res = form.errors
-      print(res)
-=======
          res = user.ajouter_salle(POST['nom'], POST['capacite'])
       else:
          res = form.errors
       
->>>>>>> 686da007641d52e946bf7b7dd78f9622b569343f
       return get_cud_response(res, success_code=status.HTTP_201_CREATED)
 
    def get(self, request):
@@ -45,15 +38,8 @@ class SalleDetail(APIView):
       return get_read_response(res, SalleSerializer)
 
    def put(self, request, nom):
-<<<<<<< HEAD
-      print(request.data)
-      print('dans le post')
-      user, POST = request.user, request.data
-      new_nom, new_capacite = POST.get('new_nom'), POST.get('new_capacite')
-=======
       user, PUT = request.user, request.data
       new_nom, new_capacite = PUT.get('new_nom'), PUT.get('new_capacite')
->>>>>>> 686da007641d52e946bf7b7dd78f9622b569343f
 
       res = user.modifier_salle(nom, new_nom, new_capacite)
       return get_cud_response(res)
