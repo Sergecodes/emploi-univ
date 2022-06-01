@@ -86,7 +86,7 @@ def cours_by_fil_niv_special(request, nom_filiere, nom_niveau, nom_specialite=No
          return Response(res)
 
 
-class CoursCRUD(APIView):
+class CoursList(APIView):
    def post(self, request):
       user, POST = request.user, request.data
       valid_req = is_valid_request(
@@ -110,15 +110,24 @@ class CoursCRUD(APIView):
 
       return get_cud_response(res, success_code=status.HTTP_201_CREATED)
 
+   def get(self, request):
+      query = "SELECT * FROM cours;"
+      res = Cours.objects.raw(query)
+      serializer = CoursSerializer(res, many=True)
+
+      return Response(serializer.data)
+
+
+class CoursDetail(APIView):
    def get(self, request, code_ue):
       res = Cours.get_cours(code_ue)
       return get_read_response(res, CoursSerializer)
 
    def put(self, request, code_ue):
-      user, POST = request.user, request.data
-      new_nom_salle, new_is_td = POST.get('new_nom_salle', ''), POST.get('new_is_td')
-      new_jour, new_heure_debut = POST.get('new_jour', ''), POST.get('new_heure_debut')
-      new_heure_fin, new_code_ue = POST.get('new_heure_fin'), POST.get('new_code_ue', '')
+      user, PUT = request.user, request.data
+      new_nom_salle, new_is_td = PUT.get('new_nom_salle', ''), PUT.get('new_is_td')
+      new_jour, new_heure_debut = PUT.get('new_jour', ''), PUT.get('new_heure_debut')
+      new_heure_fin, new_code_ue = PUT.get('new_heure_fin'), PUT.get('new_code_ue', '')
 
       res = user.modifier_cours(
          code_ue, new_code_ue, new_nom_salle, new_jour, 

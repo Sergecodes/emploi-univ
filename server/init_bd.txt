@@ -1,0 +1,18 @@
+-- DEVELOPMENT --
+1. Install Mariadb and create default root(admin) password
+
+
+** PRODUCTION **
+* Follow steps in https://blogs.oracle.com/opal/post/connecting-to-oracle-cloud-autonomous-database-with-django
+   (install oracle client)
+   (then 
+      sudo sh -c "echo /opt/oracle/instantclient_21_6 > /etc/ld.so.conf.d/oracle-instantclient.conf"
+      sudo ldconfig
+   )
+   (Create wallet)
+   (Add sqlora, tns and wallet files to instantclient dir /network/admin
+
+DONE!! 
+Run python manage.py migrate && python manage.py loaddata filieres.json then niveaux.json
+to install the data.
+python manage.py runserver to update the database and run the server

@@ -1,8 +1,12 @@
 from django.contrib.auth.models import AbstractUser
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import connection, transaction
 from django.db.utils import IntegrityError
 
-from time_table.models import UE, Cours, Enseignant, Niveau, Salle
+from time_table.models import (
+	UE, Cours, Enseignant, Filiere, Groupe, 
+	Salle, Specialite
+)
 
 
 class FiliereOps:
@@ -26,7 +30,11 @@ class FiliereOps:
 
 				with connection.cursor() as cursor:
 					cursor.execute(query2, [nom])
-		except IntegrityError as err:
+			
+					# We verify just the second query coz it's directly related to the filiere table
+					if cursor.rowcount == 0:
+						raise Filiere.DoesNotExist(f"Filiere '{nom}' not found")
+		except (IntegrityError, ObjectDoesNotExist) as err:
 			return err
 
 	def renommer_filiere(self, nom, new_nom):
@@ -38,7 +46,10 @@ class FiliereOps:
 		try: 
 			with connection.cursor() as cursor:
 				cursor.execute(query, [new_nom, nom])
-		except IntegrityError as err:
+
+				if cursor.rowcount == 0:
+					raise Filiere.DoesNotExist(f"Filiere '{nom}' not found")
+		except (IntegrityError, ObjectDoesNotExist) as err:
 			return err
 
 
@@ -46,28 +57,35 @@ class SpecialiteOps:
 	def ajouter_multiple_specialites(self, nom_filiere, specialites):
 		"""`specialites` is an array with `nom`, `bool master` and `bool licence`."""
 
-		line0 = "INSERT INTO regroupement (nom_filiere, nom_specialite, nom_niveau) VALUES "
-		next_line = "(%s, %s, %s), "
-		query = line0
-		params = []
+		query1_start = "INSERT INTO specialite (nom, effectif) VALUES "
+		query2_start = "INSERT INTO regroupement (nom_filiere, nom_specialite, nom_niveau) VALUES "
+		query1_next, query2_next = "(%s, %s), ", "(%s, %s, %s), "
+		query1, query2 = query1_start, query2_start
+		params1, params2 = [], []
 
 		for special in specialites:
-			nom_special = special['nom']
+			nom_special, effectif = special['nom'], special['effectif']
+			query1 += query1_next
+			params1.extend([nom_special, effectif])
 
 			if special.get('master'):
-				query += next_line
-				params.extend([nom_filiere, nom_special, 'M1'])
+				query2 += query2_next
+				params2.extend([nom_filiere, nom_special, 'M1'])
 
 			if special.get('licence'):
-				query += next_line
-				params.extend([nom_filiere, nom_special, 'L3'])
+				query2 += query2_next
+				params2.extend([nom_filiere, nom_special, 'L3'])
 
-		# Remove last ', ' from query string (last two characters of `next_line`)
-		query = query[:-2]
+		# Remove last ', ' from query strings (last two characters of `query2_next`)
+		query1 = query1[:-2]
+		query2 = query2[:-2]
 
 		try:
-			with connection.cursor() as cursor:
-				cursor.execute(query, params)
+			with transaction.atomic():
+				with connection.cursor() as cursor:
+					cursor.execute(query1, params1)
+				with connection.cursor() as cursor:
+					cursor.execute(query2, params2)
 		except IntegrityError as err:
 			return err
 
@@ -94,7 +112,10 @@ class SpecialiteOps:
 		try: 
 			with connection.cursor() as cursor:
 				cursor.execute(query, [nom])
-		except IntegrityError as err:
+
+				if cursor.rowcount == 0:
+					raise Specialite.DoesNotExist(f"Specialite '{nom}' not found")
+		except (IntegrityError, ObjectDoesNotExist) as err:
 			return err
 
 	def renommer_specialite(self, nom, new_nom):
@@ -106,7 +127,10 @@ class SpecialiteOps:
 		try: 
 			with connection.cursor() as cursor:
 				cursor.execute(query, [new_nom, nom])
-		except IntegrityError as err:
+
+				if cursor.rowcount == 0:
+					raise Specialite.DoesNotExist(f"Specialite '{nom}' not found")
+		except (IntegrityError, ObjectDoesNotExist) as err:
 			return err
 
 
@@ -134,7 +158,10 @@ class GroupeOps:
 		try: 
 			with connection.cursor() as cursor:
 				cursor.execute(query, [nom])
-		except IntegrityError as err:
+				
+				if cursor.rowcount == 0:
+					raise Groupe.DoesNotExist(f"Groupe '{nom}' not found")
+		except (IntegrityError, ObjectDoesNotExist) as err:
 			return err
 
 	def renommer_groupe(self, nom, new_nom):
@@ -146,7 +173,10 @@ class GroupeOps:
 		try: 
 			with connection.cursor() as cursor:
 				cursor.execute(query, [new_nom, nom])
-		except IntegrityError as err:
+
+				if cursor.rowcount == 0:
+					raise Groupe.DoesNotExist(f"Groupe '{nom}' not found")
+		except (IntegrityError, ObjectDoesNotExist) as err:
 			return err
 
 
@@ -171,7 +201,10 @@ class SalleOps:
 				
 				with connection.cursor() as cursor:
 					cursor.execute(query2, [nom])
-		except IntegrityError as err:
+					
+					if cursor.rowcount == 0:
+						raise Salle.DoesNotExist(f"Salle '{nom}' not found")
+		except (IntegrityError, ObjectDoesNotExist) as err:
 			return err
 
 	def modifier_salle(self, nom, new_nom='', new_capacite=0):
@@ -182,14 +215,17 @@ class SalleOps:
 		try:
 			salle = Salle.objects.raw(select_salle, [nom])[0]
 		except IndexError:
-			return IndexError(f"Salle with nom {nom} not found")
+			return IndexError(f"Salle '{nom}' not found")
 
 		query = "UPDATE salle SET nom = %s, capacite = %s WHERE nom = %s;"
 
 		try: 
 			with connection.cursor() as cursor:
 				cursor.execute(query, [new_nom or salle.nom, new_capacite or salle.capacite, nom])
-		except IntegrityError as err:
+				
+				if cursor.rowcount == 0:
+					raise Salle.DoesNotExist(f"Salle '{nom}' not found")
+		except (IntegrityError, ObjectDoesNotExist) as err:
 			return err
 
 
@@ -214,7 +250,10 @@ class EnseignantOps:
 					
 				with connection.cursor() as cursor:
 					cursor.execute(query2, [matricule])
-		except IntegrityError as err:
+					
+					if cursor.rowcount == 0:
+						raise Enseignant.DoesNotExist(f"Enseignant '{matricule}' not found")
+		except (IntegrityError, ObjectDoesNotExist) as err:
 			return err
 
 	def modifier_enseignant(self, matricule, new_matricule='', new_nom='', new_prenom=''):
@@ -246,7 +285,10 @@ class EnseignantOps:
 						new_prenom or ens.prenom, matricule
 					]
 				)
-		except IntegrityError as err:
+
+				if cursor.rowcount == 0:
+					raise Enseignant.DoesNotExist(f"Enseignant '{matricule}' not found")
+		except (IntegrityError, ObjectDoesNotExist) as err:
 			return err
 
 
@@ -290,7 +332,10 @@ class UEOps:
 
 				with connection.cursor() as cursor:
 					cursor.execute(query3, [code])
-		except IntegrityError as err:
+
+					if cursor.rowcount == 0:
+						raise UE.DoesNotExist(f"UE '{code}' not found")
+		except (IntegrityError, ObjectDoesNotExist) as err:
 			return err
 
 	def modifier_ue(self, code, new_code='', new_intitule=''):
@@ -311,7 +356,9 @@ class UEOps:
 					query, 
 					[new_code or ue.code, new_intitule or ue.intitule, code]
 				)
-		except IntegrityError as err:
+				if cursor.rowcount == 0:
+					raise UE.DoesNotExist(f"UE '{code}' not found")
+		except (IntegrityError, ObjectDoesNotExist) as err:
 			return err
 
 
@@ -349,7 +396,10 @@ class CoursOps:
 
 				with connection.cursor() as cursor:
 					cursor.execute(query2, [code_ue])
-		except IntegrityError as err:
+
+					if cursor.rowcount == 0:
+						raise Cours.DoesNotExist(f"Cours '{code_ue}' not found")
+		except (IntegrityError, ObjectDoesNotExist) as err:
 			return err
 
 	def modifier_cours(
@@ -389,7 +439,9 @@ class CoursOps:
 						new_heure_fin or heure_fin, new_is_td or is_td, code_ue
 					]
 				)
-		except IntegrityError as err:
+				if cursor.rowcount == 0:
+					raise Cours.DoesNotExist(f"Cours '{code_ue}' not found")
+		except (IntegrityError, ObjectDoesNotExist) as err:
 			return err
 
 
@@ -433,7 +485,7 @@ class NiveauOps:
 		try:
 			niveau = Niveau.objects.raw(select_niveau, [nom_bref])[0]
 		except IndexError:
-			return IndexError(f"Niveau with nom_bref {nom_bref} not found")
+			return IndexError(f"Niveau_bref {nom_bref} not found")
 
 		query = "UPDATE niveau SET nom_bref = %s, nom_complet = %s WHERE nom_bref = %s;"
 

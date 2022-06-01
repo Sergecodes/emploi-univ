@@ -3,28 +3,32 @@
 		"model": "time_table.Niveau",  
 		"pk": "L1",
       "fields": {
-         "nom_complet": "Niveau 1"
+         "nom_complet": "Niveau 1",
+			"nb_max": 2000
       }
 	},
 	{
 		"model": "time_table.Niveau",  
 		"pk": "L2",
       "fields": {
-         "nom_complet": "Niveau 2"
+         "nom_complet": "Niveau 2",
+			"nb_max": 2000
       }
 	},
 	{
 		"model": "time_table.Niveau",  
 		"pk": "L3",
       "fields": {
-         "nom_complet": "Niveau 3"
+         "nom_complet": "Niveau 3",
+			"nb_max": 2000
       }
 	},
 	{
 		"model": "time_table.Niveau",  
 		"pk": "M1",
       "fields": {
-         "nom_complet": "Master 1"
+         "nom_complet": "Master 1",
+			"nb_max": 2000
       }
 	}
 ]

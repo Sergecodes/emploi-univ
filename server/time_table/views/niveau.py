@@ -1,12 +1,17 @@
-# from django.db.utils import IntegrityError
-# from rest_framework import status
-# from rest_framework.response import Response
-# from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
-# from ..forms import NiveauForm
-# from ..models import Niveau
-# from ..serializers import NiveauSerializer
-# from ..utils import get_cud_response, get_read_response, is_valid_request
+from ..models import Niveau
+from ..serializers import NiveauSerializer
+
+
+class NiveauList(APIView):
+   def get(self, request):
+      query = "SELECT * FROM niveau;"
+      res = Niveau.objects.raw(query)
+      serializer = NiveauSerializer(res, many=True)
+
+      return Response(serializer.data)
 
 
 # class NiveauCRUD(APIView):
@@ -29,9 +34,9 @@
 #       return get_read_response(res, NiveauSerializer)
 
 #    def put(self, request, nom_bref):
-#       user, POST = request.user, request.data
-#       new_nom_bref = POST.get('new_nom_bref', '')
-#       new_nom_complet = POST.get('new_nom_complet', '')
+#       user, PUT = request.user, request.data
+#       new_nom_bref = PUT.get('new_nom_bref', '')
+#       new_nom_complet = PUT.get('new_nom_complet', '')
 
 #       res = user.modifier_niveau(nom_bref, new_nom_bref, new_nom_complet)
 #       return get_cud_response(res, status.HTTP_404_NOT_FOUND)

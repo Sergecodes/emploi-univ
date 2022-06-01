@@ -1,3 +1,2 @@
 env path: source ~/.virtualenvs/emploi-univ-env/bin/activate
 
-- create link to td and groupe

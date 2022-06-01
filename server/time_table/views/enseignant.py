@@ -41,11 +41,10 @@ def enseignants_by_niveau(request, nom_niveau):
    """
    result = Enseignant.objects.raw(query, [nom_niveau])
    serializer = EnseignantSerializer(result, many=True)
-   
    return Response(serializer.data)
 
 
-class EnseignantCRUD(APIView):
+class EnseignantList(APIView):
    def post(self, request):
       user, POST = request.user, request.data
       form = EnseignantForm(POST)
@@ -61,14 +60,23 @@ class EnseignantCRUD(APIView):
 
       return get_cud_response(res, success_code=status.HTTP_201_CREATED)
 
+   def get(self, request):
+      query = "SELECT * FROM enseignant;"
+      res = Enseignant.objects.raw(query)
+      serializer = EnseignantSerializer(res, many=True)
+
+      return Response(serializer.data)
+
+
+class EnseignantDetail(APIView):
    def get(self, request, matricule):
       res = Enseignant.get_enseignant(matricule)
       return get_read_response(res, EnseignantSerializer)
 
    def put(self, request, matricule):
-      user, POST = request.user, request.data
-      new_matricule = POST.get('new_matricule', '')
-      new_nom, new_prenom = POST.get('new_nom', ''), POST.get('new_prenom', '')
+      user, PUT = request.user, request.data
+      new_matricule = PUT.get('new_matricule', '')
+      new_nom, new_prenom = PUT.get('new_nom', ''), PUT.get('new_prenom', '')
 
       res = user.modifier_enseignant(matricule, new_matricule, new_nom, new_prenom)
       return get_cud_response(res)
