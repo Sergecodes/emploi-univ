@@ -99,8 +99,10 @@ class Groupe(models.Model):
 
     @classmethod
     def get_groupe(cls, nom):
+        # Even if we don't need the id_regroupement, we must include it in the SELECT query
+        # in order to be able to use `objects.raw()`
         query = """
-            SELECT nom_groupe, code_ue, nom_specialite, nom_filiere, nom_niveau 
+            SELECT id_regroupement, nom_groupe, code_ue, nom_specialite, nom_filiere, nom_niveau 
             FROM regroupement WHERE nom_groupe = %s LIMIT 1;
         """
         try:
@@ -143,8 +145,8 @@ class Specialite(models.Model):
     @classmethod
     def get_specialite(cls, nom):
         query = """
-            SELECT DISTINCT nom_specialite, nom_filiere, nom_niveau FROM regroupement
-            WHERE nom_specialite = %s LIMIT 1;
+            SELECT DISTINCT id_regroupement, nom_specialite, nom_filiere, nom_niveau 
+            FROM regroupement WHERE nom_specialite = %s LIMIT 1;
         """
         try:
             obj = Regroupement.objects.raw(query, [nom])[0]

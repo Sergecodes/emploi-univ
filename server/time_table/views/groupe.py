@@ -11,7 +11,7 @@ from ..utils import get_cud_response, is_valid_request
 
 # @api_view(['GET'])
 # def all_specialites(request):
-#    query = "SELECT DISTINCT nom_specialite, nom_filiere, nom_niveau FROM regroupement;"
+#    query = "SELECT DISTINCT id_regroupement, nom_specialite, nom_filiere, nom_niveau FROM regroupement;"
 #    res = Regroupement.objects.raw(query)
 #    serializer = RegroupementSerializer(res, many=True)
 

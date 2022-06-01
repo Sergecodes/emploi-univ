@@ -1,7 +1,2 @@
 env path: source ~/.virtualenvs/emploi-univ-env/bin/activate
 
-
-- https://blogs.oracle.com/opal/post/connecting-to-oracle-cloud-autonomous-database-with-django
-- install oracle client
-- sudo sh -c "echo /opt/oracle/instantclient_21_6 > /etc/ld.so.conf.d/oracle-instantclient.conf"
-sudo ldconfig

@@ -1,5 +1,4 @@
 from rest_framework import status
-from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -9,16 +8,7 @@ from ..serializers import RegroupementSerializer
 from ..utils import get_cud_response, is_valid_request
 
 
-@api_view(['GET'])
-def all_specialites(request):
-   query = "SELECT DISTINCT nom_specialite, nom_filiere, nom_niveau FROM regroupement;"
-   res = Regroupement.objects.raw(query)
-   serializer = RegroupementSerializer(res, many=True)
-
-   return Response(serializer.data)
-
-
-class SpecialiteCRUD(APIView):
+class SpecialiteList(APIView):
    def post(self, request):
       def check_valid_request():
          """
@@ -48,16 +38,30 @@ class SpecialiteCRUD(APIView):
       if valid_req[0] == False:
          return valid_req[1]
 
-      res = user.ajouter_multiple_specialites(POST['nom_filiere'], POST['specialites'])
+      res = user.ajouter_multiple_specialites(
+          POST['nom_filiere'], POST['specialites'])
       return get_cud_response(res, success_code=status.HTTP_201_CREATED)
 
+   def get(self, request):
+      query = """
+         SELECT DISTINCT id_regroupement, nom_specialite, nom_filiere, nom_niveau
+         FROM regroupement;
+      """
+      res = Regroupement.objects.raw(query)
+      serializer = RegroupementSerializer(res, many=True)
+
+      return Response(serializer.data)
+
+
+class SpecialiteDetail(APIView):
    def get(self, request, nom):
       res = Specialite.get_specialite(nom)
+      
       if res:
          data = {
-            'nom_specialite': res.nom_specialite,
-            'nom_filiere': res.nom_filiere,
-            'nom_niveau': res.nom_niveau
+            'nom': res.specialite.nom,
+            'nom_filiere': res.filiere.nom,
+            'nom_niveau': res.niveau.nom_bref
          }
          return Response(data)
 
@@ -87,7 +91,6 @@ class SpecialiteCRUD(APIView):
 
    def delete(self, request, nom):
       res = request.user.supprimer_specialite(nom)
-
       return get_cud_response(res, success_code=status.HTTP_204_NO_CONTENT)
 
 

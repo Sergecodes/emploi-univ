@@ -48,9 +48,8 @@ salle_urls = [
 ]
 
 specialite_urls = [
-   path('', spec_views.all_specialites, name='all-specialite'),
-   path('', spec_views.SpecialiteCRUD.as_view(), name='specialite-create'),
-   path('<str:nom>/', spec_views.SpecialiteCRUD.as_view(), name='specialite-rud'),
+   path('', spec_views.SpecialiteList.as_view(), name='specialite-list'),
+   path('<str:nom>/', spec_views.SpecialiteDetail.as_view(), name='specialite-detail'),
 ]
 
 groupe_urls = [
