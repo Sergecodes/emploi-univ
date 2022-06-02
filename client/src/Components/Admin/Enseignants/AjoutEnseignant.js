@@ -1,12 +1,12 @@
 import React,{useState} from "react";
-import { useNavigate } from "react-router";
 import axios from "axios";
 import Cookies from "js-cookie";
+import {useDispatch} from "react-redux";
+import{ handleOpenAjout} from "../../../redux/ModalDisplaySlice";
 
 
 
 const AjoutEnseignant = () => {
-  const navigate = useNavigate();
   const [enseignantInfo, setEnseignantInfo]=useState({
     nom:"",
     prenom:"",
@@ -14,6 +14,7 @@ const AjoutEnseignant = () => {
   })
 
   const csrftoken = Cookies.get('csrftoken');
+  const dispatch= useDispatch();
 
   const handleChange=(e)=>{
     let name= e.target.name;
@@ -33,7 +34,7 @@ const AjoutEnseignant = () => {
         headers:headers,
         withCredentials:true
       })
-      .then(res=>console.log(res))
+      .then(res=>console.log(res), dispatch(handleOpenAjout()))
       .catch(err=>console.error(err))
   }
 
@@ -63,7 +64,7 @@ const AjoutEnseignant = () => {
         
         </div>
         <div className="my-3 d-flex justify-content-end " style={{width:"100%"}}>
-          <button className="btn me-2 cancelButton" type="button" onClick={()=>navigate("/admin/dashboard")}>Annuler </button>
+          <button className="btn me-2 cancelButton" type="button" onClick={()=>dispatch(handleOpenAjout())}>Annuler </button>
           <button className="btn addButton" type="button" onClick={handleAjoutEnseignant}>Ajouter</button>
         </div>
       </div>

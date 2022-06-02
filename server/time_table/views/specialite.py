@@ -13,10 +13,11 @@ class SpecialiteList(APIView):
       def check_valid_request():
          """
          Request should contain `nom_filiere` and `specialites` array with
-         `nom`, `bool master` and `bool licence`.
+         `nom`, `effectif`, `bool master` and `bool licence`.
          """
+         print(request.data)
          POST = request.data
-         if 'nom_filiere' or 'specialites' not in POST:
+         if 'nom_filiere' not in POST or 'specialites' not in POST:
             return False, Response(
                "'nom_filiere' or 'specialites' array not in request body",
                status.HTTP_400_BAD_REQUEST
@@ -24,7 +25,12 @@ class SpecialiteList(APIView):
 
          specials = POST['specialites']
          for special in specials:
-            if not all(special.get('nom'), special.get('master'), special.get('licence')):
+            try:
+               special['nom']
+               special['master']
+               special['licence']
+               special['effectif']
+            except KeyError:
                return False, Response(
                   f"Invalid specialite object in array ({special})",
                   status.HTTP_400_BAD_REQUEST

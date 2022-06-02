@@ -1,12 +1,14 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router";
 import axios from "axios";
 import Cookies from "js-cookie";
+import {useDispatch} from "react-redux";
+import{ handleOpenAjout} from "../../../redux/ModalDisplaySlice";
+
 
 const AjoutSalle = () => {
-  const navigate = useNavigate();
   const [ajoutSalle, setAjoutSalle] = useState({ nom: "", capacite: 0 });
   const csrftoken = Cookies.get('csrftoken');
+  const dispatch=useDispatch();
 
   const handleChange = (e) => {
     const name = e.target.name;
@@ -23,7 +25,6 @@ const AjoutSalle = () => {
     'X-CSRFToken': csrftoken
   }
   const handleAjout = () => {
-    console.log(ajoutSalle)
     axios({
       method:'post',
       url:"http://localhost:8000/api/salles/",
@@ -31,7 +32,7 @@ const AjoutSalle = () => {
       headers:headers,
       withCredentials:true
     })
-    .then(res=>console.log(res))
+    .then(res=>console.log(res),() => dispatch(handleOpenAjout()))
     .catch(err=>console.error(err))
   };
 
@@ -72,8 +73,7 @@ const AjoutSalle = () => {
           <button
             className="btn me-2 cancelButton"
             type="button"
-            onClick={() => navigate("/admin/dashboard")}
-            onChange={handleChange}
+            onClick={() => dispatch(handleOpenAjout())}
           >
             Annuler{" "}
           </button>
