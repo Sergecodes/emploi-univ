@@ -10,6 +10,7 @@ from ..utils import get_cud_response, get_read_response, is_valid_request
 
 class SalleList(APIView):
    def post(self, request):
+      
       user, POST = request.user, request.data
       form = SalleForm(POST)
       valid_req = is_valid_request(POST, ['nom', 'capacite'])

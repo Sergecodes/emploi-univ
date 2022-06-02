@@ -1,15 +1,20 @@
 import React,{useState} from "react";
 import logo from "../../assets/logo.png";
-import { CalendarViewDayRounded, Person, ArrowBackRounded,PersonPin} from "@material-ui/icons";
+import {  Person, ArrowBackRounded,PersonPin, Menu} from "@material-ui/icons";
 import { Link } from "react-router-dom";
+import {useDispatch,useSelector} from "react-redux"
+import{ handleOpen} from '../../redux/SidenavDisplaySlice';
+//#0e0c28
 
 const NavbarAdmin = (props) => {
     const [showProfile, setShowProfile]=useState(false);
+    const dispatch= useDispatch();
+    const files= useSelector(state=>state.SidenavDisplay);
    
   return (
     <section className="navbarAdmin px-3 py-2 d-flex justify-content-between align-items-center">
       <div>
-        <CalendarViewDayRounded />
+        <Menu className="menuIcon" onClick={()=>dispatch(handleOpen())} style={files.open===true?{color:"darkBlue"}:{}} />
         <Link to="/accueil">
           <img src={logo} alt="logo" />
         </Link>

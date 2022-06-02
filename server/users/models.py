@@ -197,8 +197,8 @@ class SalleOps:
 		try: 
 			with transaction.atomic():
 				with connection.cursor() as cursor:
-					cursor.execute(query1, [nom])
-				
+					a = cursor.execute(query1, [nom])
+					print(a)
 				with connection.cursor() as cursor:
 					cursor.execute(query2, [nom])
 					

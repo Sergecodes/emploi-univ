@@ -50,7 +50,7 @@ def get_cud_response(
    """Get response to send after performing a CUD Operation"""
 
    if isinstance(op_result, IntegrityError):
-      return Response(str(op_result), error_code or status.HTTP_500_INTERNAL_SERVER_ERROR)
+      return Response(str(op_result), error_code or status.HTTP_409_CONFLICT)
 
    # Index error means no element was found in the results set,
    # so return 404 code

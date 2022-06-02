@@ -4,15 +4,13 @@ import HeaderFooter from "./Screen/HeaderFooter";
 import Accueil from "./Screen/Accueil";
 import Admin from "./Screen/Admin";
 import ComputerScience from "./Components/Consultation/ComputerScience";
-import AjoutEnseignant from "./Components/Admin/AjoutEnseignant";
-import AjoutSalle from "./Components/Admin/AjoutSalle";
-import AjoutFiliere from "./Components/Admin/AjoutFiliere";
 import AjoutUe from "./Components/Admin/AjoutUe";
 import AjoutCoursFormulaire from "./Components/Admin/AjoutCoursFormulaire";
 import AjoutCoursGraphique from "./Components/Admin/AjoutCoursGraphique";
-import ListeSalles from "./Components/Admin/ListeSalles";
-import ListeEnseignants from "./Components/Admin/ListeEnseignants";
-import ListeFilieres from "./Components/Admin/ListeFilieres";
+import Salles from "./Components/Admin/Salles";
+import Enseignants from "./Components/Admin/Enseignants";
+import Filieres from "./Components/Admin/Filieres";
+import Specialites from "./Components/Admin/Specialites";
 
 import ListeUe from "./Components/Admin/ListeUe";
 
@@ -33,16 +31,18 @@ const App = () => {
           </Route>
           <Route path="/admin" element={<Admin/>}>
             <Route path="/admin/dashboard" element={<p className="my-5">Un paragraphe</p>}/>
-            <Route path="/admin/ajout-enseignant" element={<AjoutEnseignant/>}/>
-            <Route path="/admin/ajout-filiere" element={<AjoutFiliere/>}/>
-            <Route path="/admin/ajout-salle" element={<AjoutSalle/>}/>
+            <Route path="/admin/ajout-enseignant" element={<p>Ajout enseignant</p>}/>
+            <Route path="/admin/ajout-filiere" element={<p>Ajout filiere</p>}/>
+            <Route path="/admin/ajout-salle" element={<p>Ajout salle</p>}/>
             <Route path="/admin/ajout-ue" element={<AjoutUe/>}/>
             <Route path="/admin/ajout-cours-formulaire" element={<AjoutCoursFormulaire/>}/>
             <Route path="/admin/ajout-cours-graphique" element={<AjoutCoursGraphique/>}/>
-            <Route path="/admin/liste-salles" element={<ListeSalles/>}/>
-            <Route path="/admin/liste-enseignants" element={<ListeEnseignants/>}/>
-            <Route path="/admin/liste-filieres" element={<ListeFilieres/>}/>
+            <Route path="/admin/liste-salles" element={<Salles/>}/>
+            <Route path="/admin/liste-enseignants" element={<Enseignants/>}/>
+            <Route path="/admin/liste-filieres" element={<Filieres/>}/>
             <Route path="/admin/liste-ue" element={<ListeUe/>}/>
+            <Route path="/admin/liste-specialites" element={<Specialites/>}/>
+
 
           </Route>
         </Routes>

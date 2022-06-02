@@ -1,35 +1,46 @@
-import React from "react";
-import { filiere } from "../../Constant";
+import React,{useEffect, useState} from "react";
 import { useNavigate } from "react-router";
-import Cookies from "js-cookie";
+import TextField from '@mui/material/TextField';
+import Stack from '@mui/material/Stack';
+import Autocomplete from '@mui/material/Autocomplete';
+/*import Cookies from "js-cookie";*/
 import axios from "axios";
 
 
 
 const AjoutUe = () => {
     const navigate = useNavigate();
-     const csrftoken = Cookies.get('csrftoken');
+    const [listeFilieres, setListeFilieres]=useState([{}]);
+   const [enseignant,setEnseignant]=useState([{}]);
+   // const [niveau,setNiveau]=useState([{}])
+  /*   const csrftoken = Cookies.get('csrftoken');
 
     const headers={
       'X-CSRFToken': csrftoken
-    }
+    }*/
 
-    const handleAjout=()=>{
+    useEffect(()=>{
 
+       
+      axios.get("http://localhost:8000/api/Filiere/all/")
+      .then(res=>setListeFilieres(res.data))
+      .catch(err=>console.log(err))
+
+    /*  axios.get("http://localhost:8000/api/Niveau/all/")
+      .then(res=>setNiveau(res.data))
+      .catch(err=>console.log(err))*/
+
+      axios.get("http://localhost:8000/api/Enseignant/all/")
+      .then(res=>setEnseignant(res.data))
+      .catch(err=>console.log(err))
       
-      
-      axios({
-        method:'post',
-        url:"http://localhost:8000/api/filieres/",
-        data:{"nom":filiere},
-        headers:headers,
-        withCredentials:true
-      })
-      .then(res=>console.log(res))
-      .catch(err=>console.error(err))
+    },[])
 
 
-
+    const handleAjout=()=>{    
+      for(let i in enseignant){
+        console.log(enseignant[i])
+      }
     }
   return (
     <section
@@ -54,34 +65,46 @@ const AjoutUe = () => {
               style={{ minWidth: "70%" }}
             ></input>
           </div>
-          <div className="my-3">
-            <label htmlFor="nom">Nom enseignant :</label>
-            <input
-              type="text"
-              name="nom"
-              style={{ minWidth: "60%" }}
-            ></input>
+          <div className="my-3 d-flex align-items-center">
+            <label htmlFor="matricule">matricule enseignant :</label>
+            <Stack spacing={2} sx={{ minWidth:"280px",padding:"0px",margin:"0px"}}>
+      <Autocomplete
+        freeSolo
+        id="free-solo-2-demo"
+        disableClearable
+        options={enseignant.map((option) => option.matricule)}
+        renderInput={(params) => (
+          <TextField
+            {...params}
+            label="matricule"
+            InputProps={{
+              ...params.InputProps,
+              type: 'search',
+            }}
+            size="small"
+          />
+        )}
+      />
+    </Stack>
           </div>
           <div className="my-3">
             <label htmlFor="filiere">Filiere :</label>
             <select name="filiere">
-                {
-                    filiere.map(elt=>{
-                        return(
-                            <option key={elt.id} name={elt.nom}>{elt.nom}</option>
-                        )
-                    })
-                }
+            {
+                listeFilieres.map((elt,index)=>{
+                  return(
+                  
+                      <option key={index} name={elt.nom}>{elt.nom}</option>
+      
+                  )
+                })
+              }
             </select>
           </div>
           <div className="my-3">
             <label htmlFor="niveau">Niveau :</label>
             <select name="niveau">
-            <option name="master">License 1</option>
-              <option name="doctorat">License 2</option>
-              <option name="doctorat">License 3</option>
-              <option name="master">master</option>
-              <option name="doctorat">doctorat</option>
+              <option name="niveau1">Niveau 1</option>
             </select>
           </div>
           <div className="my-3">

@@ -1,9 +1,17 @@
-import React from 'react'
+import React,{useState} from 'react';
+import TextField from '@mui/material/TextField';
 
-const ComputerScience = () => {
+
+export default function ComputerScience() {
+
+  const [test,setTest]=useState('rien')
+
   return (
-    <div>ComputerScience</div>
-  )
+   <section className="d-flex justify-content-center my-5">
+      <TextField id="outlined-basic" label="test" variant="outlined" size="small" value={test} onChange={(e)=>setTest(e.target.value)} name="test" />
+   </section>
+  );
 }
 
-export default ComputerScience
+// Top 100 films as rated by IMDb users. http://www.imdb.com/chart/top
+
