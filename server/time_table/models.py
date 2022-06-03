@@ -75,7 +75,7 @@ class Salle(models.Model):
 class Niveau(models.Model):
     nom_bref = models.CharField(max_length=10, primary_key=True)
     nom_complet = models.CharField(max_length=20, unique=True)  
-    nb_max = models.PositiveIntegerField()
+    # nb_max = models.PositiveIntegerField()
 
     @classmethod
     def get_niveau(cls, nom_bref):
@@ -145,14 +145,13 @@ class Specialite(models.Model):
     @classmethod
     def get_specialite(cls, nom):
         query = """
-            SELECT DISTINCT id_regroupement, nom_specialite, nom_filiere, nom_niveau 
-            FROM regroupement WHERE nom_specialite = %s LIMIT 1;
+            SELECT DISTINCT id_regroupement, nom_specialite, effectif, nom_filiere, 
+            nom_niveau FROM regroupement reg, specialite spec WHERE
+            reg.nom_specialite = spec.nom AND nom_specialite = %s LIMIT 1;
         """
-        try:
-            obj = Regroupement.objects.raw(query, [nom])[0]
-        except IndexError:
-            return None
-        return obj
+        with connection.cursor() as cursor:
+            cursor.execute(query, [nom])
+            return None if cursor.rowcount == 0 else dict_fetchone(cursor)
 
     def __str__(self):
         return self.nom

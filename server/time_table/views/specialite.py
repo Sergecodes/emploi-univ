@@ -1,11 +1,11 @@
+from django.db import connection
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from ..forms import SpecialiteForm
-from ..models import Regroupement, Specialite
-from ..serializers import RegroupementSerializer
-from ..utils import get_cud_response, is_valid_request
+from ..models import Specialite
+from ..utils import get_cud_response, is_valid_request, dict_fetchall
 
 
 class SpecialiteList(APIView):
@@ -50,28 +50,19 @@ class SpecialiteList(APIView):
 
    def get(self, request):
       query = """
-         SELECT DISTINCT id_regroupement, nom_specialite, nom_filiere, nom_niveau
-         FROM regroupement;
+         SELECT DISTINCT id_regroupement, nom_specialite, effectif, nom_filiere, 
+         nom_niveau FROM regroupement reg, specialite spec WHERE
+         reg.nom_specialite = spec.nom;
       """
-      res = Regroupement.objects.raw(query)
-      serializer = RegroupementSerializer(res, many=True)
-
-      return Response(serializer.data)
+      with connection.cursor() as cursor:
+         cursor.execute(query)
+         return Response(dict_fetchall(cursor))
 
 
 class SpecialiteDetail(APIView):
    def get(self, request, nom):
       res = Specialite.get_specialite(nom)
-      
-      if res:
-         data = {
-            'nom': res.specialite.nom,
-            'nom_filiere': res.filiere.nom,
-            'nom_niveau': res.niveau.nom_bref
-         }
-         return Response(data)
-
-      return Response(status=status.HTTP_404_NOT_FOUND)
+      return Response(res) if res else Response(status=status.HTTP_404_NOT_FOUND)
 
    def put(self, request, nom):
       user, PUT = request.user, request.data

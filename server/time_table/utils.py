@@ -69,10 +69,11 @@ def get_cud_response(
    return Response(op_result or success_message or "Success", success_code or status.HTTP_200_OK)
 
 
-def get_read_response(r_result: Any | None, serializer_cls):
+def get_read_response(r_result, serializer_cls):
    """Get response to send after performing a Read (select/find) operation"""
-   if r_result is None:
-      return Response({}, status.HTTP_404_NOT_FOUND)
+
+   if not r_result:
+      return Response(r_result, status.HTTP_404_NOT_FOUND)
 
    serializer = serializer_cls(r_result)
    return Response(serializer.data)

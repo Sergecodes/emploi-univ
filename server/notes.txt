@@ -1,2 +1,5 @@
 env path: source ~/.virtualenvs/emploi-univ-env/bin/activate
 
+TODO:
+ - stephanes corrections
+ - add django.db.utils.DataError checks during updates and inserts

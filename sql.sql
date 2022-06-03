@@ -1,6 +1,8 @@
 -- 
 -- Create database
 --
+-- https://stackoverflow.com/questions/6448825/sql-unique-varchar-case-sensitivity-question
+
 CREATE DATABASE emploi_univ_bd CHARACTER SET utf8;
 
 
@@ -47,14 +49,14 @@ ALTER TABLE `regroupement` ADD CONSTRAINT `unique_ue_grp_fil_niv_spec` UNIQUE (`
 --
 -- Add field enseignant to cours
 --
-ALTER TABLE `cours` ADD COLUMN `matricule_ens` varchar(15) NOT NULL , ADD CONSTRAINT `cours_matricule_ens_7a7bd320_fk_enseignant_matricule` FOREIGN KEY (`matricule_ens`) REFERENCES `enseignant`(`matricule`);
+ALTER TABLE `cours` ADD COLUMN `matricule_ens` varchar(15) NOT NULL , ADD CONSTRAINT `cours_matricule_ens_7a7bd320_fk_enseignant_matricule` FOREIGN KEY (`matricule_ens`) REFERENCES `enseignant`(`matricule`) ON DELETE RESTRICT ON UPDATE CASCADE;
 --
 -- Add field salle to cours
 --
-ALTER TABLE `cours` ADD COLUMN `nom_salle` varchar(10) NULL , ADD CONSTRAINT `cours_nom_salle_64ca790b_fk_salle_nom` FOREIGN KEY (`nom_salle`) REFERENCES `salle`(`nom`);
-ALTER TABLE `cours` ADD CONSTRAINT `cours_code_ue_4eab98b4_fk_ue_code` FOREIGN KEY (`code_ue`) REFERENCES `ue` (`code`);
-ALTER TABLE `regroupement` ADD CONSTRAINT `regroupement_nom_filiere_32af357c_fk_filiere_nom` FOREIGN KEY (`nom_filiere`) REFERENCES `filiere` (`nom`);
-ALTER TABLE `regroupement` ADD CONSTRAINT `regroupement_nom_groupe_0400cbf3_fk_groupe_nom` FOREIGN KEY (`nom_groupe`) REFERENCES `groupe` (`nom`);
+ALTER TABLE `cours` ADD COLUMN `nom_salle` varchar(10) NULL , ADD CONSTRAINT `cours_nom_salle_64ca790b_fk_salle_nom` FOREIGN KEY (`nom_salle`) REFERENCES `salle`(`nom`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `cours` ADD CONSTRAINT `cours_code_ue_4eab98b4_fk_ue_code` FOREIGN KEY (`code_ue`) REFERENCES `ue` (`code`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `regroupement` ADD CONSTRAINT `regroupement_nom_filiere_32af357c_fk_filiere_nom` FOREIGN KEY (`nom_filiere`) REFERENCES `filiere` (`nom`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `regroupement` ADD CONSTRAINT `regroupement_nom_groupe_0400cbf3_fk_groupe_nom` FOREIGN KEY (`nom_groupe`) REFERENCES `groupe` (`nom`) ON DELETE CASCADE ON UPDATE CASCADE;
 ALTER TABLE `regroupement` ADD CONSTRAINT `regroupement_nom_niveau_f894a562_fk_niveau_nom_bref` FOREIGN KEY (`nom_niveau`) REFERENCES `niveau` (`nom_bref`);
-ALTER TABLE `regroupement` ADD CONSTRAINT `regroupement_nom_specialite_3e864e1b_fk_specialite_nom` FOREIGN KEY (`nom_specialite`) REFERENCES `specialite` (`nom`);
-ALTER TABLE `regroupement` ADD CONSTRAINT `regroupement_code_ue_11d1b045_fk_ue_code` FOREIGN KEY (`code_ue`) REFERENCES `ue` (`code`);
+ALTER TABLE `regroupement` ADD CONSTRAINT `regroupement_nom_specialite_3e864e1b_fk_specialite_nom` FOREIGN KEY (`nom_specialite`) REFERENCES `specialite` (`nom`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `regroupement` ADD CONSTRAINT `regroupement_code_ue_11d1b045_fk_ue_code` FOREIGN KEY (`code_ue`) REFERENCES `ue` (`code`) ON DELETE RESTRICT ON UPDATE CASCADE;

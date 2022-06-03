@@ -4,8 +4,8 @@ from django.db import connection, transaction
 from django.db.utils import IntegrityError
 
 from time_table.models import (
-	UE, Cours, Enseignant, Filiere, Groupe, 
-	Salle, Specialite
+	UE, Cours, Enseignant, Filiere, 
+	Salle, Specialite, Groupe
 )
 
 
@@ -55,7 +55,9 @@ class FiliereOps:
 
 class SpecialiteOps:
 	def ajouter_multiple_specialites(self, nom_filiere, specialites):
-		"""`specialites` is an array with `nom`, `bool master` and `bool licence`."""
+		"""
+		`specialites` is an array with `nom`, bool `master`, int `effectif` and bool `licence`.
+		"""
 
 		query1_start = "INSERT INTO specialite (nom, effectif) VALUES "
 		query2_start = "INSERT INTO regroupement (nom_filiere, nom_specialite, nom_niveau) VALUES "
@@ -84,40 +86,58 @@ class SpecialiteOps:
 			with transaction.atomic():
 				with connection.cursor() as cursor:
 					cursor.execute(query1, params1)
+
 				with connection.cursor() as cursor:
 					cursor.execute(query2, params2)
 		except IntegrityError as err:
 			return err
 
-	def ajouter_specialite(self, nom, nom_niveau, nom_filiere):
-		query1 = "INSERT INTO specialite (nom) VALUES (%s);"
-		query2 = """
-			INSERT INTO regroupement (nom_filiere, nom_niveau, nom_specialite) 
-			VALUES (%s, %s, %s);
-		"""
-		
+	def supprimer_specialite(self, nom, licence, master):
+		if not licence and not master:
+			return
+
 		try:
-			with transaction.atomic():
+			if licence and master:
+				query1 = "DELETE FROM specialite WHERE nom = %s;"
 				with connection.cursor() as cursor:
 					cursor.execute(query1, [nom])
 
-				with connection.cursor() as cursor:
-					cursor.execute(query2, [nom_filiere, nom_niveau, nom])
-		except IntegrityError as err:
-			return err
+					if cursor.rowcount == 0:
+						raise Specialite.DoesNotExist(f"Specialite '{nom}' not found")
+						
+				return
 
-	def supprimer_specialite(self, nom):
-		query = "DELETE FROM specialite WHERE nom = %s;"
-
-		try: 
+			query1 = "DELETE FROM regroupement WHERE nom_specialite = %s AND nom_niveau = %s;"
+			
+			## If only licence was passed, delete specialite from regroupement table 
+			# where niveau is licence.
+			# if licence:
+			# 	niv = 'L3'
+			# elif master: 
+			# 	niv = 'M1'
+			niv = 'L3' if licence else 'M1'
+				
 			with connection.cursor() as cursor:
-				cursor.execute(query, [nom])
+				cursor.execute(query1, [nom, niv])
 
 				if cursor.rowcount == 0:
-					raise Specialite.DoesNotExist(f"Specialite '{nom}' not found")
+					raise Specialite.DoesNotExist(f"Specialite '{nom}' for niveau {niv} not found")
+
+			# Now check if the specialite is still in the regroupement table. If it's no longer
+			# present, delete it from the specialite table.
+			query2 = "SELECT COUNT(*) FROM regroupement WHERE nom_specialite = %s;"
+			with connection.cursor() as cursor:
+				cursor.execute(query2, [nom])
+				# Query will return tuple with one element which is the count
+				res = cursor.fetchone()[0]
+
+			if res == 0:
+				query3 = "DELETE FROM specialite WHERE nom = %s;"
+				with connection.cursor() as cursor:
+					cursor.execute(query3, [nom])
 		except (IntegrityError, ObjectDoesNotExist) as err:
 			return err
-
+	
 	def renommer_specialite(self, nom, new_nom):
 		if nom == new_nom:
 			return
@@ -197,8 +217,8 @@ class SalleOps:
 		try: 
 			with transaction.atomic():
 				with connection.cursor() as cursor:
-					a = cursor.execute(query1, [nom])
-					print(a)
+					cursor.execute(query1, [nom])
+
 				with connection.cursor() as cursor:
 					cursor.execute(query2, [nom])
 					
@@ -498,4 +518,23 @@ class NiveauOps:
 		except IntegrityError as err:
 			return err
 '''
+
+
+# def ajouter_specialite(self, nom, nom_niveau, nom_filiere, effectif):
+# 	query1 = "INSERT INTO specialite (nom, effectif) VALUES (%s, %s);"
+# 	query2 = """
+# 		INSERT INTO regroupement (nom_filiere, nom_niveau, nom_specialite) 
+# 		VALUES (%s, %s, %s);
+# 	"""
+	
+# 	try:
+# 		with transaction.atomic():
+# 			with connection.cursor() as cursor:
+# 				cursor.execute(query1, [nom, effectif])
+
+# 			with connection.cursor() as cursor:
+# 				cursor.execute(query2, [nom_filiere, nom_niveau, nom])
+# 	except IntegrityError as err:
+# 		return err
+
 
