@@ -3,10 +3,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db import connection, transaction
 from django.db.utils import IntegrityError
 
-from time_table.models import (
-	UE, Cours, Enseignant, Filiere, Groupe, 
-	Salle, Specialite
-)
+from time_table.models import UE, Cours, Enseignant, Filiere, Salle, Specialite, Groupe
 
 
 class FiliereOps:
@@ -55,7 +52,9 @@ class FiliereOps:
 
 class SpecialiteOps:
 	def ajouter_multiple_specialites(self, nom_filiere, specialites):
-		"""`specialites` is an array with `nom`, `bool master` and `bool licence`."""
+		"""
+		`specialites` is an array with `nom`, bool `master`, int `effectif` and bool `licence`.
+		"""
 
 		query1_start = "INSERT INTO specialite (nom, effectif) VALUES "
 		query2_start = "INSERT INTO regroupement (nom_filiere, nom_specialite, nom_niveau) VALUES "
@@ -84,100 +83,174 @@ class SpecialiteOps:
 			with transaction.atomic():
 				with connection.cursor() as cursor:
 					cursor.execute(query1, params1)
+
 				with connection.cursor() as cursor:
 					cursor.execute(query2, params2)
 		except IntegrityError as err:
 			return err
 
-	def ajouter_specialite(self, nom, nom_niveau, nom_filiere):
-		query1 = "INSERT INTO specialite (nom) VALUES (%s);"
-		query2 = """
-			INSERT INTO regroupement (nom_filiere, nom_niveau, nom_specialite) 
-			VALUES (%s, %s, %s);
-		"""
-		
+	def supprimer_specialite(self, nom, licence: bool, master: bool):
+		if not licence and not master:
+			return
+
 		try:
-			with transaction.atomic():
+			if licence and master:
+				query1 = "DELETE FROM specialite WHERE nom = %s;"
 				with connection.cursor() as cursor:
 					cursor.execute(query1, [nom])
 
-				with connection.cursor() as cursor:
-					cursor.execute(query2, [nom_filiere, nom_niveau, nom])
-		except IntegrityError as err:
-			return err
+					if cursor.rowcount == 0:
+						raise Specialite.DoesNotExist(f"Specialite '{nom}' not found")
+						
+				return
 
-	def supprimer_specialite(self, nom):
-		query = "DELETE FROM specialite WHERE nom = %s;"
-
-		try: 
+			query1 = "DELETE FROM regroupement WHERE nom_specialite = %s AND nom_niveau = %s;"
+			
+			## If only licence was passed, delete specialite from regroupement table 
+			# where niveau is licence.
+			# if licence:
+			# 	niv = 'L3'
+			# elif master: 
+			# 	niv = 'M1'
+			niv = 'L3' if licence else 'M1'
+				
 			with connection.cursor() as cursor:
-				cursor.execute(query, [nom])
+				cursor.execute(query1, [nom, niv])
 
 				if cursor.rowcount == 0:
-					raise Specialite.DoesNotExist(f"Specialite '{nom}' not found")
+					raise Specialite.DoesNotExist(f"Specialite '{nom}' for niveau {niv} not found")
+
+			# Now check if the specialite is still in the regroupement table. If it's no longer
+			# present, delete it from the specialite table.
+			query2 = "SELECT COUNT(*) FROM regroupement WHERE nom_specialite = %s;"
+			with connection.cursor() as cursor:
+				cursor.execute(query2, [nom])
+				# Query will return tuple with one element which is the count
+				res = cursor.fetchone()[0]
+
+			if res == 0:
+				query3 = "DELETE FROM specialite WHERE nom = %s;"
+				with connection.cursor() as cursor:
+					cursor.execute(query3, [nom])
 		except (IntegrityError, ObjectDoesNotExist) as err:
 			return err
 
-	def renommer_specialite(self, nom, new_nom):
-		if nom == new_nom:
+	def modifier_specialite(self, nom, nom_niveau, new_nom='', new_effectif_max=None):
+		if not any([new_nom, new_effectif_max]):
 			return
 
-		query = "UPDATE specialite SET nom = %s WHERE nom = %s;"
+		select_special = """
+			SELECT nom, nom_niveau, nom_filiere, effectif_max FROM 
+			specialite spec, regroupement reg WHERE reg.nom_niveau = %s AND 
+			nom = %s AND reg.nom_specialite = spec.nom LIMIT 1;
+		"""
+		with connection.cursor() as cursor:
+			cursor.execute(select_special, [nom_niveau, nom])
+			if cursor.rowcount == 0:
+				return Specialite.DoesNotExist(f"Specialite {nom} for {nom_niveau} not found")
 
-		try: 
-			with connection.cursor() as cursor:
-				cursor.execute(query, [new_nom, nom])
+		try:
+			if new_nom:
+				# If specialite has both m1 and l3 in regroupement table, then
+				# update just the regroupement table for the current niveau.
+				query = """
+					SELECT COUNT(*) FROM regroupement WHERE nom_specialite = %s AND
+					nom_niveau = %s;
+				"""
+				with connection.cursor() as cursor:
+					cursor.execute(query, [nom, 'L3'])
+					count1 = cursor.fetchone()[0]
 
-				if cursor.rowcount == 0:
-					raise Specialite.DoesNotExist(f"Specialite '{nom}' not found")
-		except (IntegrityError, ObjectDoesNotExist) as err:
+				with connection.cursor() as cursor:
+					cursor.execute(query, [nom, 'M1'])
+					count2 = cursor.fetchone()[0]
+
+				if count1 > 0 and count2 > 0:
+					# Both l3 and m1 are in the regroupement table.
+					query = """
+						UPDATE regroupement SET nom_specialite = %s WHERE 
+						nom_specialite = %s AND nom_niveau = %s;
+					"""
+					with connection.cursor() as cursor:
+						cursor.execute(query, [new_nom, nom, nom_niveau])	
+				else:
+					# There's only either l3 or m1. And changing the name of the specialite
+					# table will cascade update the regroupement table.
+					query = "UPDATE specialite SET nom = %s WHERE nom = %s;"
+					with connection.cursor() as cursor:
+						cursor.execute(query, [new_nom, nom])
+
+			if new_effectif_max:
+				query = """
+					UPDATE regroupement SET effectif_max = %s WHERE 
+					nom_specialite = %s AND nom_niveau = %s;
+				"""
+				with connection.cursor() as cursor:
+					cursor.execute(query, [new_effectif_max, nom, nom_niveau])
+		except IntegrityError as err:
 			return err
 
 
 class GroupeOps:
-	def ajouter_groupe(self, nom, code_ue, nom_filiere, nom_niveau, nom_specialite=None):
-		query1 = "INSERT INTO groupe (nom) VALUES (%s);"
-		query2 = """
-			INSERT INTO regroupement(code_ue, nom_filiere, nom_niveau, nom_groupe, nom_specialite)
-			VALUE (%s, %s, %s, %s, %s);
-		"""
+	def ajouter_groupe(self, nom, nom_filiere, nom_niveau):
+		# Recall that groups A - E will be in the database (via fixtures)
+		query = "INSERT INTO regroupement(nom_filiere, nom_niveau, nom_groupe) VALUES (%s, %s, %s);"
 		
 		try:
-			with transaction.atomic():
-				with connection.cursor() as cursor:
-					cursor.execute(query1, [nom])
-
-				with connection.cursor() as cursor:
-					cursor.execute(query2, [code_ue, nom_filiere, nom_niveau, nom, nom_specialite])
+			with connection.cursor() as cursor:
+				cursor.execute(query, [nom_filiere, nom_niveau, nom])
 		except IntegrityError as err:
 			return err
 
-	def supprimer_groupe(self, nom):
-		query = "DELETE FROM groupe WHERE nom = %s;"
-
-		try: 
-			with connection.cursor() as cursor:
-				cursor.execute(query, [nom])
-				
-				if cursor.rowcount == 0:
-					raise Groupe.DoesNotExist(f"Groupe '{nom}' not found")
-		except (IntegrityError, ObjectDoesNotExist) as err:
-			return err
-
-	def renommer_groupe(self, nom, new_nom):
-		if nom == new_nom:
+	def supprimer_groupe(self, nom, nom_filiere, licence: bool, master: bool):
+		if not licence and not master:
 			return
 
-		query = "UPDATE groupe SET nom = %s WHERE nom = %s;"
+		try:
+			if licence and master:
+				query1 = "DELETE FROM regroupement WHERE nom_groupe = %s AND nom_filiere = %s;"
+				with connection.cursor() as cursor:
+					cursor.execute(query1, [nom, nom_filiere])
 
-		try: 
+					if cursor.rowcount == 0:
+						raise Groupe.DoesNotExist(f"Groupe {nom} for filiere {nom_filiere} not found")
+						
+				return
+
+			query1 = """
+				DELETE FROM regroupement WHERE nom_groupe = %s 
+				AND nom_filiere = %s AND nom_niveau = %s;
+			"""
+			
+			## If only licence was passed, delete groupe from regroupement table 
+			# where niveau is licence.
+			niv = 'L3' if licence else 'M1'
+				
 			with connection.cursor() as cursor:
-				cursor.execute(query, [new_nom, nom])
+				cursor.execute(query1, [nom, nom_filiere, niv])
 
 				if cursor.rowcount == 0:
-					raise Groupe.DoesNotExist(f"Groupe '{nom}' not found")
+					raise Groupe.DoesNotExist(
+						f"Groupe '{nom}' for filiere {nom_filiere} and niveau {niv} not found"
+					)
 		except (IntegrityError, ObjectDoesNotExist) as err:
 			return err
+
+
+	# def renommer_groupe(self, nom, new_nom):
+	# 	if nom == new_nom:
+	# 		return
+
+	# 	query = "UPDATE groupe SET nom = %s WHERE nom = %s;"
+
+	# 	try: 
+	# 		with connection.cursor() as cursor:
+	# 			cursor.execute(query, [new_nom, nom])
+
+	# 			if cursor.rowcount == 0:
+	# 				raise Groupe.DoesNotExist(f"Groupe '{nom}' not found")
+	# 	except (IntegrityError, ObjectDoesNotExist) as err:
+	# 		return err
 
 
 class SalleOps:
@@ -197,8 +270,8 @@ class SalleOps:
 		try: 
 			with transaction.atomic():
 				with connection.cursor() as cursor:
-					a = cursor.execute(query1, [nom])
-					print(a)
+					cursor.execute(query1, [nom])
+
 				with connection.cursor() as cursor:
 					cursor.execute(query2, [nom])
 					
@@ -498,4 +571,23 @@ class NiveauOps:
 		except IntegrityError as err:
 			return err
 '''
+
+
+# def ajouter_specialite(self, nom, nom_niveau, nom_filiere, effectif):
+# 	query1 = "INSERT INTO specialite (nom, effectif) VALUES (%s, %s);"
+# 	query2 = """
+# 		INSERT INTO regroupement (nom_filiere, nom_niveau, nom_specialite) 
+# 		VALUES (%s, %s, %s);
+# 	"""
+	
+# 	try:
+# 		with transaction.atomic():
+# 			with connection.cursor() as cursor:
+# 				cursor.execute(query1, [nom, effectif])
+
+# 			with connection.cursor() as cursor:
+# 				cursor.execute(query2, [nom_filiere, nom_niveau, nom])
+# 	except IntegrityError as err:
+# 		return err
+
 

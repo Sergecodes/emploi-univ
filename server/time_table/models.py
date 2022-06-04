@@ -75,7 +75,6 @@ class Salle(models.Model):
 class Niveau(models.Model):
     nom_bref = models.CharField(max_length=10, primary_key=True)
     nom_complet = models.CharField(max_length=20, unique=True)  
-    nb_max = models.PositiveIntegerField()
 
     @classmethod
     def get_niveau(cls, nom_bref):
@@ -97,19 +96,19 @@ class Niveau(models.Model):
 class Groupe(models.Model):
     nom = models.CharField(max_length=20, primary_key=True)
 
-    @classmethod
-    def get_groupe(cls, nom):
-        # Even if we don't need the id_regroupement, we must include it in the SELECT query
-        # in order to be able to use `objects.raw()`
-        query = """
-            SELECT id_regroupement, nom_groupe, code_ue, nom_specialite, nom_filiere, nom_niveau 
-            FROM regroupement WHERE nom_groupe = %s LIMIT 1;
-        """
-        try:
-            obj = Regroupement.objects.raw(query, [nom])[0]
-        except IndexError:
-            return None
-        return obj
+    # @classmethod
+    # def get_groupe(cls, nom):
+    #     # Even if we don't need the id_regroupement, we must include it in the SELECT query
+    #     # in order to be able to use `objects.raw()`
+    #     query = """
+    #         SELECT id_regroupement, nom_groupe, nom_specialite, nom_filiere,  
+    #         nom_niveau FROM regroupement WHERE nom_groupe = %s LIMIT 1;
+    #     """
+    #     try:
+    #         obj = Regroupement.objects.raw(query, [nom])[0]
+    #     except IndexError:
+    #         return None
+    #     return obj
 
     def __str__(self):
         return self.nom
@@ -140,19 +139,17 @@ class Filiere(models.Model):
 
 class Specialite(models.Model):
     nom = models.CharField(max_length=20, primary_key=True)
-    effectif = models.PositiveSmallIntegerField()
     
     @classmethod
     def get_specialite(cls, nom):
         query = """
-            SELECT DISTINCT id_regroupement, nom_specialite, nom_filiere, nom_niveau 
-            FROM regroupement WHERE nom_specialite = %s LIMIT 1;
+            SELECT DISTINCT id_regroupement, nom_specialite, effectif_max, nom_filiere, 
+            nom_niveau FROM regroupement reg, specialite spec WHERE effectif_max IS NOT NULL 
+            AND reg.nom_specialite = spec.nom AND nom_specialite = %s LIMIT 1;
         """
-        try:
-            obj = Regroupement.objects.raw(query, [nom])[0]
-        except IndexError:
-            return None
-        return obj
+        with connection.cursor() as cursor:
+            cursor.execute(query, [nom])
+            return None if cursor.rowcount == 0 else dict_fetchone(cursor)
 
     def __str__(self):
         return self.nom
@@ -261,6 +258,7 @@ class Regroupement(models.Model):
         blank=True, 
         null=True
     )
+    effectif_max = models.PositiveIntegerField(null=True, blank=True)
 
     @classmethod
     def get_regroupement(cls, id):

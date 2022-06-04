@@ -7,6 +7,7 @@ from .views import niveau as niveau_views
 from .views import salle as salle_views
 from .views import specialite as spec_views
 from .views import ue as ue_views
+from .views import misc as misc_views
 # from .views import common as common_views
 from .views import groupe as groupe_views
 
@@ -48,6 +49,7 @@ specialite_urls = [
 
 groupe_urls = [
    path('', groupe_views.GroupeList.as_view()),
+   path('<str:nom_filiere>/<str:nom_niveau>/', groupe_views.GroupeList.as_view()),
    path('<str:nom>/', groupe_views.GroupeDetail.as_view()),
 ]
 
@@ -61,8 +63,20 @@ niveau_urls = [
    # path('<str:nom_bref>/', niveau_views.NiveauCRUD.as_view()),
 ]
 
+misc_urls = [
+   path(
+      'set-filiere-niveau-capacite/<str:nom_filiere>/<str:nom_niveau>/', 
+      misc_views.set_filiere_niveau_capacite
+   ),
+   path(
+      'get-filiere-niveau-capacite/<str:nom_filiere>/<str:nom_niveau>/', 
+      misc_views.get_filiere_niveau_capacite
+   )
+]
+
 
 urlpatterns = [
+   path('', include(misc_urls)),
    path('cours/', include(cours_urls)),
    path('enseignants/', include(enseignant_urls)),
    path('filieres/', include(filiere_urls)),
@@ -71,7 +85,7 @@ urlpatterns = [
    path('specialites/', include(specialite_urls)),
    path('groupes/', include(groupe_urls)),
    path('ue/', include(ue_urls)),
-   # path('<str:model>/all/', common_views.all_entries, name='all-entries'),
 
+   # path('<str:model>/all/', common_views.all_entries, name='all-entries'),
 ]
 
