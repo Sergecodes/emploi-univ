@@ -96,19 +96,19 @@ class Niveau(models.Model):
 class Groupe(models.Model):
     nom = models.CharField(max_length=20, primary_key=True)
 
-    # @classmethod
-    # def get_groupe(cls, nom):
-    #     # Even if we don't need the id_regroupement, we must include it in the SELECT query
-    #     # in order to be able to use `objects.raw()`
-    #     query = """
-    #         SELECT id_regroupement, nom_groupe, nom_specialite, nom_filiere,  
-    #         nom_niveau FROM regroupement WHERE nom_groupe = %s LIMIT 1;
-    #     """
-    #     try:
-    #         obj = Regroupement.objects.raw(query, [nom])[0]
-    #     except IndexError:
-    #         return None
-    #     return obj
+    @classmethod
+    def get_groupe(cls, nom):
+        # Even if we don't need the id_regroupement, we must include it in the SELECT query
+        # in order to be able to use `objects.raw()`
+        query = """
+            SELECT id_regroupement, nom_groupe, nom_specialite, nom_filiere,  
+            nom_niveau FROM regroupement WHERE nom_groupe = %s LIMIT 1;
+        """
+        try:
+            obj = Regroupement.objects.raw(query, [nom])[0]
+        except IndexError:
+            return None
+        return obj
 
     def __str__(self):
         return self.nom
@@ -143,8 +143,8 @@ class Specialite(models.Model):
     @classmethod
     def get_specialite(cls, nom):
         query = """
-            SELECT DISTINCT id_regroupement, nom_specialite, effectif_max, nom_filiere, 
-            nom_niveau FROM regroupement reg, specialite spec WHERE effectif_max IS NOT NULL 
+            SELECT DISTINCT id_regroupement, nom_specialite, nom_filiere, 
+            nom_niveau FROM regroupement reg, specialite spec WHERE 
             AND reg.nom_specialite = spec.nom AND nom_specialite = %s LIMIT 1;
         """
         with connection.cursor() as cursor:

@@ -11,20 +11,14 @@ from ..utils import get_cud_response, is_valid_request, dict_fetchall
 class UEList(APIView):
    def post(self, request):
       user, POST = request.user, request.data
-      valid_req = is_valid_request(
-         POST, 
-         [
-            'code', 'intitule', 'matricule_ens', 
-            'nom_filiere', 'nom_niveau'
-         ]
-      )
+      valid_req = is_valid_request(POST, ['code', 'intitule', 'nom_filiere', 'nom_niveau'])
 
       if valid_req[0] == False:
          return valid_req[1]
 
       nom_filiere, nom_niveau = POST['nom_filiere'], POST['nom_niveau']
-      intitule, matricule_ens = POST['intitule'], POST['matricule_ens']
       code, nom_specialite = POST['code'], POST.get('nom_specialite')
+      intitule = POST['intitule']
 
       if nom_specialite:
          spec_form = SpecialiteForm({ 'nom': nom_specialite })
@@ -59,10 +53,7 @@ class UEList(APIView):
             status.HTTP_400_BAD_REQUEST
          )
 
-      res = user.ajouter_ue(
-         code, intitule, matricule_ens, nom_filiere,
-         nom_niveau, nom_specialite
-      )
+      res = user.ajouter_ue(code, intitule, nom_filiere, nom_niveau, nom_specialite)
       return get_cud_response(res, success_code=status.HTTP_201_CREATED)
       
    def get(self, request):
