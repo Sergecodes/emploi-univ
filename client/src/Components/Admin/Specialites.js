@@ -16,27 +16,26 @@ import axios from "axios";
 const Salles = () => {
   const [listeSpecialites, setListeSpecialites] = useState([{}
   ]);
- // const [filiereInfo, setFiliereInfo] = useState({ });
+ const [specialiteInfo, setSpecialiteInfo] = useState({ });
 
   const data = listeSpecialites;
   const columns = [
     { title: "Filiere", field: "filiere", align: "center" },
     { title: "Specialite", field: "specialite", align: "center" },
-    { title: "Niveau", field: "niveau", align: "center" }
+    { title: "Niveau", field: "niveau", align: "center" },
+    { title: "Effectif", field: "effectif", align: "center" },
   
   ];
 
   const dispatch = useDispatch();
 
   const handleModify = (data) => {
-    /*let new_filiereInfo = { nom: data.nom };
-    setFiliereInfo(new_filiereInfo);*/
+    setSpecialiteInfo(data);
     dispatch(handleOpenModify());
   };
 
   const handleDelete = (data) => {
-   /* let new_filiereInfo = { nom: data.nom };
-    setFiliereInfo(new_filiereInfo);*/
+    setSpecialiteInfo(data);
     dispatch(handleOpenDelete());
   };
 
@@ -46,7 +45,7 @@ const Salles = () => {
   useEffect(() => {
     axios
       .get("http://localhost:8000/api/specialites/")
-      .then((res) =>setListeSpecialites(res.data))
+      .then((res) =>{setListeSpecialites(res.data);console.log(res.data)})
       .catch((err) => console.log(err));
   }, []);
 
@@ -105,7 +104,7 @@ const Salles = () => {
       <div>
         <Modal open={files.openDelete}>
           <Box>
-            <SupprimerSpecialite />
+            <SupprimerSpecialite specialite={specialiteInfo.specialite}/>
           </Box>
         </Modal>
       </div>
@@ -114,7 +113,7 @@ const Salles = () => {
       <div>
         <Modal open={files.openModify}>
           <Box>
-            <ModifierSpecialite  />
+            <ModifierSpecialite specialite={specialiteInfo.specialite}  />
           </Box>
         </Modal>
       </div>

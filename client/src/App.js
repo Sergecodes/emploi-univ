@@ -11,6 +11,8 @@ import Salles from "./Components/Admin/Salles";
 import Enseignants from "./Components/Admin/Enseignants";
 import Filieres from "./Components/Admin/Filieres";
 import Specialites from "./Components/Admin/Specialites";
+import Groupes from "./Components/Admin/Groupes";
+
 
 import ListeUe from "./Components/Admin/ListeUe";
 
@@ -42,6 +44,8 @@ const App = () => {
             <Route path="/admin/liste-filieres" element={<Filieres/>}/>
             <Route path="/admin/liste-ue" element={<ListeUe/>}/>
             <Route path="/admin/liste-specialites" element={<Specialites/>}/>
+            <Route path="/admin/liste-groupes" element={<Groupes/>}/>
+
 
 
           </Route>

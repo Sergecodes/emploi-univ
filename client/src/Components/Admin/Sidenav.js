@@ -46,6 +46,8 @@ const Sidenav = () => {
     else if (name === "Filieres") return "liste-filieres";
     else if (name === "Unite d'enseignement") return "liste-ue";
     else if (name === "Specialités") return "liste-specialites";
+    else if (name === "Groupes") return "liste-groupes";
+
 
 
 

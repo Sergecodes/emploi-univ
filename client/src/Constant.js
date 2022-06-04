@@ -201,7 +201,12 @@ export const adminSidenavElements=[
             id:"6",
             icon:<BsBookFill  className="ms-1"/>,
             name:"Specialités"
-        }
+        },
+        {
+          id:"7",
+          icon:<BsBookFill  className="ms-1"/>,
+          name:"Groupes"
+      },
            
         ]
     }
