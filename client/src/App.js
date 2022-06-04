@@ -14,7 +14,7 @@ import Specialites from "./Components/Admin/Specialites";
 import Groupes from "./Components/Admin/Groupes";
 
 
-import ListeUe from "./Components/Admin/ListeUe";
+import UniteEnseignement from "./Components/Admin/UniteEnseignement";
 
 
 
@@ -42,7 +42,7 @@ const App = () => {
             <Route path="/admin/liste-salles" element={<Salles/>}/>
             <Route path="/admin/liste-enseignants" element={<Enseignants/>}/>
             <Route path="/admin/liste-filieres" element={<Filieres/>}/>
-            <Route path="/admin/liste-ue" element={<ListeUe/>}/>
+            <Route path="/admin/liste-ue" element={<UniteEnseignement/>}/>
             <Route path="/admin/liste-specialites" element={<Specialites/>}/>
             <Route path="/admin/liste-groupes" element={<Groupes/>}/>
 
