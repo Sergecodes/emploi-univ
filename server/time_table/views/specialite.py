@@ -50,9 +50,9 @@ class SpecialiteList(APIView):
 
    def get(self, request):
       query = """
-         SELECT DISTINCT id_regroupement, nom_specialite, effectif, nom_filiere, 
-         nom_niveau FROM regroupement reg, specialite spec WHERE
-         reg.nom_specialite = spec.nom;
+         SELECT DISTINCT id_regroupement, nom_specialite, effectif_max, nom_filiere, 
+         nom_niveau FROM regroupement reg, specialite spec WHERE effectif_max IS NOT NULL 
+         AND reg.nom_specialite = spec.nom;
       """
       with connection.cursor() as cursor:
          cursor.execute(query)
@@ -87,7 +87,13 @@ class SpecialiteDetail(APIView):
       return get_cud_response(res)
 
    def delete(self, request, nom):
-      res = request.user.supprimer_specialite(nom)
+      user, DELETE = request.user, request.data
+      valid_req = is_valid_request(DELETE, ['licence', 'master'])
+
+      if valid_req[0] == False:
+         return valid_req[1]
+
+      res = user.supprimer_specialite(nom, DELETE['licence'], DELETE['master'])
       return get_cud_response(res, success_code=status.HTTP_204_NO_CONTENT)
 
 
