@@ -52,20 +52,18 @@ class FiliereOps:
 
 class SpecialiteOps:
 	def ajouter_multiple_specialites(self, nom_filiere, specialites):
-		"""
-		`specialites` is an array with `nom`, bool `master`, int `effectif` and bool `licence`.
-		"""
+		"""`specialites` is an array with `nom`, bool `master` and bool `licence`."""
 
-		query1_start = "INSERT INTO specialite (nom, effectif) VALUES "
+		query1_start = "INSERT INTO specialite (nom) VALUES "
 		query2_start = "INSERT INTO regroupement (nom_filiere, nom_specialite, nom_niveau) VALUES "
 		query1_next, query2_next = "(%s, %s), ", "(%s, %s, %s), "
 		query1, query2 = query1_start, query2_start
 		params1, params2 = [], []
 
 		for special in specialites:
-			nom_special, effectif = special['nom'], special['effectif']
+			nom_special = special['nom']
 			query1 += query1_next
-			params1.extend([nom_special, effectif])
+			params1.extend([nom_special])
 
 			if special.get('master'):
 				query2 += query2_next
@@ -135,122 +133,139 @@ class SpecialiteOps:
 		except (IntegrityError, ObjectDoesNotExist) as err:
 			return err
 
-	def modifier_specialite(self, nom, nom_niveau, new_nom='', new_effectif_max=None):
-		if not any([new_nom, new_effectif_max]):
+	def renommer_specialite(self, nom, new_nom):
+		if nom == new_nom:
 			return
 
-		select_special = """
-			SELECT nom, nom_niveau, nom_filiere, effectif_max FROM 
-			specialite spec, regroupement reg WHERE reg.nom_niveau = %s AND 
-			nom = %s AND reg.nom_specialite = spec.nom LIMIT 1;
-		"""
-		with connection.cursor() as cursor:
-			cursor.execute(select_special, [nom_niveau, nom])
-			if cursor.rowcount == 0:
-				return Specialite.DoesNotExist(f"Specialite {nom} for {nom_niveau} not found")
+		query = "UPDATE specialite SET nom = %s WHERE nom = %s;"
 
-		try:
-			if new_nom:
-				# If specialite has both m1 and l3 in regroupement table, then
-				# update just the regroupement table for the current niveau.
-				query = """
-					SELECT COUNT(*) FROM regroupement WHERE nom_specialite = %s AND
-					nom_niveau = %s;
-				"""
-				with connection.cursor() as cursor:
-					cursor.execute(query, [nom, 'L3'])
-					count1 = cursor.fetchone()[0]
-
-				with connection.cursor() as cursor:
-					cursor.execute(query, [nom, 'M1'])
-					count2 = cursor.fetchone()[0]
-
-				if count1 > 0 and count2 > 0:
-					# Both l3 and m1 are in the regroupement table.
-					query = """
-						UPDATE regroupement SET nom_specialite = %s WHERE 
-						nom_specialite = %s AND nom_niveau = %s;
-					"""
-					with connection.cursor() as cursor:
-						cursor.execute(query, [new_nom, nom, nom_niveau])	
-				else:
-					# There's only either l3 or m1. And changing the name of the specialite
-					# table will cascade update the regroupement table.
-					query = "UPDATE specialite SET nom = %s WHERE nom = %s;"
-					with connection.cursor() as cursor:
-						cursor.execute(query, [new_nom, nom])
-
-			if new_effectif_max:
-				query = """
-					UPDATE regroupement SET effectif_max = %s WHERE 
-					nom_specialite = %s AND nom_niveau = %s;
-				"""
-				with connection.cursor() as cursor:
-					cursor.execute(query, [new_effectif_max, nom, nom_niveau])
-		except IntegrityError as err:
-			return err
-
-
-class GroupeOps:
-	def ajouter_groupe(self, nom, nom_filiere, nom_niveau):
-		# Recall that groups A - E will be in the database (via fixtures)
-		query = "INSERT INTO regroupement(nom_filiere, nom_niveau, nom_groupe) VALUES (%s, %s, %s);"
-		
-		try:
+		try: 
 			with connection.cursor() as cursor:
-				cursor.execute(query, [nom_filiere, nom_niveau, nom])
-		except IntegrityError as err:
-			return err
-
-	def supprimer_groupe(self, nom, nom_filiere, licence: bool, master: bool):
-		if not licence and not master:
-			return
-
-		try:
-			if licence and master:
-				query1 = "DELETE FROM regroupement WHERE nom_groupe = %s AND nom_filiere = %s;"
-				with connection.cursor() as cursor:
-					cursor.execute(query1, [nom, nom_filiere])
-
-					if cursor.rowcount == 0:
-						raise Groupe.DoesNotExist(f"Groupe {nom} for filiere {nom_filiere} not found")
-						
-				return
-
-			query1 = """
-				DELETE FROM regroupement WHERE nom_groupe = %s 
-				AND nom_filiere = %s AND nom_niveau = %s;
-			"""
-			
-			## If only licence was passed, delete groupe from regroupement table 
-			# where niveau is licence.
-			niv = 'L3' if licence else 'M1'
+				cursor.execute(query, [new_nom, nom])
 				
-			with connection.cursor() as cursor:
-				cursor.execute(query1, [nom, nom_filiere, niv])
-
 				if cursor.rowcount == 0:
-					raise Groupe.DoesNotExist(
-						f"Groupe '{nom}' for filiere {nom_filiere} and niveau {niv} not found"
-					)
+					raise Specialite.DoesNotExist(f"Specialite '{nom}' not found")
 		except (IntegrityError, ObjectDoesNotExist) as err:
 			return err
 
 
-	# def renommer_groupe(self, nom, new_nom):
-	# 	if nom == new_nom:
-	# 		return
+class GroupeOps:
+	def ajouter_multiple_groupes(self, nom_filiere, nom_niveau, nom_groupes, nom_specialite=None):
+		query1_start = "INSERT INTO groupe (nom) VALUES "
+		query2_start = """
+			INSERT INTO regroupement (nom_groupe, nom_filiere, nom_specialite, nom_niveau) VALUES 
+		"""
+		query1_next, query2_next = "(%s), ", "(%s, %s, %s, %s), "
+		query1, query2 = query1_start, query2_start
+		params1, params2 = [], []
 
-	# 	query = "UPDATE groupe SET nom = %s WHERE nom = %s;"
+		for nom in nom_groupes:
+			
 
-	# 	try: 
-	# 		with connection.cursor() as cursor:
-	# 			cursor.execute(query, [new_nom, nom])
+			nom_special = special['nom']
+			query1 += query1_next
+			params1.extend([nom_special])
 
-	# 			if cursor.rowcount == 0:
-	# 				raise Groupe.DoesNotExist(f"Groupe '{nom}' not found")
-	# 	except (IntegrityError, ObjectDoesNotExist) as err:
-	# 		return err
+			if special.get('master'):
+				query2 += query2_next
+				params2.extend([nom_filiere, nom_special, 'M1'])
+
+			if special.get('licence'):
+				query2 += query2_next
+				params2.extend([nom_filiere, nom_special, 'L3'])
+
+		# Remove last ', ' from query strings (last two characters of `query2_next`)
+		query1 = query1[:-2]
+		query2 = query2[:-2]
+
+		try:
+			with transaction.atomic():
+				with connection.cursor() as cursor:
+					cursor.execute(query1, params1)
+
+				with connection.cursor() as cursor:
+					cursor.execute(query2, params2)
+		except IntegrityError as err:
+			return err
+
+
+	def ajouter_groupe(self, nom, code_ue, nom_filiere, nom_niveau, nom_specialite=None):
+		query1 = "INSERT INTO groupe (nom) VALUES (%s);"
+		query2 = """
+			INSERT INTO regroupement (code_ue, nom_filiere, nom_niveau, nom_groupe, nom_specialite)
+			VALUE (%s, %s, %s, %s, %s);
+		"""
+		
+		try:
+			with transaction.atomic():
+				with connection.cursor() as cursor:
+					cursor.execute(query1, [nom])
+
+				with connection.cursor() as cursor:
+					cursor.execute(query2, [code_ue, nom_filiere, nom_niveau, nom, nom_specialite])
+		except IntegrityError as err:
+			return err
+
+	def supprimer_groupe(self, nom, nom_filiere, nom_niveau, nom_specialite=None):
+		try:
+			query1 = """
+				DELETE FROM regroupement WHERE nom_filiere = %s AND nom_niveau = %s 
+				AND nom_specialite = %s AND nom_groupe = %s;
+			"""
+				
+			with connection.cursor() as cursor:
+				cursor.execute(query1, [nom_filiere, nom_niveau, nom_specialite, nom])
+
+				if cursor.rowcount == 0:
+					raise Groupe.DoesNotExist(
+						f"Groupe {nom} for niveau {nom_niveau}, filiere {nom_filiere}, \
+						specialite {nom_specialite} not found"
+					)
+
+			# Now check if the groupe is still in the regroupement table. If it's no longer
+			# present, delete it from the groupe table.
+			query2 = "SELECT COUNT(*) FROM regroupement WHERE nom_groupe = %s;"
+			with connection.cursor() as cursor:
+				cursor.execute(query2, [nom])
+				# Query will return tuple with one element which is the count
+				res = cursor.fetchone()[0]
+
+			if res == 0:
+				query3 = "DELETE FROM groupe WHERE nom = %s;"
+				with connection.cursor() as cursor:
+					cursor.execute(query3, [nom])
+		except (IntegrityError, ObjectDoesNotExist) as err:
+			return err
+
+	def renommer_groupe(self, nom, new_nom, nom_niveau, nom_filiere, nom_specialite=None):
+		if nom == new_nom:
+			return
+
+		query1 = """
+			UPDATE regroupement SET nom = %s WHERE nom_niveau = %s AND 
+			nom_filiere = %s AND nom_specialite = %s AND nom_groupe = %s;
+		"""
+
+		try: 
+			with connection.cursor() as cursor:
+				cursor.execute(query1, [nom, nom_niveau, nom_filiere, nom_specialite])
+
+				if cursor.rowcount == 0:
+					raise Groupe.DoesNotExist(
+						f"Groupe {nom} for niveau {nom_niveau}, filiere {nom_filiere}, \
+						specialite {nom_specialite} not found"
+					)
+		except (IntegrityError, ObjectDoesNotExist) as err:
+			return err
+
+		# Now insert the new groupe in the groupe table. If it already exists, 
+		# do nothing
+		query2 = "INSERT INTO groupe (nom) VALUES (%s);"
+		try:
+			with connection.cursor() as cursor:
+				cursor.execute(query2, [new_nom])
+		except IntegrityError:
+			pass			
 
 
 class SalleOps:
@@ -366,13 +381,9 @@ class EnseignantOps:
 
 
 class UEOps:
-	def ajouter_ue(
-		self, code, intitule, matricule_ens, 
-		nom_filiere, nom_niveau, nom_specialite=None
-	):
+	def ajouter_ue(self, code, intitule, nom_filiere, nom_niveau, nom_specialite=None):
 		query1 = "INSERT INTO ue (code, intitule) VALUES (%s, %s);"
-		query2 = "INSERT INTO cours (code_ue, matricule_ens) VALUES (%s, %s);"
-		query3 = """
+		query2 = """
 			INSERT INTO regroupement (code_ue, nom_filiere, nom_niveau, nom_specialite) 
 			VALUES (%s, %s, %s, %s);
 		"""
@@ -383,10 +394,7 @@ class UEOps:
 					cursor.execute(query1, [code, intitule])
 
 				with connection.cursor() as cursor:
-					cursor.execute(query2, [code, matricule_ens])
-
-				with connection.cursor() as cursor:
-					cursor.execute(query3, [code, nom_filiere, nom_niveau, nom_specialite])
+					cursor.execute(query2, [code, nom_filiere, nom_niveau, nom_specialite])
 		except IntegrityError as err:
 			return err
 
@@ -443,6 +451,7 @@ class CoursOps:
 		# Recall that when UE is added, a Cours is created containing only the
 		# code_ue and matricule_ens. 
 
+		# query = "INSERT INTO cours (code_ue, matricule_ens) VALUES (%s, %s);"
 		query = """
 			UPDATE cours SET nom_salle = %s, jour = %s, 
 			heure_debut = %s, heure_fin = %s, is_td = %s 

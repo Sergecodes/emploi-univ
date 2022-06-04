@@ -13,7 +13,7 @@ class SpecialiteList(APIView):
       def check_valid_request():
          """
          Request should contain `nom_filiere` and `specialites` array with
-         `nom`, `effectif`, `bool master` and `bool licence`.
+         `nom`, `bool master` and `bool licence`.
          """
          print(request.data)
          POST = request.data
@@ -29,7 +29,6 @@ class SpecialiteList(APIView):
                special['nom']
                special['master']
                special['licence']
-               special['effectif']
             except KeyError:
                return False, Response(
                   f"Invalid specialite object in array ({special})",
@@ -44,14 +43,13 @@ class SpecialiteList(APIView):
       if valid_req[0] == False:
          return valid_req[1]
 
-      res = user.ajouter_multiple_specialites(
-          POST['nom_filiere'], POST['specialites'])
+      res = user.ajouter_multiple_specialites(POST['nom_filiere'], POST['specialites'])
       return get_cud_response(res, success_code=status.HTTP_201_CREATED)
 
    def get(self, request):
       query = """
-         SELECT DISTINCT id_regroupement, nom_specialite, effectif_max, nom_filiere, 
-         nom_niveau FROM regroupement reg, specialite spec WHERE effectif_max IS NOT NULL 
+         SELECT DISTINCT id_regroupement, nom_specialite, nom_filiere, 
+         nom_niveau FROM regroupement reg, specialite spec WHERE  
          AND reg.nom_specialite = spec.nom;
       """
       with connection.cursor() as cursor:
