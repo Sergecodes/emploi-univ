@@ -37,6 +37,7 @@ class SpecialiteList(APIView):
 
          return True, None
 
+
       user, POST = request.user, request.data
       valid_req = check_valid_request()
 

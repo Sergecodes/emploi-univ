@@ -87,28 +87,20 @@ def cours_by_fil_niv_special(request, nom_filiere, nom_niveau, nom_specialite=No
 
 
 class CoursList(APIView):
-   def post(self, request):
-      user, POST = request.user, request.data
-      valid_req = is_valid_request(
-         POST, 
-         ['code_ue', 'nom_salle', 'jour', 'heure_fin', 'heure_debut']
-      )
+   # def post(self, request):
+   #    user, POST = request.user, request.data
+   #    valid_req = is_valid_request(
+   #       POST, 
+   #       ['code_ue', 'nom_salle', 'matricule_enseignants', 'heure_debut', 'heure_fin']
+   #    )
 
-      if valid_req[0] == False:
-         return valid_req[1]
+   #    if valid_req[0] == False:
+   #       return valid_req[1]
 
-      code_ue, jour = POST['code_ue'], POST['jour']
-      nom_salle, is_td = POST['nom_salle'], POST.get('is_td', False)
-      heure_debut, heure_fin = POST['heure_debut'], POST['heure_fin']
-      
-      form = CoursForm(POST)
+   #    nom_groupe, is_virtuel = POST.get('nom_groupe'), POST.get('is_virtuel')
+   #    res = user.ajouter_cours()
 
-      if form.is_valid():
-         res = user.ajouter_cours(code_ue, nom_salle, jour, heure_debut, heure_fin, is_td)
-      else:
-         res = form.errors
-
-      return get_cud_response(res, success_code=status.HTTP_201_CREATED)
+   #    return get_cud_response(res, success_code=status.HTTP_201_CREATED)
 
    def get(self, request):
       query = "SELECT * FROM cours;"
@@ -123,17 +115,17 @@ class CoursDetail(APIView):
       res = Cours.get_cours(code_ue)
       return get_read_response(res, CoursSerializer)
 
-   def put(self, request, code_ue):
-      user, PUT = request.user, request.data
-      new_nom_salle, new_is_td = PUT.get('new_nom_salle', ''), PUT.get('new_is_td')
-      new_jour, new_heure_debut = PUT.get('new_jour', ''), PUT.get('new_heure_debut')
-      new_heure_fin, new_code_ue = PUT.get('new_heure_fin'), PUT.get('new_code_ue', '')
+   # def put(self, request, code_ue):
+   #    user, PUT = request.user, request.data
+   #    new_nom_salle, new_is_td = PUT.get('new_nom_salle', ''), PUT.get('new_is_td')
+   #    new_jour, new_heure_debut = PUT.get('new_jour', ''), PUT.get('new_heure_debut')
+   #    new_heure_fin, new_code_ue = PUT.get('new_heure_fin'), PUT.get('new_code_ue', '')
 
-      res = user.modifier_cours(
-         code_ue, new_code_ue, new_nom_salle, new_jour, 
-         new_heure_debut, new_heure_fin, new_is_td
-      )
-      return get_cud_response(res)
+   #    res = user.modifier_cours(
+   #       code_ue, new_code_ue, new_nom_salle, new_jour, 
+   #       new_heure_debut, new_heure_fin, new_is_td
+   #    )
+   #    return get_cud_response(res)
 
    def delete(self, request, code_ue):
       res = request.user.supprimer_cours(code_ue)  
