@@ -26,7 +26,7 @@ const AjoutSpecialite = () => {
 
 
   const handleClick=()=>{
-    setSpecialite([...specialite,{id:specialite.length ,effectif:0,nom:" ",licence:false, master:false}])
+    setSpecialite([...specialite,{id:specialite.length ,nom:" ",licence:false, master:false}])
   }
 
   const handleCheckboxChange=(nom,id)=>{
@@ -35,21 +35,12 @@ const AjoutSpecialite = () => {
     setSpecialite(new_specialite)
   }
 
-  const handleInputChange=(e,id,inputName)=>{
+  const handleInputChange=(e,id)=>{
     const new_specialite= [...specialite];
-    if(inputName==="nom"){
       new_specialite[id].nom=e.target.value;
       setSpecialite(new_specialite)
-    }
-    else if(inputName==="effectif"){
-      new_specialite[id].effectif=e.target.value;
-      new_specialite[id].effectif=parseInt(new_specialite[id].effectif,10)
-      setSpecialite(new_specialite)
-    }
    
  }
-
-
  
  const handleDelete=(e,id)=>{
   const new_specialite= specialite.filter(elt=>elt.id!==id);
@@ -111,11 +102,7 @@ const AjoutSpecialite = () => {
                       <div className="d-flex justify-content-between  align-items-center mx-1 my-3" key={elt.id}>
                           <div>
                             <label htmlFor={elt.id}>Spécialité :</label>
-                            <input type="text" id={elt.id} value={specialite[elt.id].nom} onChange={(e)=>handleInputChange(e,elt.id,"nom")}></input>
-                          </div>
-                           <div>
-                            <label htmlFor={elt.id}>Effectif :</label>
-                            <input type="number" id={elt.id} value={specialite[elt.id].effectif} onChange={(e)=>handleInputChange(e,elt.id,"effectif")}></input>
+                            <input type="text" id={elt.id} value={specialite[elt.id].nom} onChange={(e)=>handleInputChange(e,elt.id)}></input>
                           </div>
                         <div className="d-flex ">
                             <div className="me-2">

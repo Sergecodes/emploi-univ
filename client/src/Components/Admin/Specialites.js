@@ -23,7 +23,6 @@ const Salles = () => {
     { title: "Filiere", field: "filiere", align: "center" },
     { title: "Specialite", field: "specialite", align: "center" },
     { title: "Niveau", field: "niveau", align: "center" },
-    { title: "Effectif", field: "effectif", align: "center" },
   
   ];
 

@@ -1,38 +1,44 @@
 import React, { useState,useEffect} from "react";
-/*import tableIcons from "../Common/MaterialTableIcons";
+import tableIcons from "../Common/MaterialTableIcons";
 import MaterialTable from "material-table";
 import { Modal, Box } from "@material-ui/core";
-import AjoutUe from "./Enseignants/AjoutUe";
-import SupprimerUe from "./Enseignants/SupprimerUe";
-import ModifierUe from "./Enseignants/ModifierUe";
+import AjouterUe from "./Unite_Enseignement/AjouterUe";
+import SupprimerUe from "./Unite_Enseignement/SupprimerUe";
+import ModifierUe from "./Unite_Enseignement/ModifierUe";
 import { useSelector, useDispatch } from "react-redux";
 import {
   handleOpenAjout,
   handleOpenDelete,
   handleOpenModify,
 } from "../../redux/ModalDisplaySlice";
-import axios from "axios";
+//import axios from "axios";
 
 const UniteEnseignement = () => {
-  const [listeUe, setListeUe] = useState([{}]);
-  const [enseignantInfo, setEnseignantInfo] = useState({  });
+  const [listeUe, setListeUe] = useState([
+    {code:"INF 3018",intitule:"algorithmique et structure de données", nom_filiere:"Informatique",nom_niveau:"Niveau 3",nom_specialite:" Geni logiciel"},
+    {code:"INF 2058",intitule:"biologie medicale", nom_filiere:"Bioscience",nom_niveau:"Niveau 2",nom_specialite:" "}
+  ]);
+  const [ueInfo, setUeInfo] = useState({  });
   const columns = [
-    { title: "Nom", field: "nom", align: "center" },
-    { title: "Prenom", field: "prenom", align: "center" },
-    { title: "Matricule", field: "matricule", align: "center" },
+    { title: "Code", field: "code", align: "center" },
+    { title: "Intitule", field: "intitule", align: "center" },
+    { title: "Nom filiere", field: "nom_filiere", align: "center" },
+    { title: "Nom_niveau", field: "nom_niveau", align: "center" },
+    { title: "Nom_specialite", field: "nom_specialite", align: "center" },
+
   ];
   const data = listeUe;
   const dispatch = useDispatch();
 
   const handleModify = (data) => {
-    let new_enseignantInfo = { nom: data.nom, prenom: data.prenom, matricule:data.matricule };
-    setEnseignantInfo(new_enseignantInfo);
+    let new_ueInfo = { code:data.code, intitule:data.intitule, nom_filiere:data.nom_filiere, nom_niveau:data.nom_niveau };
+    setUeInfo(new_ueInfo);
     dispatch(handleOpenModify());
   };
 
   const handleDelete = (data) => {
-    let new_enseignantInfo = { nom: data.nom, prenom: data.prenom, matricule:data.matricule };
-    setEnseignantInfo(new_enseignantInfo);
+    let new_ueInfo = { code:data.code, intitule:data.intitule, nom_filiere:data.nom_filiere, nom_niveau:data.nom_niveau };
+    setUeInfo(new_ueInfo);
     dispatch(handleOpenDelete());
   };
 
@@ -40,18 +46,18 @@ const UniteEnseignement = () => {
   
 
   
-  useEffect(() => {
+  /*useEffect(() => {
     axios
-      .get("http://localhost:8000/api/enseignants/")
+      .get("http://localhost:8000/api/ue/")
       .then((res) => setListeUe(res.data))
       .catch((err) => console.log(err));
-  }, [files.openAjout]);
+  }, [files.openAjout]);*/
 
 
   return (
     <section className="materialTableSalle mx-2 my-3">
       <MaterialTable
-        title="ENSEIGNANTS FACSCIENCES UY1"
+        title="UE FACSCIENCES UY1"
         actions={[
           {
             icon: tableIcons.Edit,
@@ -75,31 +81,31 @@ const UniteEnseignement = () => {
         columns={columns}
         data={data}
         options={{ paging: false, grouping: true }}
-      />*/
+      />
 
-      {/*Modal pour l'ajout d'un enseignant
+      {/*Modal pour l'ajout d'une ue*/}
       <div>
         <Modal open={files.openAjout}>
           <Box>
-            <AjoutUe />
+            <AjouterUe />
           </Box>
         </Modal>
       </div>
 
-      {/*Modal pour la suppression d'un enseignant
+      {/*Modal pour la suppression d'une ue */}
       <div>
         <Modal open={files.openDelete}>
           <Box>
-            <SupprimerUe matricule={enseignantInfo.matricule} />
+            <SupprimerUe />
           </Box>
         </Modal>
-      </div>*/}
+      </div>
 
-      {/* Modal pour la suppression d'un enseignant 
+      {/* Modal pour la suppression d'une ue*/}
       <div>
         <Modal open={files.openModify}>
           <Box>
-            <ModifierUe enseignant={enseignantInfo} />
+            <ModifierUe  />
           </Box>
         </Modal>
       </div>
@@ -107,13 +113,7 @@ const UniteEnseignement = () => {
   );
 };
 
-export default UniteEnseignement;*/}
+export default UniteEnseignement;
 
 
-const UniteEnseignement = () => {
-  return (
-    <div>UniteEnseignement</div>
-  )
-}
 
-export default UniteEnseignement
