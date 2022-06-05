@@ -1,73 +1,74 @@
-
-.header{
-  background-color: var(--primaryBlue);
-  padding:8px 50px;
-  padding-right:10px;
-  width:100%;
+/* ceci est a ne pas toucher variables globale */
+:root {
+  --primary-color: rgb(91, 37, 185);
+  --secondary-color: rgb(30, 165, 89);
+  --third-color: #13084d;
+  /* --secondary-color: rgb(47, 172, 102); */
 }
-.row{
+.header {
+  background-color: var(--primaryBlue);
+  padding: 8px 50px;
+  padding-right: 10px;
+  width: 100%;
+}
+.row {
   margin: 0 !important;
 }
-.headerLinks ul{
-  display:flex;
-  justify-content:flex-end;
+.headerLinks ul {
+  display: flex;
+  justify-content: flex-end;
   align-items: center;
-
 }
-.headerLinks ul li{
- list-style-type: none;
- margin:0px 20px;
+.headerLinks ul li {
+  list-style-type: none;
+  margin: 0px 20px;
 }
-.headerLinks ul> li >a{
-  color:white;
+.headerLinks ul > li > a {
+  color: white;
   text-decoration: none;
 }
-.headerLinks ul> li >a:hover ,.filiere:hover{
-  color:var(--secondaryBlue);
+.headerLinks ul > li > a:hover,
+.filiere:hover {
+  color: var(--secondaryBlue);
 }
-.logo>a>img{
-  height:60px;
+.logo > a > img {
+  height: 60px;
   width: 60px;
-  
 }
 
-.adminButton{
-  border:none;
+.adminButton {
+  border: none;
   box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
-  padding:8px 15px;
+  padding: 8px 15px;
   background-color: var(--secondaryBlue);
-  color:white;
+  color: white;
   border-radius: 8px;
 }
 
-.adminButton:hover{
+.adminButton:hover {
   background-color: rgb(13, 11, 48);
 }
 
-.dropdown{
-  background-color:transparent !important;
-  padding:0 !important;
+.dropdown {
+  background-color: transparent !important;
+  padding: 0 !important;
 
-  margin:0 !important;
-  box-shadow:none !important;
-  border:none !important;
+  margin: 0 !important;
+  box-shadow: none !important;
+  border: none !important;
 }
 
-@media (max-width:500px) {
+@media (max-width: 500px) {
+  .header {
+    padding: 8px 8px;
+  }
 
+  .adminButton {
+    transform: scale(0.8);
+  }
 
- .header{
-   padding:8px 8px;
-   
- }
-
- .adminButton{
-   transform: scale(0.8);
-  
- }
-
- .headerLinks ul li{
-  list-style-type: none;
-  margin:0px 13px;
- }
+  .headerLinks ul li {
+    list-style-type: none;
+    margin: 0px 13px;
+  }
 }

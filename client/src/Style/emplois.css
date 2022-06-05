@@ -1,0 +1,15 @@
+.tableau-style {
+  border-collapse: collapse;
+  cursor: pointer;
+  border: 2px solid var(--third-color);
+  font-family: "Open Sans", sans-serif;
+}
+.tableau-style th {
+  background-color: var(--third-color);
+  color: white;
+}
+.tableau-style th,
+.tableau-style td {
+  padding: 15px 20px;
+  border: 1px solid rgba(0, 0, 0, 0.5);
+}
