@@ -24,7 +24,7 @@ def set_filiere_niveau_capacite(request, nom_filiere, nom_niveau):
    # Verify if there's already a field like this. If not, then insert it.
    # Else update. (basically an upsert)
    with connection.cursor() as cursor:
-      cursor.execute(query, [nom_filiere, nom_niveau, PUT['effectif_max']])
+      cursor.execute(select_q, [nom_filiere, nom_niveau, PUT['effectif_max']])
       count1 = cursor.fetchone()[0]
       
    res = None

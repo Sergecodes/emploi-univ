@@ -11,18 +11,19 @@ import {
   handleOpenDelete,
   handleOpenModify,
 } from "../../redux/ModalDisplaySlice";
-//import axios from "axios";
+import axios from "axios";
 
 const Groupes = () => {
-  const [listeGroupes, setListeGroupes] = useState([{nom_groupe:"groupe 1", nom_niveau:"niveau 1", nom_filiere:"CHimie"},{nom_groupe:"groupe 2", nom_niveau:"niveau 1", nom_filiere:"CHimie"},{nom_groupe:"groupe 1", nom_niveau:"niveau 2", nom_filiere:"Physique"}
-  ]);
+  const [listeGroupes, setListeGroupes] = useState([{}]);
  const [groupeInfo, setGroupeInfo] = useState({ });
 
   const data = listeGroupes;
   const columns = [
+    { title: "Groupe", field: "nom_groupe", align: "center" },
     { title: "Filiere", field: "nom_filiere", align: "center" },
     { title: "Niveau", field: "nom_niveau", align: "center" },
-    { title: "Groupe", field: "nom_groupe", align: "center" },
+    { title: "Specialité", field: "nom_specialite", align: "center" },
+
   
   ];
 
@@ -41,26 +42,14 @@ const Groupes = () => {
   const files = useSelector((state) => state.ModalDisplay);
   
   
- /* useEffect(() => {
+  useEffect(() => {
     axios
       .get("http://localhost:8000/api/groupes/")
       .then((res) =>{setListeGroupes(res.data);console.log(res.data)})
       .catch((err) => console.log(err));
-  }, []);*/
+  }, []);
 
-  /*const handlePost=()=>{
-    axios({
-        method:'post',
-        url:"http://localhost:8000/api/groupes/",
-        data:{nom_filiere:"Chimie",specialites:[{nom:"Chimie compliquée",master:true, licence:true,effectif:250},{nom:"Chimie facile",master:true, licence:true,effectif:250}]},
-        headers:headers,
-        withCredentials:true
-      })
-      .then(res=>console.log(res))
-      .catch(err=>console.error(err))
-  }
-*/
-//filiere ,  niveau , groupe
+  
   return (
     <section className="materialTableSalle mx-2 my-3">
        <MaterialTable

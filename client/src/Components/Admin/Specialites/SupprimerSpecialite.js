@@ -6,7 +6,8 @@ import axios from "axios";
 import Cookies from "js-cookie";
 
 const SupprimerSpecialite = (props) => {
- 
+    const licence = props.specialite.nom_niveau === 'L3'?true:false;
+    const master = props.specialite.nom_niveau === 'M1'?true:false;
     const dispatch = useDispatch();
     const csrftoken = Cookies.get('csrftoken');
   const headers={
@@ -16,7 +17,8 @@ const SupprimerSpecialite = (props) => {
     const handleDelete=()=>{
       axios({
         method:'delete',
-        url:`http://localhost:8000/api/specialites/${encodeURIComponent(props.specialite)}/`,
+        url:`http://localhost:8000/api/specialites/${encodeURIComponent(props.specialite.nom_specialite)}/`,
+        data:{licence:licence, master:master},
         headers:headers,
         withCredentials:true
       })
@@ -34,7 +36,7 @@ const SupprimerSpecialite = (props) => {
             >
               <div className="ajout mt-5  px-3 py-2 col-12 col-md-9 col-lg-6">
                 <h4 className="fs-5 fw-light text-center">
-                  Voulez vous vraiment Supprimer la spécialité {props.specialite}?
+                  Voulez vous vraiment Supprimer la spécialité {props.specialite.nom_specialite}?
                 </h4>
                 <div
                   className="my-4 d-flex justify-content-center "

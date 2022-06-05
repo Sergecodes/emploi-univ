@@ -20,9 +20,9 @@ const Salles = () => {
 
   const data = listeSpecialites;
   const columns = [
-    { title: "Filiere", field: "filiere", align: "center" },
-    { title: "Specialite", field: "specialite", align: "center" },
-    { title: "Niveau", field: "niveau", align: "center" },
+    { title: "Filiere", field: "nom_filiere", align: "center" },
+    { title: "Specialite", field: "nom_specialite", align: "center" },
+    { title: "Niveau", field: "nom_niveau", align: "center" },
   
   ];
 
@@ -103,7 +103,7 @@ const Salles = () => {
       <div>
         <Modal open={files.openDelete}>
           <Box>
-            <SupprimerSpecialite specialite={specialiteInfo.specialite}/>
+            <SupprimerSpecialite specialite={specialiteInfo}/>
           </Box>
         </Modal>
       </div>
@@ -112,7 +112,7 @@ const Salles = () => {
       <div>
         <Modal open={files.openModify}>
           <Box>
-            <ModifierSpecialite specialite={specialiteInfo.specialite}  />
+            <ModifierSpecialite specialite={specialiteInfo.nom_specialite}  />
           </Box>
         </Modal>
       </div>

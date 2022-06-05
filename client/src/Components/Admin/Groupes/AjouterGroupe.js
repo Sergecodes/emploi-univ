@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-//import Cookies from "js-cookie";
+import Cookies from "js-cookie";
 import {useDispatch} from "react-redux";
 import{ handleOpenAjout} from "../../../redux/ModalDisplaySlice";
 import {BsTrash, BsPlus} from "react-icons/bs";
@@ -10,21 +10,32 @@ import {BsTrash, BsPlus} from "react-icons/bs";
 const AjoutGroupe = () => {
   const [groupe,setGroupe]= useState([]);
   const [listeFilieres, setListeFilieres]= useState([]);
-  const [listeNiveaux, setListeNiveaux]=useState([{nom:"niveau 1"},{nom:"niveau 2"},{nom:"niveau 3"}]);
-  const [choixFiliere, setChoixFiliere]=useState("");
-  const [choixNiveau,setChoixNiveau]=useState('Niveau 1')
- // const csrftoken = Cookies.get('csrftoken');
+  const [listeNiveaux, setListeNiveaux]= useState([]);
+  const [choix,setChoix]=useState({nom:" ",nom_niveau:' ',nom_specialite:" "});
+  const csrftoken = Cookies.get('csrftoken');
   const dispatch=useDispatch();
-
+  const axiosLinks =[
+    'http://localhost:8000/api/filieres/',
+    'http://localhost:8000/api/niveaux/'
+  ]
+  /*
+  Promise.all(endpoints.map((endpoint) => axios.get(endpoint))).then(
+  axios.spread((...allData) => {
+    console.log({ allData });
+  })
+);*/
   useEffect(()=>{
-    axios
-    .get("http://localhost:8000/api/filieres/")
-    .then((res) => {
-      setChoixFiliere(res.data[0].nom);
-      setListeFilieres(res.data)
-    })
-    .catch((err) => console.log(err));
+    Promise.all(axiosLinks.map((link) => axios.get(link)))
+    .then(
+      axios.spread((...allData) => {
+        setListeFilieres(allData[0].data);
+        setListeNiveaux(allData[1].data);
+        setChoix({...choix,nom_niveau:allData[1].data[0].nom_bref,nom:allData[0].data[0].nom});
+      }))
+      .catch(err=>console.log(err))
   },[])
+
+ 
 
 
   const handleClick=()=>{
@@ -32,7 +43,7 @@ const AjoutGroupe = () => {
   }
 
  
-  const handleInputChange=(e,id,inputName)=>{
+  const handleInputChange=(e,id)=>{
     const new_groupe= [...groupe];
       new_groupe[id].nom_groupe=e.target.value;
       setGroupe(new_groupe)
@@ -47,23 +58,25 @@ const AjoutGroupe = () => {
 }
 
 
- /* const headers={
+const handleSelectChange=(e)=>{
+  const name= e.target.name;
+  const value= e.target.value;
+  setChoix({...choix, [name]:value})
+}
+
+ const headers={
     'X-CSRFToken': csrftoken
-  }*/
+  }
   const handleAjout = () => {
-    /*axios({
+    axios({
       method:'post',
       url:"http://localhost:8000/api/groupes/",
-      data:{nom_filiere:choixFiliere,groupes:groupe},
+      data:{nom_filiere:choix.nom,nom_niveau:choix.nom_niveau,groupes:groupe},
       headers:headers,
       withCredentials:true
     })
     .then(res=>console.log(res))
-    .catch(err=>console.error(err))*/
-    console.log('filiere choisie',choixFiliere, 'niveau choisi',choixNiveau);
-    console.log(groupe)
-
-  
+    .catch(err=>console.error(err))
   };
 
 
@@ -79,8 +92,8 @@ const AjoutGroupe = () => {
         </h4>
         <div className="mt-4">
         <div className="my-4 d-flex justify-content-center ">
-            <label htmlFor="filiere">Filiere :</label>
-            <select name="filiere" onChange={(e)=>setChoixFiliere(e.target.value)}>
+            <label htmlFor="nom">Filiere :</label>
+            <select name="nom" onChange={e=>handleSelectChange(e)}>
             {
                 listeFilieres.map((elt,index)=>{
                   return(
@@ -94,13 +107,13 @@ const AjoutGroupe = () => {
           </div>
         </div>
         <div className="my-4 d-flex justify-content-center ">
-            <label htmlFor="niveau">Niveau :</label>
-            <select name="niveau" onChange={(e)=>setChoixNiveau(e.target.value)}>
+            <label htmlFor="nom_niveau">Niveau :</label>
+            <select name="nom_niveau" onChange={e=>handleSelectChange(e)}>
             {
                 listeNiveaux.map((elt,index)=>{
                   return(
                   
-                      <option key={index} name={elt.nom}>{elt.nom}</option>
+                      <option key={index} name={elt.nom_bref}>{elt.nom_bref}</option>
       
                   )
                 })

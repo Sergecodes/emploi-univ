@@ -50,8 +50,7 @@ class SpecialiteList(APIView):
    def get(self, request):
       query = """
          SELECT DISTINCT id_regroupement, nom_specialite, nom_filiere, 
-         nom_niveau FROM regroupement reg, specialite spec WHERE  
-         AND reg.nom_specialite = spec.nom;
+         nom_niveau FROM regroupement reg, specialite spec WHERE reg.nom_specialite = spec.nom;
       """
       with connection.cursor() as cursor:
          cursor.execute(query)

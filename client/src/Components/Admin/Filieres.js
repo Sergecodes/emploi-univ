@@ -10,7 +10,14 @@ import {
   handleOpenAjout,
   handleOpenDelete,
   handleOpenModify,
+  handleOpenSnackbar,
+  handleAlert
 } from "../../redux/ModalDisplaySlice";
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
+
+
+
 import axios from "axios";
 
 const Filieres = () => {
@@ -39,15 +46,41 @@ const Filieres = () => {
 
   const files = useSelector((state) => state.ModalDisplay);
   
+  const Alert = React.forwardRef(function Alert(props, ref) {
+    return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+  });
 
+  const handleClose = ()=>{
+    if(files.openSnackbar===true){
+      dispatch(handleOpenSnackbar())
+    }
+  }
+
+
+  const alertMessage = ()=>{
+    if(files.alert.type==='success'){
+      return( 
+        <Alert onClose={()=>handleClose()} severity={"success"} sx={{ width: '100%' }}>
+     Opération réussie
+   </Alert>)
+    }
+    else{
+      return(
+        <Alert onClose={()=>handleClose()} severity={"error"} sx={{ width: '100%' }}>
+   Une erreur est survenue lors de l'execution de l'opération
+   </Alert>
+      )
+    }
+   
+  }
   
   useEffect(() => {
     axios
       .get("http://localhost:8000/api/filieres/")
-      .then((res) => setListeFilieres(res.data))
+      .then((res) =>  setListeFilieres(res.data))
       .catch((err) => console.log(err));
-  }, [files.openAjout]);
 
+  }, [files.openAjout,files.openModify,files.openDelete]);
 
   return (
     <section className="materialTableSalle mx-2 my-3">
@@ -77,6 +110,13 @@ const Filieres = () => {
         data={data}
         options={{ paging: false, grouping: true }}
       />
+
+        {/*snackbar */}
+        <div>
+      <Snackbar open={files.openSnackbar} autoHideDuration={6000} onClose={()=>handleClose()}>
+         {alertMessage()}
+      </Snackbar>
+      </div>
 
       {/*Modal pour l'ajout d'une salle*/}
       <div>
