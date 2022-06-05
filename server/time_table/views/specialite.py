@@ -1,11 +1,24 @@
 from django.db import connection
 from rest_framework import status
+from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from ..forms import SpecialiteForm
 from ..models import Specialite
 from ..utils import get_cud_response, is_valid_request, dict_fetchall
+
+
+@api_view(['GET'])
+def specialites_by_niveau_filiere(request, nom_filiere, nom_niveau):
+   query = """
+      SELECT DISTINCT id_regroupement, nom_specialite, nom_filiere, nom_niveau 
+      FROM regroupement reg, specialite spec WHERE reg.nom_specialite = spec.nom
+      AND reg.nom_niveau = %s AND reg.nom_filiere = %s;
+   """
+   with connection.cursor() as cursor:
+      cursor.execute(query, [nom_niveau, nom_filiere])
+      return Response(dict_fetchall(cursor))
 
 
 class SpecialiteList(APIView):
@@ -49,8 +62,8 @@ class SpecialiteList(APIView):
 
    def get(self, request):
       query = """
-         SELECT DISTINCT id_regroupement, nom_specialite, nom_filiere, 
-         nom_niveau FROM regroupement reg, specialite spec WHERE reg.nom_specialite = spec.nom;
+         SELECT DISTINCT id_regroupement, nom_specialite, nom_filiere, nom_niveau 
+         FROM regroupement reg, specialite spec WHERE reg.nom_specialite = spec.nom;
       """
       with connection.cursor() as cursor:
          cursor.execute(query)

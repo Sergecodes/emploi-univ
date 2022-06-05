@@ -37,7 +37,7 @@ CREATE TABLE `ue` (`code` varchar(10) NOT NULL PRIMARY KEY, `intitule` varchar(5
 --
 -- Create model Cours
 --
-CREATE TABLE `cours` (`code_ue` varchar(10) NOT NULL PRIMARY KEY, `jour` varchar(3) NOT NULL, `heure_debut` time(6) NULL, `heure_fin` time(6) NULL, `is_td` bool NULL);
+CREATE TABLE `cours` (`code_ue` varchar(10) NOT NULL PRIMARY KEY, `jour` varchar(3) NOT NULL, `heure_debut` time(6) NOT NULL, `heure_fin` time(6) NOT NULL, `is_td` bool NOT NULL, `is_virtuel` bool NOT NULL);
 --
 -- Create model Regroupement
 --

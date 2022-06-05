@@ -45,11 +45,12 @@ salle_urls = [
 specialite_urls = [
    path('', spec_views.SpecialiteList.as_view()),
    path('<str:nom>/', spec_views.SpecialiteDetail.as_view()),
+   path('<str:nom_filiere>/<str:nom_niveau>/', spec_views.specialites_by_niveau_filiere)
 ]
 
 groupe_urls = [
    path('', groupe_views.GroupeList.as_view()),
-   path('<str:nom_filiere>/<str:nom_niveau>/', groupe_views.GroupeList.as_view()),
+   path('<str:nom_filiere>/<str:nom_niveau>/', groupe_views.groupes_by_niveau_filiere),
    path('<str:nom>/', groupe_views.GroupeDetail.as_view()),
 ]
 

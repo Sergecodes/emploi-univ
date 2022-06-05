@@ -3,7 +3,6 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from ..forms import FiliereForm, SpecialiteForm, NiveauForm
 from ..models import UE
 from ..utils import get_cud_response, is_valid_request, dict_fetchall
 
@@ -19,40 +18,6 @@ class UEList(APIView):
       nom_filiere, nom_niveau = POST['nom_filiere'], POST['nom_niveau']
       code, nom_specialite = POST['code'], POST.get('nom_specialite')
       intitule = POST['intitule']
-
-      if nom_specialite:
-         spec_form = SpecialiteForm({ 'nom': nom_specialite })
-
-         if not spec_form.is_valid():
-            return Response(
-               {
-                  'message': 'Specialite form has errors',
-                  **spec_form.errors
-               }, 
-               status.HTTP_400_BAD_REQUEST
-            )
-
-      fil_form = FiliereForm({ 'nom': nom_filiere })
-      niv_form = NiveauForm({ 'nom': nom_niveau })
-
-      if not fil_form.is_valid():
-         return Response(
-            {
-               'message': 'Filiere form has errors',
-               **fil_form.errors
-            }, 
-            status.HTTP_400_BAD_REQUEST
-         )
-
-      if not niv_form.is_valid():
-         return Response(
-            {
-               'message': 'Niveau form has errors',
-               **niv_form.errors
-            }, 
-            status.HTTP_400_BAD_REQUEST
-         )
-
       res = user.ajouter_ue(code, intitule, nom_filiere, nom_niveau, nom_specialite)
       return get_cud_response(res, success_code=status.HTTP_201_CREATED)
       
