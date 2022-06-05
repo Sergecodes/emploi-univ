@@ -169,11 +169,13 @@ class Cours(models.Model):
         ('DIM', _('Dimanche')),
     )
 
-    ue = models.OneToOneField(
+    id_cours = models.BigAutoField(primary_key=True)
+    ue = models.ForeignKey(
         UE, 
         db_column='code_ue', 
-        primary_key=True, 
-        on_delete=models.RESTRICT
+        on_delete=models.RESTRICT,
+        related_name='cours',
+        related_query_name='cours'
     )
     enseignant = models.ForeignKey(
         Enseignant,
@@ -191,10 +193,12 @@ class Cours(models.Model):
         blank=True,
         null=True
     )
-    jour = models.CharField(max_length=3, choices=DAYS_OF_THE_WEEK, blank=True)
-    heure_debut = models.TimeField(blank=True, null=True)
-    heure_fin = models.TimeField(blank=True, null=True)
-    is_td = models.BooleanField(blank=True, null=True)
+    jour = models.CharField(max_length=3, choices=DAYS_OF_THE_WEEK)
+    heure_debut = models.TimeField()
+    heure_fin = models.TimeField()
+    is_td = models.BooleanField(default=False)
+    is_virtuel = models.BooleanField(default=False)
+    description = models.TextField(blank=True)
 
     @classmethod
     def get_cours(cls, code_ue):
@@ -211,6 +215,12 @@ class Cours(models.Model):
         
     class Meta:
         db_table = 'cours'
+        constraints = [
+            models.UniqueConstraint(
+                fields=['ue', 'enseignant'],
+                name='unique_ue_enseignant'
+            ),
+        ]
 
 
 class Regroupement(models.Model):

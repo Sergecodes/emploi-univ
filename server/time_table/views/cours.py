@@ -1,3 +1,4 @@
+import datetime
 from django.db import connection
 from rest_framework import status
 from rest_framework.decorators import api_view
@@ -87,20 +88,28 @@ def cours_by_fil_niv_special(request, nom_filiere, nom_niveau, nom_specialite=No
 
 
 class CoursList(APIView):
-   # def post(self, request):
-   #    user, POST = request.user, request.data
-   #    valid_req = is_valid_request(
-   #       POST, 
-   #       ['code_ue', 'nom_salle', 'matricule_enseignants', 'heure_debut', 'heure_fin']
-   #    )
+   def post(self, request):
+      user, POST = request.user, request.data
+      is_virtuel, is_td = POST.get('is_virtuel'), POST.get('is_td')
 
-   #    if valid_req[0] == False:
-   #       return valid_req[1]
+      if not is_virtuel:
+         valid_req = is_valid_request(
+            POST, 
+            [
+               'code_ue', 'nom_salle', 'matricule_enseignants', 
+               'jour', 'heure_debut', 'heure_fin'
+            ]
+         )
 
-   #    nom_groupe, is_virtuel = POST.get('nom_groupe'), POST.get('is_virtuel')
-   #    res = user.ajouter_cours()
+         if valid_req[0] == False:
+            return valid_req[1]
 
-   #    return get_cud_response(res, success_code=status.HTTP_201_CREATED)
+         nom_groupe = POST.get('nom_groupe')
+         res = user.ajouter_cours()
+      else:
+         res = user.ajouter_cours_virtuel()
+
+      return get_cud_response(res, success_code=status.HTTP_201_CREATED)
 
    def get(self, request):
       query = "SELECT * FROM cours;"

@@ -1,11 +1,24 @@
 from rest_framework import status
+from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from ..forms import FiliereForm, GroupeForm, NiveauForm
+from ..forms import GroupeForm
 from ..models import Regroupement, Groupe
 from ..serializers import RegroupementSerializer
 from ..utils import get_cud_response, is_valid_request
+
+
+@api_view(['GET'])
+def groupes_by_niveau_filiere(self, request, nom_filiere, nom_niveau):
+   query = """
+      SELECT DISTINCT id_regroupement, nom_groupe, nom_filiere, nom_niveau,
+      nom_specialite FROM regroupement WHERE nom_filiere = %s AND nom_niveau = %s;
+   """
+   res = Regroupement.objects.raw(query, [nom_filiere, nom_niveau])
+   serializer = RegroupementSerializer(res, many=True)
+
+   return Response(serializer.data)
 
 
 class GroupeList(APIView):
@@ -32,41 +45,18 @@ class GroupeList(APIView):
       if valid_req[0] == False:
          return valid_req[1]
 
-      groupes = POST['groupes']
-      nom_filiere, nom_niveau = POST['nom_filiere'], POST['nom_niveau']
-
-      fil_form = FiliereForm({ 'nom': nom_filiere })
-      niv_form = NiveauForm({ 'nom': nom_niveau })
-
-      if not fil_form.is_valid():
-         return Response(
-            {
-               'message': 'Filiere form has errors',
-               **fil_form.errors
-            }, 
-            status.HTTP_400_BAD_REQUEST
-         )
-
-      if not niv_form.is_valid():
-         return Response(
-            {
-               'message': 'Niveau form has errors',
-               **niv_form.errors
-            }, 
-            status.HTTP_400_BAD_REQUEST
-         )
-         
       res = user.ajouter_multiple_groupes(
-         nom_filiere, nom_niveau, groupes, POST.get('nom_specialite')
+         POST['nom_filiere'], POST['nom_niveau'], 
+         POST['groupes'], POST.get('nom_specialite')
       )
       return get_cud_response(res, success_code=status.HTTP_201_CREATED)
 
-   def get(self, request, nom_filiere, nom_niveau):
+   def get(self, request):
       query = """
          SELECT DISTINCT id_regroupement, nom_groupe, nom_filiere, nom_niveau,
-         nom_specialite FROM regroupement WHERE nom_filiere = %s AND nom_niveau = %s;
+         nom_specialite FROM regroupement WHERE nom_groupe IS NOT NULL;
       """
-      res = Regroupement.objects.raw(query, [nom_filiere, nom_niveau])
+      res = Regroupement.objects.raw(query)
       serializer = RegroupementSerializer(res, many=True)
 
       return Response(serializer.data)
@@ -106,19 +96,8 @@ class GroupeDetail(APIView):
       if valid_req[0] == False:
          return valid_req[1]
 
-      new_nom = PUT['new_nom']
-      groupe_form = GroupeForm({ 'nom': new_nom })
-
-      if not groupe_form.is_valid():
-         return Response(
-            {
-               'message': 'Groupe form has errors',
-               **groupe_form.errors
-            }, 
-            status.HTTP_400_BAD_REQUEST
-         )
-
       res = user.renommer_groupe(
-         nom, new_nom, PUT['nom_niveau'], PUT['nom_filiere'], PUT.get('nom_specialite')
+         nom, PUT['new_nom'], PUT['nom_niveau'], 
+         PUT['nom_filiere'], PUT.get('nom_specialite')
       )
       return get_cud_response(res)

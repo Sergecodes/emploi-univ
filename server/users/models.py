@@ -427,43 +427,99 @@ class UEOps:
 
 
 class CoursOps:
-	def ajouter_cours(
-		self, code_ue, nom_salle, jour, 
-		heure_debut, heure_fin, is_td=None
+	def ajouter_cours_virtuel(
+		self, jour, heure_debut, heure_fin, 
+		nom_niveau, nom_filiere=None, description=''
 	):
-		# Recall that when UE is added, a Cours is created containing only the
-		# code_ue and matricule_ens. 
-
-		# query = "INSERT INTO cours (code_ue, matricule_ens) VALUES (%s, %s);"
-		query = """
-			UPDATE cours SET nom_salle = %s, jour = %s, 
-			heure_debut = %s, heure_fin = %s, is_td = %s 
-			WHERE code_ue = %s;
+		query1 = "INSERT INTO ue (code, intitule) VALUES (%s, %s);"
+		query2 = """
+			INSERT INTO cours (
+				code_ue, matricule_ens, nom_salle, jour, heure_debut,  
+				heure_fin, is_td, is_virtuel, description
+			) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s);
 		"""
-
-		try:
-			with connection.cursor() as cursor:
-				cursor.execute(
-					query, 
-					[nom_salle, jour, heure_debut, heure_fin, is_td, code_ue]
-				)
-		except IntegrityError as err:
-			return err
-
-	def supprimer_cours(self, code_ue):
-		query1 = "DELETE FROM regroupement WHERE code_ue = %s;"
-		query2 = "DELETE FROM cours WHERE code_ue = %s;"
+		query3 = """
+			INSERT INTO regroupement (code_ue, nom_filiere, nom_niveau) VALUES (%s, %s, %s)
+		"""
+		
+		# Generate random code_ue for the virtual cours
+		if nom_filiere:
+			code_ue = f"CV_{nom_niveau}_{nom_filiere}"
+			intitule = f"Cours virtuel de {nom_niveau} de {nom_filiere}"
+		else:
+			code_ue = f"CV_{nom_niveau}_TOUTE_FILIERE"
+			intitule = f"Cours virtuel de {nom_niveau} pour toutes les filières"
 
 		try: 
 			with transaction.atomic():
 				with connection.cursor() as cursor:
-					cursor.execute(query1, [code_ue])
+					cursor.execute(query1, [code_ue, intitule])
 
 				with connection.cursor() as cursor:
-					cursor.execute(query2, [code_ue])
+					filler_ens, filler_salle = '000000', '000000'
+					cursor.execute(
+						query2, 
+						[
+							code_ue, filler_ens, filler_salle, jour, 
+							heure_debut, heure_fin, False, True, description
+						]
+					)
 
-					if cursor.rowcount == 0:
-						raise Cours.DoesNotExist(f"Cours '{code_ue}' not found")
+				with connection.cursor() as cursor:
+					cursor.execute(query3, [code_ue, nom_filiere, nom_niveau])
+		except IntegrityError as err:
+			return err
+
+	def ajouter_cours_normal(
+		self, code_ue, mat_enseignants, nom_salle, jour, 
+		heure_debut, heure_fin, is_td=False, description=''
+	):
+		"""`mat_enseignants` is an array with matricule of enseignants."""
+
+		# Get intitule of ue concerned
+		# query_ue = "SELECT * FROM ue WHERE code = %s LIMIT 1;"
+		# try:
+		# 	ue = UE.objects.raw(query_ue, [code_ue])[0]
+		# except IndexError:
+		# 	return UE.DoesNotExist(f"UE '{code_ue}' not found")
+
+		query1_start = """
+			INSERT INTO cours (code_ue, matricule_ens, nom_salle, jour,  
+			heure_debut, heure_fin, is_td, is_virtuel, description) VALUES 
+		"""
+		query1_next = "(%s, %s, %s, %s, %s, %s, %s, %s, %s), "
+		query1 = query1_start
+		params = []
+		query2 = """
+			INSERT INTO regroupement (code_ue, nom_filiere, nom_niveau, nom_specialite, nom_groupe) 
+			VALUES (%s, %s, %s)
+		"""
+
+		for matricule in mat_enseignants:
+			query1 += query1_next
+			params.extend([
+				code_ue, matricule, nom_salle, jour, heure_debut,  
+				heure_fin, is_td, False, description
+			])
+
+		# Remove last ', ' from query string (last two characters of `query1`)
+		query1 = query1[:-2]
+
+		try:
+			with connection.cursor() as cursor:
+				cursor.execute(query1, params)
+		except IntegrityError as err:
+			return err
+
+	def supprimer_cours(self, code_ue):
+		query = "DELETE FROM cours WHERE code_ue = %s;"
+
+		try: 
+			with connection.cursor() as cursor:
+				cursor.execute(query, [code_ue])
+
+				if cursor.rowcount == 0:
+					raise Cours.DoesNotExist(f"Cours '{code_ue}' not found")
 		except (IntegrityError, ObjectDoesNotExist) as err:
 			return err
 
