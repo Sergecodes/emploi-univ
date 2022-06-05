@@ -56,7 +56,7 @@ class SpecialiteOps:
 
 		query1_start = "INSERT INTO specialite (nom) VALUES "
 		query2_start = "INSERT INTO regroupement (nom_filiere, nom_specialite, nom_niveau) VALUES "
-		query1_next, query2_next = "(%s, %s), ", "(%s, %s, %s), "
+		query1_next, query2_next = "(%s), ", "(%s, %s, %s), "
 		query1, query2 = query1_start, query2_start
 		params1, params2 = [], []
 
@@ -79,8 +79,13 @@ class SpecialiteOps:
 
 		try:
 			with transaction.atomic():
-				with connection.cursor() as cursor:
-					cursor.execute(query1, params1)
+				# If the specialite is already in the specialites table, 
+				# just ignore
+				try:
+					with connection.cursor() as cursor:
+						cursor.execute(query1, params1)
+				except IntegrityError:
+					pass
 
 				with connection.cursor() as cursor:
 					cursor.execute(query2, params2)
@@ -160,19 +165,11 @@ class GroupeOps:
 		params1, params2 = [], []
 
 		for nom in nom_groupes:
-			
-
-			nom_special = special['nom']
 			query1 += query1_next
-			params1.extend([nom_special])
+			params1.extend([nom])
 
-			if special.get('master'):
-				query2 += query2_next
-				params2.extend([nom_filiere, nom_special, 'M1'])
-
-			if special.get('licence'):
-				query2 += query2_next
-				params2.extend([nom_filiere, nom_special, 'L3'])
+			query2 += query2_next
+			params2.extend([nom, nom_filiere, nom_specialite, nom_niveau])
 
 		# Remove last ', ' from query strings (last two characters of `query2_next`)
 		query1 = query1[:-2]
@@ -180,29 +177,15 @@ class GroupeOps:
 
 		try:
 			with transaction.atomic():
-				with connection.cursor() as cursor:
-					cursor.execute(query1, params1)
+				# If groupe is already in bd(hence an integrity error), just ignore
+				try:
+					with connection.cursor() as cursor:
+						cursor.execute(query1, params1)
+				except IntegrityError:
+					pass
 
 				with connection.cursor() as cursor:
 					cursor.execute(query2, params2)
-		except IntegrityError as err:
-			return err
-
-
-	def ajouter_groupe(self, nom, code_ue, nom_filiere, nom_niveau, nom_specialite=None):
-		query1 = "INSERT INTO groupe (nom) VALUES (%s);"
-		query2 = """
-			INSERT INTO regroupement (code_ue, nom_filiere, nom_niveau, nom_groupe, nom_specialite)
-			VALUE (%s, %s, %s, %s, %s);
-		"""
-		
-		try:
-			with transaction.atomic():
-				with connection.cursor() as cursor:
-					cursor.execute(query1, [nom])
-
-				with connection.cursor() as cursor:
-					cursor.execute(query2, [code_ue, nom_filiere, nom_niveau, nom, nom_specialite])
 		except IntegrityError as err:
 			return err
 
@@ -600,3 +583,19 @@ class NiveauOps:
 # 		return err
 
 
+# def ajouter_groupe(self, nom, code_ue, nom_filiere, nom_niveau, nom_specialite=None):
+# 	query1 = "INSERT INTO groupe (nom) VALUES (%s);"
+# 	query2 = """
+# 		INSERT INTO regroupement (code_ue, nom_filiere, nom_niveau, nom_groupe, nom_specialite)
+# 		VALUE (%s, %s, %s, %s, %s);
+# 	"""
+	
+# 	try:
+# 		with transaction.atomic():
+# 			with connection.cursor() as cursor:
+# 				cursor.execute(query1, [nom])
+
+# 			with connection.cursor() as cursor:
+# 				cursor.execute(query2, [code_ue, nom_filiere, nom_niveau, nom, nom_specialite])
+# 	except IntegrityError as err:
+# 		return err

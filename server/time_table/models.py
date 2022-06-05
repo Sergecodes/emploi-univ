@@ -145,7 +145,7 @@ class Specialite(models.Model):
         query = """
             SELECT DISTINCT id_regroupement, nom_specialite, nom_filiere, 
             nom_niveau FROM regroupement reg, specialite spec WHERE 
-            AND reg.nom_specialite = spec.nom AND nom_specialite = %s LIMIT 1;
+            reg.nom_specialite = spec.nom AND nom_specialite = %s LIMIT 1;
         """
         with connection.cursor() as cursor:
             cursor.execute(query, [nom])
