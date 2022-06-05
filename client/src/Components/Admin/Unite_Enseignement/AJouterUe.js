@@ -19,7 +19,7 @@ const AjouterUe = () => {
     nom_filiere:" ",
     nom_niveau:niveaux[0].nom,
     nom_specialite:specialites[0].nom
-  })
+  }) 
    const dispatch = useDispatch()
    // const [niveau,setNiveau]=useState([{}])
   /*   const csrftoken = Cookies.get('csrftoken');

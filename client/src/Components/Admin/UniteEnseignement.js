@@ -15,8 +15,8 @@ import {
 
 const UniteEnseignement = () => {
   const [listeUe, setListeUe] = useState([
-    {code:"INF 3018",intitule:"algorithmique et structure de données", nom_filiere:"Informatique",nom_niveau:"Niveau 3",nom_specialite:" Geni logiciel"},
-    {code:"INF 2058",intitule:"biologie medicale", nom_filiere:"Bioscience",nom_niveau:"Niveau 2",nom_specialite:" "}
+    {code:"INF 3018",intitule:"algorithmique et structure de données", nom_filiere:"Chimie",nom_niveau:"niveau 3",nom_specialite:" Geni logiciel"},
+    {code:"INF 2058",intitule:"biologie medicale", nom_filiere:"Bioscience",nom_niveau:"niveau 2",nom_specialite:" "}
   ]);
   const [ueInfo, setUeInfo] = useState({  });
   const columns = [
@@ -31,13 +31,13 @@ const UniteEnseignement = () => {
   const dispatch = useDispatch();
 
   const handleModify = (data) => {
-    let new_ueInfo = { code:data.code, intitule:data.intitule, nom_filiere:data.nom_filiere, nom_niveau:data.nom_niveau };
+    let new_ueInfo = { code:data.code, intitule:data.intitule, nom_filiere:data.nom_filiere, nom_niveau:data.nom_niveau ,nom_specialite:data.nom_specialite};
     setUeInfo(new_ueInfo);
     dispatch(handleOpenModify());
   };
 
   const handleDelete = (data) => {
-    let new_ueInfo = { code:data.code, intitule:data.intitule, nom_filiere:data.nom_filiere, nom_niveau:data.nom_niveau };
+    let new_ueInfo = { code:data.code, intitule:data.intitule, nom_filiere:data.nom_filiere, nom_niveau:data.nom_niveau ,nom_specialite:data.nom_specialite};
     setUeInfo(new_ueInfo);
     dispatch(handleOpenDelete());
   };
@@ -96,7 +96,7 @@ const UniteEnseignement = () => {
       <div>
         <Modal open={files.openDelete}>
           <Box>
-            <SupprimerUe />
+            <SupprimerUe  ue={ueInfo} />
           </Box>
         </Modal>
       </div>
@@ -105,7 +105,7 @@ const UniteEnseignement = () => {
       <div>
         <Modal open={files.openModify}>
           <Box>
-            <ModifierUe  />
+            <ModifierUe  ue={ueInfo}/>
           </Box>
         </Modal>
       </div>

@@ -4,14 +4,13 @@ import HeaderFooter from "./Screen/HeaderFooter";
 import Accueil from "./Screen/Accueil";
 import Admin from "./Screen/Admin";
 import ComputerScience from "./Components/Consultation/ComputerScience";
-import AjoutUe from "./Components/Admin/AjoutUe";
-import AjoutCoursFormulaire from "./Components/Admin/AjoutCoursFormulaire";
-import AjoutCoursGraphique from "./Components/Admin/AjoutCoursGraphique";
 import Salles from "./Components/Admin/Salles";
 import Enseignants from "./Components/Admin/Enseignants";
 import Filieres from "./Components/Admin/Filieres";
 import Specialites from "./Components/Admin/Specialites";
 import Groupes from "./Components/Admin/Groupes";
+import Niveaux from "./Components/Admin/Niveaux"
+import AjoutCoursGraphique from "./Components/Admin/AjoutCoursGraphique";
 
 
 import UniteEnseignement from "./Components/Admin/UniteEnseignement";
@@ -32,12 +31,7 @@ const App = () => {
             
           </Route>
           <Route path="/admin" element={<Admin/>}>
-            <Route path="/admin/dashboard" element={<p className="my-5">Un paragraphe</p>}/>
-            <Route path="/admin/ajout-enseignant" element={<p>Ajout enseignant</p>}/>
-            <Route path="/admin/ajout-filiere" element={<p>Ajout filiere</p>}/>
-            <Route path="/admin/ajout-salle" element={<p>Ajout salle</p>}/>
-            <Route path="/admin/ajout-ue" element={<AjoutUe/>}/>
-            <Route path="/admin/ajout-cours-formulaire" element={<AjoutCoursFormulaire/>}/>
+            <Route path="/admin/dashboard" element={<p>Dashboard</p>}/>
             <Route path="/admin/ajout-cours-graphique" element={<AjoutCoursGraphique/>}/>
             <Route path="/admin/liste-salles" element={<Salles/>}/>
             <Route path="/admin/liste-enseignants" element={<Enseignants/>}/>
@@ -45,6 +39,7 @@ const App = () => {
             <Route path="/admin/liste-ue" element={<UniteEnseignement/>}/>
             <Route path="/admin/liste-specialites" element={<Specialites/>}/>
             <Route path="/admin/liste-groupes" element={<Groupes/>}/>
+            <Route path="/admin/liste-niveaux" element={<Niveaux/>}/>
 
 
 

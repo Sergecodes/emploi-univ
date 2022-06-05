@@ -35,18 +35,15 @@ const Sidenav = () => {
 
   const recognize = (name) => {
     if (name === "DASHBOARD") return "dashboard";
-    else if (name === "Ajout d'un enseignant") return "ajout-enseignant";
-    else if (name === "Ajout d'une salle") return "ajout-salle";
-    else if (name === "Ajout d'une filière") return "ajout-filiere";
-    else if (name === "Ajout d'une UE") return "ajout-ue";
+    else if(name==="Ajout d'un cours") return "ajout-cours-graphique"
     else if (name === "Salles de cours") return "liste-salles";
-    else if (name === "mode formulaire") return "ajout-cours-formulaire";
     else if (name === "mode graphique") return "ajout-cours-graphique";
     else if (name === "Enseignants") return "liste-enseignants";
     else if (name === "Filieres") return "liste-filieres";
     else if (name === "Unite d'enseignement") return "liste-ue";
     else if (name === "Specialités") return "liste-specialites";
     else if (name === "Groupes") return "liste-groupes";
+    else if ( name === "Niveaux" ) return "liste-niveaux"
 
 
 
