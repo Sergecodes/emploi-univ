@@ -1,9 +1,13 @@
+import datetime
 from django.contrib.auth.models import AbstractUser
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import connection, transaction
 from django.db.utils import IntegrityError
 
-from time_table.models import UE, Cours, Enseignant, Filiere, Salle, Specialite, Groupe
+from time_table.models import (
+	UE, Cours, Enseignant, Filiere, 
+	Regroupement, Salle, Specialite, Groupe
+)
 
 
 class FiliereOps:
@@ -191,19 +195,30 @@ class GroupeOps:
 
 	def supprimer_groupe(self, nom, nom_filiere, nom_niveau, nom_specialite=None):
 		try:
-			query1 = """
-				DELETE FROM regroupement WHERE nom_filiere = %s AND nom_niveau = %s 
-				AND nom_specialite = %s AND nom_groupe = %s;
-			"""
+			if nom_specialite:
+				query1 = """
+					DELETE FROM regroupement WHERE nom_filiere = %s AND nom_niveau = %s 
+					AND nom_specialite = %s AND nom_groupe = %s;
+				"""
+				params1 = [nom_filiere, nom_niveau, nom_specialite, nom]
+			else:
+				query1 = """
+					DELETE FROM regroupement WHERE nom_filiere = %s AND nom_niveau = %s 
+					AND nom_specialite IS NULL AND nom_groupe = %s;
+				"""
+				params1 = [nom_filiere, nom_niveau, nom]
 				
 			with connection.cursor() as cursor:
-				cursor.execute(query1, [nom_filiere, nom_niveau, nom_specialite, nom])
+				cursor.execute(query1, params1)
 
 				if cursor.rowcount == 0:
-					raise Groupe.DoesNotExist(
-						f"Groupe {nom} for niveau {nom_niveau}, filiere {nom_filiere}, \
-						specialite {nom_specialite} not found"
-					)
+					if nom_specialite:
+						msg = f"Groupe {nom} for niveau {nom_niveau}, filiere {nom_filiere}, \
+							specialite {nom_specialite} not found"
+					else:
+						msg = f"Groupe {nom} for niveau {nom_niveau}, filiere {nom_filiere} not found"
+
+					raise Groupe.DoesNotExist(msg)
 
 			# Now check if the groupe is still in the regroupement table. If it's no longer
 			# present, delete it from the groupe table.
@@ -224,14 +239,22 @@ class GroupeOps:
 		if nom == new_nom:
 			return
 
-		query1 = """
-			UPDATE regroupement SET nom = %s WHERE nom_niveau = %s AND 
-			nom_filiere = %s AND nom_specialite = %s AND nom_groupe = %s;
-		"""
+		if nom_specialite:
+			query1 = """
+				UPDATE regroupement SET nom_groupe = %s WHERE nom_niveau = %s AND 
+				nom_filiere = %s AND nom_specialite = %s AND nom_groupe = %s;
+			"""
+			params1 = [new_nom, nom_niveau, nom_filiere, nom_specialite, nom]
+		else:
+			query1 = """
+				UPDATE regroupement SET nom_groupe = %s WHERE nom_niveau = %s AND 
+				nom_filiere = %s AND nom_specialite IS NULL AND nom_groupe = %s;
+			"""
+			params1 = [new_nom, nom_niveau, nom_filiere, nom]
 
 		try: 
 			with connection.cursor() as cursor:
-				cursor.execute(query1, [nom, nom_niveau, nom_filiere, nom_specialite])
+				cursor.execute(query1, params1)
 
 				if cursor.rowcount == 0:
 					raise Groupe.DoesNotExist(
@@ -241,8 +264,8 @@ class GroupeOps:
 		except (IntegrityError, ObjectDoesNotExist) as err:
 			return err
 
-		# Now insert the new groupe in the groupe table. If it already exists, 
-		# do nothing
+		# Now insert the new groupe in the groupe table. 
+		# If it already exists do nothing
 		query2 = "INSERT INTO groupe (nom) VALUES (%s);"
 		try:
 			with connection.cursor() as cursor:
@@ -451,6 +474,13 @@ class CoursOps:
 			intitule = f"Cours virtuel de {nom_niveau} pour toutes les filières"
 
 		try: 
+			# Get heure_debut and heure_fin in timefield format
+			h_debut, m_debut = heure_debut.split('h')
+			heure_debut = datetime.time(h_debut, m_debut)
+
+			h_fin, m_fin = heure_fin.split('h')
+			heure_fin = datetime.time(h_fin, m_fin)
+			
 			with transaction.atomic():
 				with connection.cursor() as cursor:
 					cursor.execute(query1, [code_ue, intitule])
@@ -476,12 +506,15 @@ class CoursOps:
 	):
 		"""`mat_enseignants` is an array with matricule of enseignants."""
 
-		# Get intitule of ue concerned
-		# query_ue = "SELECT * FROM ue WHERE code = %s LIMIT 1;"
-		# try:
-		# 	ue = UE.objects.raw(query_ue, [code_ue])[0]
-		# except IndexError:
-		# 	return UE.DoesNotExist(f"UE '{code_ue}' not found")
+		# Get nom_filiere, nom_niveau and nom_specialite of ue concerned
+		query_ue = """
+			SELECT * FROM regroupement reg WHERE reg.code_ue = %s AND 
+			reg.nom_niveau IS NOT NULL AND reg.nom_filiere IS NOT NULL LIMIT 1;
+		"""
+		try:
+			reg = Regroupement.objects.raw(query_ue, [code_ue])[0]
+		except IndexError:
+			return UE.DoesNotExist(f"UE '{code_ue}' not found")
 
 		query1_start = """
 			INSERT INTO cours (code_ue, matricule_ens, nom_salle, jour,  
@@ -489,15 +522,22 @@ class CoursOps:
 		"""
 		query1_next = "(%s, %s, %s, %s, %s, %s, %s, %s, %s), "
 		query1 = query1_start
-		params = []
+		params1 = []
 		query2 = """
-			INSERT INTO regroupement (code_ue, nom_filiere, nom_niveau, nom_specialite, nom_groupe) 
-			VALUES (%s, %s, %s)
+			INSERT INTO regroupement (code_ue, nom_filiere, nom_niveau, nom_specialite) 
+			VALUES (%s, %s, %s, %s)
 		"""
 
+		# Get heure_debut and heure_fin in timefield format
+		h_debut, m_debut = heure_debut.split('h')
+		heure_debut = datetime.time(h_debut, m_debut)
+
+		h_fin, m_fin = heure_fin.split('h')
+		heure_fin = datetime.time(h_fin, m_fin)
+			
 		for matricule in mat_enseignants:
 			query1 += query1_next
-			params.extend([
+			params1.extend([
 				code_ue, matricule, nom_salle, jour, heure_debut,  
 				heure_fin, is_td, False, description
 			])
@@ -506,25 +546,37 @@ class CoursOps:
 		query1 = query1[:-2]
 
 		try:
-			with connection.cursor() as cursor:
-				cursor.execute(query1, params)
+			with transaction.atomic():
+				with connection.cursor() as cursor:
+					cursor.execute(query1, params1)
+
+				with connection.cursor() as cursor:
+					cursor.execute(
+						query2, 
+						[code_ue, reg.nom_filiere, reg.nom_niveau, reg.nom_specialite]
+					)
 		except IntegrityError as err:
 			return err
 
 	def supprimer_cours(self, code_ue):
-		query = "DELETE FROM cours WHERE code_ue = %s;"
+		query1 = "DELETE FROM regroupement WHERE code = %s;"
+		query2 = "DELETE FROM cours WHERE code_ue = %s;"
 
 		try: 
-			with connection.cursor() as cursor:
-				cursor.execute(query, [code_ue])
+			with transaction.atomic():
+				with connection.cursor() as cursor:
+					cursor.execute(query1, [code_ue])
 
-				if cursor.rowcount == 0:
-					raise Cours.DoesNotExist(f"Cours '{code_ue}' not found")
+				with connection.cursor() as cursor:
+					cursor.execute(query2, [code_ue])
+
+					if cursor.rowcount == 0:
+						raise Cours.DoesNotExist(f"Cours '{code_ue}' not found")
 		except (IntegrityError, ObjectDoesNotExist) as err:
 			return err
 
 	def modifier_cours(
-		self, code_ue, new_code_ue='', new_nom_salle='', new_jour=None, 
+		self, code_ue, new_code_ue=None, new_nom_salle=None, new_jour=None, 
 		new_heure_debut=None, new_heure_fin=None, new_is_td=None
 	):
 		# If no data wants to be modified
@@ -547,7 +599,7 @@ class CoursOps:
 
 		try: 
 			jour, heure_debut = cours.jour, cours.heure_debut
-			heure_fin, nom_salle, is_td = cours.nom_salle, cours.is_td, cours.heure_fin
+			nom_salle, is_td, heure_fin = cours.nom_salle, cours.is_td, cours.heure_fin
 
 			# Use or in these params so as to maintain the old values if no new value 
 			# was passed

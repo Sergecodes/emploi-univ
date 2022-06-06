@@ -23,7 +23,7 @@ class UEList(APIView):
       
    def get(self, request):
       query = """
-         SELECT nom_ue, intitule, matricule_enseignant, enseignant.nom AS nom_enseignant, 
+         SELECT code_ue, intitule, matricule_enseignant, enseignant.nom AS nom_enseignant, 
          enseignant.prenom AS prenom_ens, nom_filiere, nom_niveau, nom_specialite 
          FROM regroupement, cours, enseignant WHERE regroupement.code_ue = cours.code_ue 
          AND cours.matricule_ens = enseignant.matricule;
@@ -44,7 +44,7 @@ class UEDetail(APIView):
       return get_cud_response(res)
 
    def delete(self, request, code):
-      res = request.user.supprimer_specialite(code)
+      res = request.user.supprimer_ue(code)
       return get_cud_response(res, success_code=status.HTTP_204_NO_CONTENT)
 
 

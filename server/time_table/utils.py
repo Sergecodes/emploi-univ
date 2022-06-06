@@ -3,7 +3,7 @@ from django.db.utils import IntegrityError
 from django.forms.utils import ErrorDict
 from rest_framework import status
 from rest_framework.response import Response
-from typing import Any, Iterable
+from typing import Iterable
 
 
 def dict_fetchone(cursor):
@@ -59,6 +59,13 @@ def get_cud_response(
 
    # ErrorDict happens if error was from form validation (form.errors was passed)
    elif isinstance(op_result, ErrorDict):
+      for field in op_result:
+         message_arr = op_result[field]
+
+         for message in message_arr:
+            if 'already exists' in message:
+               return Response(op_result, error_code or status.HTTP_409_CONFLICT)
+         
       return Response(op_result, error_code or status.HTTP_400_BAD_REQUEST)
 
    # ObjectDoesNotExist is raised when the object was not found during an
