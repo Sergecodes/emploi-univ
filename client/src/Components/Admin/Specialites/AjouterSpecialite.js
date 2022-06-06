@@ -26,7 +26,7 @@ const AjoutSpecialite = () => {
 
 
   const handleClick=()=>{
-    setSpecialite([...specialite,{id:specialite.length ,nom:" ",licence:false, master:false}])
+    setSpecialite([...specialite,{id:specialite.length ,nom:"",licence:false, master:false}])
   }
 
   const handleCheckboxChange=(nom,id)=>{

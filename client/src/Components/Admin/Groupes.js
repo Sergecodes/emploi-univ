@@ -19,10 +19,10 @@ const Groupes = () => {
 
   const data = listeGroupes;
   const columns = [
-    { title: "Groupe", field: "nom_groupe", align: "center" },
-    { title: "Filiere", field: "nom_filiere", align: "center" },
-    { title: "Niveau", field: "nom_niveau", align: "center" },
-    { title: "Specialité", field: "nom_specialite", align: "center" },
+    { title: "Groupe", field: "groupe", align: "center" },
+    { title: "Filiere", field: "filiere", align: "center" },
+    { title: "Niveau", field: "niveau", align: "center" },
+    { title: "Specialité", field: "specialite", align: "center" },
 
   
   ];
@@ -92,7 +92,7 @@ const Groupes = () => {
       <div>
         <Modal open={files.openDelete}>
           <Box>
-            <SupprimerGroupe groupeInfo={groupeInfo} />
+            <SupprimerGroupe groupeInfo={{nom_filiere:groupeInfo.filiere,groupe:groupeInfo.groupe, nom_specialite:groupeInfo.specialite, nom_niveau:groupeInfo.niveau}}  />
           </Box>
         </Modal>
       </div>
@@ -101,7 +101,7 @@ const Groupes = () => {
       <div>
         <Modal open={files.openModify}>
           <Box>
-            <ModifierGroupe groupeInfo={groupeInfo}  />
+            <ModifierGroupe groupeInfo={{nom_filiere:groupeInfo.filiere,new_nom:groupeInfo.groupe, nom_specialite:groupeInfo.specialite, nom_niveau:groupeInfo.niveau}}  />
           </Box>
         </Modal>
       </div>

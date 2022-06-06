@@ -11,6 +11,7 @@ import Specialites from "./Components/Admin/Specialites";
 import Groupes from "./Components/Admin/Groupes";
 import Niveaux from "./Components/Admin/Niveaux"
 import AjoutCoursGraphique from "./Components/Admin/AjoutCoursGraphique";
+import Cours from "./Components/Admin/Cours"
 
 
 import UniteEnseignement from "./Components/Admin/UniteEnseignement";
@@ -40,6 +41,8 @@ const App = () => {
             <Route path="/admin/liste-specialites" element={<Specialites/>}/>
             <Route path="/admin/liste-groupes" element={<Groupes/>}/>
             <Route path="/admin/liste-niveaux" element={<Niveaux/>}/>
+            <Route path="/admin/liste-cours" element={<Cours/>}/>
+
 
 
 

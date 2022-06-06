@@ -11,25 +11,23 @@ import {
   handleOpenDelete,
   handleOpenModify,
 } from "../../redux/ModalDisplaySlice";
-//import axios from "axios";
+import axios from "axios";
 
 const UniteEnseignement = () => {
   const [listeUe, setListeUe] = useState([
-    {code:"INF 3018",intitule:"algorithmique et structure de données", nom_filiere:"Chimie",nom_niveau:"niveau 3",nom_specialite:" Geni logiciel"},
-    {code:"INF 2058",intitule:"biologie medicale", nom_filiere:"Bioscience",nom_niveau:"niveau 2",nom_specialite:" "}
   ]);
   const [ueInfo, setUeInfo] = useState({  });
   const columns = [
     { title: "Code", field: "code", align: "center" },
     { title: "Intitule", field: "intitule", align: "center" },
     { title: "Nom filiere", field: "nom_filiere", align: "center" },
-    { title: "Nom_niveau", field: "nom_niveau", align: "center" },
-    { title: "Nom_specialite", field: "nom_specialite", align: "center" },
+    { title: "Nom niveau", field: "nom_niveau", align: "center" },
+    { title: "Nom specialite", field: "nom_specialite", align: "center" },
 
   ];
-  const data = listeUe;
-  const dispatch = useDispatch();
 
+  const dispatch = useDispatch();
+  const data = listeUe;
   const handleModify = (data) => {
     let new_ueInfo = { code:data.code, intitule:data.intitule, nom_filiere:data.nom_filiere, nom_niveau:data.nom_niveau ,nom_specialite:data.nom_specialite};
     setUeInfo(new_ueInfo);
@@ -46,12 +44,12 @@ const UniteEnseignement = () => {
   
 
   
-  /*useEffect(() => {
+  useEffect(() => {
     axios
       .get("http://localhost:8000/api/ue/")
       .then((res) => setListeUe(res.data))
       .catch((err) => console.log(err));
-  }, [files.openAjout]);*/
+  }, [files.openAjout]);
 
 
   return (
@@ -61,17 +59,17 @@ const UniteEnseignement = () => {
         actions={[
           {
             icon: tableIcons.Edit,
-            tooltip: "Modifier un enseignant",
+            tooltip: "Modifier une UE",
             onClick: (event, data) => handleModify(data),
           },
           {
             icon: tableIcons.Delete,
-            tooltip: "Supprimer un enseignant",
+            tooltip: "Supprimer une UE",
             onClick: (event, data) => handleDelete(data),
           },
           {
             icon: tableIcons.Add,
-            tooltip: "Ajouter un enseignant",
+            tooltip: "Ajouter une UE",
             isFreeAction: true,
             onClick: () => dispatch(handleOpenAjout()),
 

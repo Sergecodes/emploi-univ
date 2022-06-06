@@ -163,6 +163,11 @@ export const adminSidenavElements=[
           icon:<BsBookFill  className="ms-1"/>,
           name:"Groupes"
       },
+      {
+        id:"9",
+        icon:<BsBookFill  className="ms-1"/>,
+        name:"Cours"
+    },
            
         ]
     }

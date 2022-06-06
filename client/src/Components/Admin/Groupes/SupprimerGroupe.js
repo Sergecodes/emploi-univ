@@ -2,26 +2,27 @@ import React from 'react';
 import {useDispatch} from "react-redux";
 import{ handleOpenDelete} from "../../../redux/ModalDisplaySlice";
 import { Delete } from '@material-ui/icons';
-/*import axios from "axios";
-import Cookies from "js-cookie";*/
+import axios from "axios";
+import Cookies from "js-cookie";
 
 const SupprimerGroupe = (props) => {
  
     const dispatch = useDispatch();
-  /*  const csrftoken = Cookies.get('csrftoken');
+    const csrftoken = Cookies.get('csrftoken');
   const headers={
     'X-CSRFToken': csrftoken
-  }*/
+  }
 
     const handleDelete=()=>{
-    /*  axios({
+      axios({
         method:'delete',
-        url:`http://localhost:8000/api/groupes/${encodeURIComponent(props.groupeInfo.nom_filiere)}/${encodeURIComponent(props.groupeInfo.nom_niveau)}/`,
+        url:`http://localhost:8000/api/groupes/${encodeURIComponent(props.groupeInfo.groupe)}`,
+        data:props.groupeInfo,
         headers:headers,
         withCredentials:true
       })
       .then(res=>console.log(res))
-      .catch(err=>console.error(err))*/
+      .catch(err=>console.error(err))
   //  dispatch(handleOpenDelete());
   console.log(props.groupeInfo)
     }
@@ -35,7 +36,7 @@ const SupprimerGroupe = (props) => {
             >
               <div className="ajout mt-5  px-3 py-2 col-12 col-md-9 col-lg-6">
                 <h4 className="fs-5 fw-light text-center">
-                  Voulez vous vraiment Supprimer le groupe {props.groupeInfo.nom_groupe} du {props.groupeInfo.nom_niveau} de la filiere {props.groupeInfo.nom_filiere}?
+                  Voulez vous vraiment Supprimer le groupe '{props.groupeInfo.groupe}' de {props.groupeInfo.nom_niveau} de la filiere {props.groupeInfo.nom_filiere}?
                 </h4>
                 <div
                   className="my-4 d-flex justify-content-center "

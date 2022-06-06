@@ -11,13 +11,12 @@ const AjoutGroupe = () => {
   const [groupe,setGroupe]= useState([]);
   const [listeFilieres, setListeFilieres]= useState([]);
   const [listeNiveaux, setListeNiveaux]= useState([]);
-  const [choix,setChoix]=useState({nom:" ",nom_niveau:' ',nom_specialite:" "});
+  const [listeSpecialites, setListeSpecialites]=useState([]);
+  const [activate,setActivate]=useState(true);
+  const [choix,setChoix]=useState({nom:"",nom_niveau:'',nom_specialite:""});
   const csrftoken = Cookies.get('csrftoken');
   const dispatch=useDispatch();
-  const axiosLinks =[
-    'http://localhost:8000/api/filieres/',
-    'http://localhost:8000/api/niveaux/'
-  ]
+ 
   /*
   Promise.all(endpoints.map((endpoint) => axios.get(endpoint))).then(
   axios.spread((...allData) => {
@@ -25,21 +24,37 @@ const AjoutGroupe = () => {
   })
 );*/
   useEffect(()=>{
+    const axiosLinks =[
+      'http://localhost:8000/api/filieres/',
+      'http://localhost:8000/api/niveaux/'
+    ]
     Promise.all(axiosLinks.map((link) => axios.get(link)))
     .then(
       axios.spread((...allData) => {
         setListeFilieres(allData[0].data);
         setListeNiveaux(allData[1].data);
-        setChoix({...choix,nom_niveau:allData[1].data[0].nom_bref,nom:allData[0].data[0].nom});
+        setChoix(prevState=>({...prevState,nom_niveau:allData[1].data[0].nom_bref,nom:allData[0].data[0].nom}));
       }))
       .catch(err=>console.log(err))
+
   },[])
 
+  useEffect(()=>{
+    if(choix.nom!=="" && choix.nom_niveau!==""){
+      axios
+    .get(`http://localhost:8000/api/specialites/${choix.nom}/${choix.nom_niveau}`)
+    .then((res) =>{setListeSpecialites(res.data); if(res.data.length!==0){
+      setChoix(prevState=>({...prevState, nom_specialite:res.data[0].nom_specialite}))
+    }})
+    .catch((err) => console.log(err));
+    }
+    
+  },[choix.nom, choix.nom_niveau])
  
 
 
   const handleClick=()=>{
-    setGroupe([...groupe,{id:groupe.length ,nom_groupe:" "}])
+    setGroupe([...groupe,{id:groupe.length ,nom_groupe:""}])
   }
 
  
@@ -68,10 +83,16 @@ const handleSelectChange=(e)=>{
     'X-CSRFToken': csrftoken
   }
   const handleAjout = () => {
-    axios({
+    let new_groupe=[];
+    for( let i in groupe){
+        new_groupe.push(groupe[i].nom_groupe);
+    }
+    console.log(new_groupe);
+    console.log(choix)
+   axios({
       method:'post',
       url:"http://localhost:8000/api/groupes/",
-      data:{nom_filiere:choix.nom,nom_niveau:choix.nom_niveau,groupes:groupe},
+      data:{nom_filiere:choix.nom,nom_niveau:choix.nom_niveau,nom_specialite:activate?null:choix.nom_specialite, groupes:new_groupe},
       headers:headers,
       withCredentials:true
     })
@@ -119,6 +140,22 @@ const handleSelectChange=(e)=>{
                 })
               }
             </select>
+          </div>
+        
+          <div className="my-4 d-flex justify-content-center align-items-center ">
+            <label htmlFor="nom_specialite" style={activate===true?{color:"GrayText"}:{}}>Specialite :</label>
+            <select name="nom_specialite" onChange={e=>handleSelectChange(e)} disabled={activate}>
+            {
+                listeSpecialites.map((elt,index)=>{
+                  return(
+                  
+                      <option key={index} name={elt.nom_specialite}>{elt.nom_specialite}</option>
+      
+                  )
+                })
+              }
+            </select>
+            <input type="checkbox" className="ms-3" value={activate} onChange={()=>setActivate(!activate)}/>
           </div>
         
         <div className="d-flex justify-content-center my-3 align-items-center ">
