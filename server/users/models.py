@@ -530,10 +530,10 @@ class CoursOps:
 
 		# Get heure_debut and heure_fin in timefield format
 		h_debut, m_debut = heure_debut.split('h')
-		heure_debut = datetime.time(h_debut, m_debut)
+		heure_debut = datetime.time(int(h_debut), int(m_debut))
 
 		h_fin, m_fin = heure_fin.split('h')
-		heure_fin = datetime.time(h_fin, m_fin)
+		heure_fin = datetime.time(int(h_fin), int(m_fin))
 			
 		for matricule in mat_enseignants:
 			query1 += query1_next
@@ -553,13 +553,13 @@ class CoursOps:
 				with connection.cursor() as cursor:
 					cursor.execute(
 						query2, 
-						[code_ue, reg.nom_filiere, reg.nom_niveau, reg.nom_specialite]
+						[code_ue, reg.filiere_id, reg.niveau_id, reg.specialite_id]
 					)
 		except IntegrityError as err:
 			return err
 
 	def supprimer_cours(self, code_ue):
-		query1 = "DELETE FROM regroupement WHERE code = %s;"
+		query1 = "DELETE FROM regroupement WHERE code_ue = %s;"
 		query2 = "DELETE FROM cours WHERE code_ue = %s;"
 
 		try: 

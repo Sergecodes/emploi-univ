@@ -6,13 +6,15 @@ import axios from "axios";
 import Cookies from "js-cookie";
 
 const ModifierGroupe = (props) => {
+
   const [alert, setAlert] = useState("none");
-  const actual = props.groupeInfo;
+  const modified=  {nom_filiere:props.groupeInfo.nom_filiere.nom, nom_niveau:props.groupeInfo.nom_niveau.nom_bref,nom_specialite:props.groupeInfo.nom_specialite.nom,new_nom:props.groupeInfo.new_nom.nom};
+  const actual = modified;
   const [listeFilieres, setListeFilieres]= useState([]);
   const [listeNiveaux, setListeNiveaux]= useState([]);
   const [listeSpecialites, setListeSpecialites]=useState([]);
   const [activate,setActivate]=useState(true);
-  const [updateGroupe, setUpdateGroupe] = useState(props.groupeInfo);
+  const [updateGroupe, setUpdateGroupe] = useState( modified);
   const dispatch = useDispatch();
   const csrftoken = Cookies.get("csrftoken");
   const headers = {

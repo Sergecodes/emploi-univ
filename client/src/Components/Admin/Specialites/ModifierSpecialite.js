@@ -8,7 +8,6 @@ import Cookies from "js-cookie";
 
 
 const ModifierSpecialite = (props) => {
-  console.log(props.specialite)
   const [alert ,setAlert]=useState("none")
   const actual=props.specialite;
   const [updateSpecialite, setUpdateSpecialite] = useState(props.specialite);
@@ -24,7 +23,7 @@ const ModifierSpecialite = (props) => {
     }
     else{
         setAlert("none")
-      axios({
+     axios({
         method:'put',
         url:`http://localhost:8000/api/specialites/${encodeURIComponent(actual)}/`,
         data:{new_nom:updateSpecialite},
@@ -33,6 +32,7 @@ const ModifierSpecialite = (props) => {
       })
       .then(res=>console.log(res))
       .catch(err=>console.error(err))
+      console.log(updateSpecialite)
     }
   }
 
@@ -43,7 +43,7 @@ const ModifierSpecialite = (props) => {
             >
               <div className="ajout mt-5  px-3 py-2 col-12 col-md-9 col-lg-6">
                 <h4 className="fs-5 fw-light text-center">
-                  Modification des informations concernant une filiere
+                  Modification des informations concernant une spécialité
                  <div className="my-2">
                    {/* <Alert severity="error">This is an error alert — check it out!</Alert>
 <Alert severity="warning">This is a warning alert — check it out!</Alert>

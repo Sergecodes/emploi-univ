@@ -19,10 +19,10 @@ const Groupes = () => {
 
   const data = listeGroupes;
   const columns = [
-    { title: "Groupe", field: "groupe", align: "center" },
-    { title: "Filiere", field: "filiere", align: "center" },
-    { title: "Niveau", field: "niveau", align: "center" },
-    { title: "Specialité", field: "specialite", align: "center" },
+    { title: "Groupe", field: "groupe.nom", align: "center" },
+    { title: "Filiere", field: "filiere.nom", align: "center" },
+    { title: "Niveau", field: "niveau.nom_bref", align: "center" },
+    { title: "Specialité", field: "specialite.nom", align: "center" },
 
   
   ];
@@ -45,7 +45,7 @@ const Groupes = () => {
   useEffect(() => {
     axios
       .get("http://localhost:8000/api/groupes/")
-      .then((res) =>{setListeGroupes(res.data);console.log(res.data)})
+      .then((res) =>{setListeGroupes(res.data); console.log(res.data)})
       .catch((err) => console.log(err));
   }, []);
 
@@ -79,6 +79,7 @@ const Groupes = () => {
         options={{ paging: false, grouping: true }}
       /> 
 
+
       {/*Modal pour l'ajout d'une specialite*/}
       <div>
         <Modal open={files.openAjout}>
@@ -88,7 +89,7 @@ const Groupes = () => {
         </Modal>
       </div>
 
-      {/*Modal pour la suppression d'une Groupe*/}
+      {/*Modal pour la suppression d'une Group e*/}
       <div>
         <Modal open={files.openDelete}>
           <Box>
