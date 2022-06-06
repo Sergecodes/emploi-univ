@@ -17,6 +17,7 @@ class RegroupementSerializer(ModelSerializer):
    class Meta:
       model = Regroupement
       fields = '__all__'
+      depth = 1
 
 
 class NiveauSerializer(ModelSerializer):
@@ -68,11 +69,4 @@ class SalleSerializer(ModelSerializer):
    class Meta:
       model = Salle
       fields = '__all__'
-
-
-# class RegroupementSerializer(ModelSerializer):
-#    class Meta:
-#       model = Regroupement
-#       fields = '__all__'
-
 
