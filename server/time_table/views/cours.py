@@ -1,16 +1,13 @@
-import datetime
 from django.db import connection
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from ..forms import CoursForm 
 from ..models import Cours
 from ..serializers import CoursSerializer
 from ..utils import (
-   get_cud_response, get_read_response, 
-   is_valid_request, dict_fetchall
+   get_cud_response, get_read_response, is_valid_request, dict_fetchall
 )
 
 
@@ -89,25 +86,39 @@ def cours_by_fil_niv_special(request, nom_filiere, nom_niveau, nom_specialite=No
 
 class CoursList(APIView):
    def post(self, request):
+      """
+      `enseignants` is array of matricule enseignants, `jour`: {LUN, MAR, ..., DIM},
+      `heure_debut` and `heure_fin` e.g. 9h55
+      """
       user, POST = request.user, request.data
-      is_virtuel, is_td = POST.get('is_virtuel'), POST.get('is_td')
+      is_virtuel = POST.get('is_virtuel')
 
       if not is_virtuel:
          valid_req = is_valid_request(
             POST, 
-            [
-               'code_ue', 'nom_salle', 'matricule_enseignants', 
-               'jour', 'heure_debut', 'heure_fin'
-            ]
+            ['code_ue', 'nom_salle', 'enseignants', 'jour', 'heure_debut', 'heure_fin']
          )
 
          if valid_req[0] == False:
             return valid_req[1]
 
-         nom_groupe = POST.get('nom_groupe')
-         res = user.ajouter_cours()
+         res = user.ajouter_cours_normal(
+            POST['code_ue'], POST['enseignants'], 
+            POST['nom_salle'], POST['jour'], POST['heure_debut'], 
+            POST['heure_fin'], POST.get('is_td', False), POST.get('description', '')
+         )
       else:
-         res = user.ajouter_cours_virtuel()
+         valid_req = is_valid_request(
+            POST, ['jour', 'heure_debut', 'heure_fin', 'nom_niveau']
+         )
+
+         if valid_req[0] == False:
+            return valid_req[1]
+
+         res = user.ajouter_cours_virtuel(
+            POST['jour'], POST['heure_debut'], POST['heure_fin'], 
+            POST['nom_niveau'], POST.get('nom_filiere'), POST.get('description', '')
+         )
 
       return get_cud_response(res, success_code=status.HTTP_201_CREATED)
 
@@ -124,17 +135,17 @@ class CoursDetail(APIView):
       res = Cours.get_cours(code_ue)
       return get_read_response(res, CoursSerializer)
 
-   # def put(self, request, code_ue):
-   #    user, PUT = request.user, request.data
-   #    new_nom_salle, new_is_td = PUT.get('new_nom_salle', ''), PUT.get('new_is_td')
-   #    new_jour, new_heure_debut = PUT.get('new_jour', ''), PUT.get('new_heure_debut')
-   #    new_heure_fin, new_code_ue = PUT.get('new_heure_fin'), PUT.get('new_code_ue', '')
+   def put(self, request, code_ue):
+      user, PUT = request.user, request.data
+      new_nom_salle, new_is_td = PUT.get('new_nom_salle'), PUT.get('new_is_td')
+      new_jour, new_heure_debut = PUT.get('new_jour'), PUT.get('new_heure_debut')
+      new_heure_fin, new_code_ue = PUT.get('new_heure_fin'), PUT.get('new_code_ue')
 
-   #    res = user.modifier_cours(
-   #       code_ue, new_code_ue, new_nom_salle, new_jour, 
-   #       new_heure_debut, new_heure_fin, new_is_td
-   #    )
-   #    return get_cud_response(res)
+      res = user.modifier_cours(
+         code_ue, new_code_ue, new_nom_salle, new_jour, 
+         new_heure_debut, new_heure_fin, new_is_td
+      )
+      return get_cud_response(res)
 
    def delete(self, request, code_ue):
       res = request.user.supprimer_cours(code_ue)  

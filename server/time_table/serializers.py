@@ -17,6 +17,7 @@ class RegroupementSerializer(ModelSerializer):
    class Meta:
       model = Regroupement
       fields = '__all__'
+      depth = 1
 
 
 class NiveauSerializer(ModelSerializer):
@@ -30,6 +31,14 @@ class CoursSerializer(ModelSerializer):
    class Meta:
       model = Cours
       fields = '__all__'
+      depth = 1
+
+   def to_representation(self, instance):
+      """Convert `heure_debut` and `heure_fin` to appropriate formats."""
+      ret = super().to_representation(instance)
+      print(ret)
+      # ret['heure_debut'] = ret['heure_debut']
+      return ret
 
 
 class FiliereSerializer(ModelSerializer):
@@ -60,11 +69,4 @@ class SalleSerializer(ModelSerializer):
    class Meta:
       model = Salle
       fields = '__all__'
-
-
-# class RegroupementSerializer(ModelSerializer):
-#    class Meta:
-#       model = Regroupement
-#       fields = '__all__'
-
 

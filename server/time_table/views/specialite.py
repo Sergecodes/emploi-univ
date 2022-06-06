@@ -11,10 +11,13 @@ from ..utils import get_cud_response, is_valid_request, dict_fetchall
 
 @api_view(['GET'])
 def specialites_by_niveau_filiere(request, nom_filiere, nom_niveau):
+   # We use code_ue and effectif_max is null check to prevent 
+   # receiving duplicate specialites. Such as after a UE is added.
    query = """
       SELECT DISTINCT id_regroupement, nom_specialite, nom_filiere, nom_niveau 
       FROM regroupement reg, specialite spec WHERE reg.nom_specialite = spec.nom
-      AND reg.nom_niveau = %s AND reg.nom_filiere = %s;
+      AND reg.nom_niveau = %s AND reg.nom_filiere = %s AND code_ue IS NULL AND 
+      effectif_max IS NULL;
    """
    with connection.cursor() as cursor:
       cursor.execute(query, [nom_niveau, nom_filiere])
@@ -63,7 +66,8 @@ class SpecialiteList(APIView):
    def get(self, request):
       query = """
          SELECT DISTINCT id_regroupement, nom_specialite, nom_filiere, nom_niveau 
-         FROM regroupement reg, specialite spec WHERE reg.nom_specialite = spec.nom;
+         FROM regroupement reg, specialite spec WHERE reg.nom_specialite = spec.nom
+         AND code_ue IS NULL AND effectif_max IS NULL;
       """
       with connection.cursor() as cursor:
          cursor.execute(query)
@@ -107,50 +111,3 @@ class SpecialiteDetail(APIView):
       res = user.supprimer_specialite(nom, DELETE['licence'], DELETE['master'])
       return get_cud_response(res, success_code=status.HTTP_204_NO_CONTENT)
 
-
-'''
-def post(self, request):
-   user, POST = request.user, request.POST
-   valid_req = is_valid_request(POST, ['nom_specialite', 'nom_niveau', 'nom_filiere'])
-
-   if valid_req[0] == False:
-      return valid_req[1]
-
-   nom_filiere, nom_niveau = POST['nom_filiere'], POST['nom_niveau']
-   nom_specialite = POST['nom_specialite']
-
-   spec_form = SpecialiteForm({ 'nom': nom_specialite })
-   fil_form = FiliereForm({ 'nom': nom_filiere })
-   niv_form = NiveauForm({ 'nom': nom_niveau })
-
-   if not spec_form.is_valid():
-      return Response(
-         {
-            'message': 'Specialite form has errors',
-            **spec_form.errors
-         }, 
-         status.HTTP_400_BAD_REQUEST
-      )
-
-   if not fil_form.is_valid():
-      return Response(
-         {
-            'message': 'Filiere form has errors',
-            **fil_form.errors
-         }, 
-         status.HTTP_400_BAD_REQUEST
-      )
-
-   if not niv_form.is_valid():
-      return Response(
-         {
-            'message': 'Niveau form has errors',
-            **niv_form.errors
-         }, 
-         status.HTTP_400_BAD_REQUEST
-      )
-
-   res = user.ajouter_specialite(nom_specialite, nom_niveau, nom_filiere)
-   return get_cud_response(res, success_code=status.HTTP_201_CREATED)
-
-'''

@@ -3,7 +3,6 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from ..forms import GroupeForm
 from ..models import Regroupement, Groupe
 from ..serializers import RegroupementSerializer
 from ..utils import get_cud_response, is_valid_request
