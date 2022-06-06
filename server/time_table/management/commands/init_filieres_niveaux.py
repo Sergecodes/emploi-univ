@@ -1,3 +1,4 @@
+from decouple import config
 from django.db.utils import IntegrityError
 from django.db import connection, transaction
 from django.core.management.base import BaseCommand, CommandError
@@ -7,6 +8,7 @@ class Command(BaseCommand):
    help = 'Insert initial filieres and niveaux into database'
 
    def handle(self, *args, **options):
+      USE_PROD_DB = config('USE_PROD_DB', cast=bool, default=False)
       filieres = ['Physique', 'Chimie', 'Mathématiques', 'Informatique']
       niveaux = [
          {'nom_bref': 'L1', 'nom_complet': 'Niveau 1'},
@@ -15,9 +17,21 @@ class Command(BaseCommand):
          {'nom_bref': 'M1', 'nom_complet': 'Master 1'},
       ]
 
-      query1_start = "INSERT INTO filiere (nom) VALUES "
-      query2_start = "INSERT INTO niveau (nom_bref, nom_complet) VALUES "
-      query1_next, query2_next = "(%s), ", "(%s, %s, %s), "
+      # If Oracle is used, since it does not support INSERT IGNORE clause, use the hint...
+      if USE_PROD_DB:
+         query1_start = """
+            INSERT /*+ IGNORE_ROW_ON_DUPKEY_INDEX(filiere, nom) */ 
+            INTO filiere (nom) VALUES 
+         """
+         query2_start = """
+            INSERT /*+ IGNORE_ROW_ON_DUPKEY_INDEX(niveau, nom_bref) */ 
+            INTO niveau (nom_bref, nom_complet) VALUES 
+         """
+      else:
+         query1_start = "INSERT IGNORE INTO filiere (nom) VALUES "
+         query2_start = "INSERT IGNORE INTO niveau (nom_bref, nom_complet) VALUES "
+
+      query1_next, query2_next = "(%s), ", "(%s, %s), "
       query1, query2 = query1_start, query2_start
       params1, params2 = [], []
 
@@ -39,7 +53,7 @@ class Command(BaseCommand):
                cursor.execute(query1, params1)
 
             with connection.cursor() as cursor:
-               cursor.execute(query1, params2)
+               cursor.execute(query2, params2)
       except IntegrityError as err:
          raise CommandError(
             "There would be duplicate entries if this command were executed. "
