@@ -84,3 +84,9 @@ def get_read_response(r_result, serializer_cls):
 
    serializer = serializer_cls(r_result)
    return Response(serializer.data)
+
+
+def validate_cours_heure(heure: str):
+   """`heure` should be of the form ahb where a is the hour and b the minutes"""
+   hour, minute = heure.split('h')
+   # TODO

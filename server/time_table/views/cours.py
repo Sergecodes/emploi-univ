@@ -137,13 +137,15 @@ class CoursDetail(APIView):
 
    def put(self, request, code_ue):
       user, PUT = request.user, request.data
+      
+      new_enseignants = PUT.get('new_enseignants', [])
       new_nom_salle, new_is_td = PUT.get('new_nom_salle'), PUT.get('new_is_td')
       new_jour, new_heure_debut = PUT.get('new_jour'), PUT.get('new_heure_debut')
       new_heure_fin, new_code_ue = PUT.get('new_heure_fin'), PUT.get('new_code_ue')
 
       res = user.modifier_cours(
-         code_ue, new_code_ue, new_nom_salle, new_jour, 
-         new_heure_debut, new_heure_fin, new_is_td
+         code_ue, new_code_ue, new_enseignants, new_nom_salle, 
+         new_jour, new_heure_debut, new_heure_fin, new_is_td
       )
       return get_cud_response(res)
 

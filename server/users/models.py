@@ -559,29 +559,31 @@ class CoursOps:
 			return err
 
 	def supprimer_cours(self, code_ue):
-		query1 = "DELETE FROM regroupement WHERE code_ue = %s;"
-		query2 = "DELETE FROM cours WHERE code_ue = %s;"
+		query = "DELETE FROM cours WHERE code_ue = %s;"
 
 		try: 
-			with transaction.atomic():
-				with connection.cursor() as cursor:
-					cursor.execute(query1, [code_ue])
+			with connection.cursor() as cursor:
+				cursor.execute(query, [code_ue])
 
-				with connection.cursor() as cursor:
-					cursor.execute(query2, [code_ue])
-
-					if cursor.rowcount == 0:
-						raise Cours.DoesNotExist(f"Cours '{code_ue}' not found")
+				if cursor.rowcount == 0:
+					raise Cours.DoesNotExist(f"Cours '{code_ue}' not found")
 		except (IntegrityError, ObjectDoesNotExist) as err:
 			return err
 
 	def modifier_cours(
-		self, code_ue, new_code_ue=None, new_nom_salle=None, new_jour=None, 
-		new_heure_debut=None, new_heure_fin=None, new_is_td=None
+		self, code_ue, new_code_ue=None, new_enseignants=None, new_nom_salle=None, 
+		new_jour=None, new_heure_debut=None, new_heure_fin=None, new_is_td=None
 	):
+
+		# Don't use mutable objects as function defaults.
+		# https://stackoverflow.com/questions/366422/
+		# what-is-the-pythonic-way-to-avoid-default-parameters-that-are-empty-lists
+		if new_enseignants is None:
+			new_enseignants = []
+
 		# If no data wants to be modified
 		if not any([
-			new_code_ue, new_nom_salle, new_jour, 
+			new_code_ue, new_nom_salle, new_jour, new_enseignants, 
 			new_heure_debut, new_heure_fin, new_is_td
 		]):
 			return
