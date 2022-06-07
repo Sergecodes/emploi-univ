@@ -29,7 +29,7 @@ CREATE TABLE `salle` (`nom` varchar(10) NOT NULL PRIMARY KEY, `capacite` smallin
 --
 -- Create model Specialite
 --
-CREATE TABLE `specialite` (`nom` varchar(20) NOT NULL PRIMARY KEY, `effectif` smallint UNSIGNED NOT NULL CHECK (`effectif` >= 0));
+CREATE TABLE `specialite` (`nom` varchar(20) NOT NULL PRIMARY KEY);
 --
 -- Create model UE
 --
@@ -41,7 +41,7 @@ CREATE TABLE `cours` (`code_ue` varchar(10) NOT NULL PRIMARY KEY, `jour` varchar
 --
 -- Create model Regroupement
 --
-CREATE TABLE `regroupement` (`id_regroupement` bigint AUTO_INCREMENT NOT NULL PRIMARY KEY, `nom_filiere` varchar(20) NOT NULL, `nom_groupe` varchar(20) NULL, `nom_niveau` varchar(10) NOT NULL, `nom_specialite` varchar(20) NULL, `code_ue` varchar(10) NULL);
+CREATE TABLE `regroupement` (`id_regroupement` bigint AUTO_INCREMENT NOT NULL PRIMARY KEY, `nom_filiere` varchar(20) NOT NULL, `nom_groupe` varchar(20) NULL, `nom_niveau` varchar(10) NOT NULL, `nom_specialite` varchar(20) NULL, `code_ue` varchar(10) NULL, `effectif_max` int(10) unsigned NULL CHECK (`effectif_max` >= 0)); 
 --
 -- Create constraint unique_ue_grp_fil_niv_spec on model regroupement
 --
@@ -57,6 +57,6 @@ ALTER TABLE `cours` ADD COLUMN `nom_salle` varchar(10) NULL , ADD CONSTRAINT `co
 ALTER TABLE `cours` ADD CONSTRAINT `cours_code_ue_4eab98b4_fk_ue_code` FOREIGN KEY (`code_ue`) REFERENCES `ue` (`code`) ON DELETE RESTRICT ON UPDATE CASCADE;
 ALTER TABLE `regroupement` ADD CONSTRAINT `regroupement_nom_filiere_32af357c_fk_filiere_nom` FOREIGN KEY (`nom_filiere`) REFERENCES `filiere` (`nom`) ON DELETE RESTRICT ON UPDATE CASCADE;
 ALTER TABLE `regroupement` ADD CONSTRAINT `regroupement_nom_groupe_0400cbf3_fk_groupe_nom` FOREIGN KEY (`nom_groupe`) REFERENCES `groupe` (`nom`) ON DELETE CASCADE ON UPDATE CASCADE;
-ALTER TABLE `regroupement` ADD CONSTRAINT `regroupement_nom_niveau_f894a562_fk_niveau_nom_bref` FOREIGN KEY (`nom_niveau`) REFERENCES `niveau` (`nom_bref`);
+ALTER TABLE `regroupement` ADD CONSTRAINT `regroupement_nom_niveau_f894a562_fk_niveau_nom_bref` FOREIGN KEY (`nom_niveau`) REFERENCES `niveau` (`nom_bref`) ON DELETE RESTRICT ON UPDATE RESTRICT;
 ALTER TABLE `regroupement` ADD CONSTRAINT `regroupement_nom_specialite_3e864e1b_fk_specialite_nom` FOREIGN KEY (`nom_specialite`) REFERENCES `specialite` (`nom`) ON DELETE CASCADE ON UPDATE CASCADE;
 ALTER TABLE `regroupement` ADD CONSTRAINT `regroupement_code_ue_11d1b045_fk_ue_code` FOREIGN KEY (`code_ue`) REFERENCES `ue` (`code`) ON DELETE RESTRICT ON UPDATE CASCADE;
