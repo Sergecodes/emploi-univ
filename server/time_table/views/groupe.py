@@ -65,6 +65,8 @@ class GroupeDetail(APIView):
    def delete(self, request, nom):
       user, DELETE = request.user, request.data
       valid_req = is_valid_request(DELETE, ['nom_niveau', 'nom_filiere'])
+      print(DELETE)
+      print(DELETE.get("nom_specialite"), type(DELETE.get('nom_specialite')))
 
       if valid_req[0] == False:
          return valid_req[1]

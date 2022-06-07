@@ -1,6 +1,6 @@
 import React,{useState} from 'react';
 import { Alert } from '@mui/material';
-import{ handleOpenModify} from "../../../redux/ModalDisplaySlice";
+import{ handleOpenModify,handleOpenSnackbar,handleAlert} from "../../../redux/ModalDisplaySlice";
 import {useDispatch} from "react-redux";
 import axios from "axios";
 import Cookies from "js-cookie";
@@ -8,7 +8,6 @@ import Cookies from "js-cookie";
 
 
 const ModifierFiliere = (props) => {
-
   const [alert ,setAlert]=useState("none")
   const actual=props.filiere;
   const [updateFiliere, setUpdateFiliere] = useState(props.filiere);
@@ -27,12 +26,27 @@ const ModifierFiliere = (props) => {
       axios({
         method:'put',
         url:`http://localhost:8000/api/filieres/${encodeURIComponent(actual.nom)}/`,
-        data:{new_nom:updateFiliere},
+        data:{new_nom:updateFiliere.nom},
         headers:headers,
         withCredentials:true
       })
-      .then(res=>console.log(res))
-      .catch(err=>console.error(err))
+      .then(res=>{
+        dispatch(handleOpenModify());
+        dispatch(handleOpenSnackbar())
+        if(res.status===200){
+          dispatch(handleAlert({type : "success"}))
+        }
+        else{
+          dispatch(handleAlert({type : "error"}));
+        }
+       
+       
+      })
+      .catch(err=>{
+        dispatch(handleOpenModify());
+        dispatch(handleOpenSnackbar());
+        dispatch(handleAlert({type : "error"}));
+      })
     }
   }
 
@@ -60,7 +74,7 @@ const ModifierFiliere = (props) => {
                       name="nom"
                       style={{ minWidth: "70%" }}
                       value={updateFiliere.nom}
-                      onChange={(e)=>setUpdateFiliere(e.target.value)}
+                      onChange={(e)=>setUpdateFiliere({...updateFiliere,nom:e.target.value})}
                     ></input>
                   </div>
                 </div>

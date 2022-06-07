@@ -2,9 +2,9 @@ import React, {useState, useEffect} from "react";
 import tableIcons from "../Common/MaterialTableIcons";
 import MaterialTable from "material-table";
 import { Modal, Box } from "@material-ui/core";
-import AjouterSpecialite from "./Specialites/AjouterSpecialite";
-import SupprimerSpecialite from "./Specialites/SupprimerSpecialite";
-import ModifierSpecialite from "./Specialites/ModifierSpecialite";
+import AjouterGroupe from "./Groupes/AjouterGroupe";
+import SupprimerGroupe from "./Groupes/SupprimerGroupe";
+import ModifierGroupe from "./Groupes/ModifierGroupe";
 import { useSelector, useDispatch } from "react-redux";
 import {
   handleOpenAjout,
@@ -13,28 +13,29 @@ import {
 } from "../../redux/ModalDisplaySlice";
 import axios from "axios";
 
-const Salles = () => {
-  const [listeSpecialites, setListeSpecialites] = useState([{}
-  ]);
- const [specialiteInfo, setSpecialiteInfo] = useState({ });
+const Groupes = () => {
+  const [listeGroupes, setListeGroupes] = useState([{}]);
+ const [groupeInfo, setGroupeInfo] = useState({ });
 
-  const data = listeSpecialites;
+  const data = listeGroupes;
   const columns = [
-    { title: "Filiere", field: "nom_filiere", align: "center" },
-    { title: "Specialite", field: "nom_specialite", align: "center" },
-    { title: "Niveau", field: "nom_niveau", align: "center" },
+    { title: "Groupe", field: "groupe.nom", align: "center" },
+    { title: "Filiere", field: "filiere.nom", align: "center" },
+    { title: "Niveau", field: "niveau.nom_bref", align: "center" },
+    { title: "Specialité", field: "specialite.nom", align: "center" },
+
   
   ];
 
   const dispatch = useDispatch();
 
   const handleModify = (data) => {
-    setSpecialiteInfo(data);
+    setGroupeInfo(data);
     dispatch(handleOpenModify());
   };
 
   const handleDelete = (data) => {
-    setSpecialiteInfo(data);
+    setGroupeInfo(data);
     dispatch(handleOpenDelete());
   };
 
@@ -43,42 +44,30 @@ const Salles = () => {
   
   useEffect(() => {
     axios
-      .get("http://localhost:8000/api/specialites/")
-      .then((res) =>{setListeSpecialites(res.data);console.log(res.data)})
+      .get("http://localhost:8000/api/groupes/")
+      .then((res) =>{setListeGroupes(res.data); console.log(res.data)})
       .catch((err) => console.log(err));
   }, []);
 
-  /*const handlePost=()=>{
-    axios({
-        method:'post',
-        url:"http://localhost:8000/api/specialites/",
-        data:{nom_filiere:"Chimie",specialites:[{nom:"Chimie compliquée",master:true, licence:true,effectif:250},{nom:"Chimie facile",master:true, licence:true,effectif:250}]},
-        headers:headers,
-        withCredentials:true
-      })
-      .then(res=>console.log(res))
-      .catch(err=>console.error(err))
-  }
-*/
-//filiere ,  niveau , specialite
+  
   return (
     <section className="materialTableSalle mx-2 my-3">
        <MaterialTable
-        title="SPECIALITES DE L'UNIVERSITE"
+        title="GROUPES DE L'UNIVERSITE"
         actions={[
           {
             icon: tableIcons.Edit,
-            tooltip: "Modifier une specialite",
+            tooltip: "Modifier une groupe",
             onClick: (event, data) => handleModify(data),
           },
           {
             icon: tableIcons.Delete,
-            tooltip: "Supprimer une specialite",
+            tooltip: "Supprimer une groupe",
             onClick: (event, data) => handleDelete(data),
           },
           {
             icon: tableIcons.Add,
-            tooltip: "Ajouter une/plusieurs specialite(s)",
+            tooltip: "Ajouter une/plusieurs groupe(s)",
             isFreeAction: true,
             onClick: () => dispatch(handleOpenAjout()),
 
@@ -90,29 +79,30 @@ const Salles = () => {
         options={{ paging: false, grouping: true }}
       /> 
 
+
       {/*Modal pour l'ajout d'une specialite*/}
       <div>
         <Modal open={files.openAjout}>
           <Box>
-            <AjouterSpecialite />
+            <AjouterGroupe />
           </Box>
         </Modal>
       </div>
 
-      {/*Modal pour la suppression d'une specialite*/}
+      {/*Modal pour la suppression d'une Group e*/}
       <div>
         <Modal open={files.openDelete}>
           <Box>
-            <SupprimerSpecialite specialite={specialiteInfo}/>
+            <SupprimerGroupe groupeInfo={{nom_filiere:groupeInfo.filiere,groupe:groupeInfo.groupe, nom_specialite:groupeInfo.specialite, nom_niveau:groupeInfo.niveau}}  />
           </Box>
         </Modal>
       </div>
 
-      {/* Modal pour la suppression d'une specialite  */}
+      {/* Modal pour la suppression d'une groupe  */}
       <div>
         <Modal open={files.openModify}>
           <Box>
-            <ModifierSpecialite specialite={specialiteInfo.nom_specialite}  />
+            <ModifierGroupe groupeInfo={{nom_filiere:groupeInfo.filiere,new_nom:groupeInfo.groupe, nom_specialite:groupeInfo.specialite, nom_niveau:groupeInfo.niveau}}  />
           </Box>
         </Modal>
       </div>
@@ -120,4 +110,4 @@ const Salles = () => {
   );
 };
 
-export default Salles;
+export default Groupes;

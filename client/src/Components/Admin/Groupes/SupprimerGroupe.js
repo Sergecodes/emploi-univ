@@ -5,9 +5,15 @@ import { Delete } from '@material-ui/icons';
 import axios from "axios";
 import Cookies from "js-cookie";
 
-const SupprimerSpecialite = (props) => {
-    const licence = props.specialite.nom_niveau === 'L3'?true:false;
-    const master = props.specialite.nom_niveau === 'M1'?true:false;
+const SupprimerGroupe = (props) => {
+  const groupeInfo = props.groupeInfo;
+  if(groupeInfo.nom_specialite===null){
+    console.log("null")
+  }
+  else{
+    console.log("not null")
+  }
+ 
     const dispatch = useDispatch();
     const csrftoken = Cookies.get('csrftoken');
   const headers={
@@ -15,16 +21,25 @@ const SupprimerSpecialite = (props) => {
   }
 
     const handleDelete=()=>{
+      let newData ={};
+      if(groupeInfo.nom_specialite===null)
+      {
+        newData={nom_niveau:groupeInfo.nom_niveau.nom_bref, nom_filiere:groupeInfo.nom_filiere.nom}
+      }
+      else{
+        newData= {nom_niveau:groupeInfo.nom_niveau.nom_bref, nom_filiere:groupeInfo.nom_filiere.nom,nom_specialite:groupeInfo.nom_specialite.nom}
+      }
       axios({
         method:'delete',
-        url:`http://localhost:8000/api/specialites/${encodeURIComponent(props.specialite.nom_specialite)}/`,
-        data:{licence:licence, master:master},
+        url:`http://localhost:8000/api/groupes/${encodeURIComponent(groupeInfo.groupe.nom)}`,
+        data:newData,
         headers:headers,
         withCredentials:true
       })
       .then(res=>console.log(res))
       .catch(err=>console.error(err))
   //  dispatch(handleOpenDelete());
+  console.log(props.groupeInfo)
     }
    
   return (
@@ -36,7 +51,7 @@ const SupprimerSpecialite = (props) => {
             >
               <div className="ajout mt-5  px-3 py-2 col-12 col-md-9 col-lg-6">
                 <h4 className="fs-5 fw-light text-center">
-                  Voulez vous vraiment Supprimer la spécialité {props.specialite.nom_specialite}?
+                  Voulez vous vraiment Supprimer le groupe '{props.groupeInfo.groupe.nom}' de {props.groupeInfo.nom_niveau.nom_bref} de la filiere {props.groupeInfo.nom_filiere.nom}?
                 </h4>
                 <div
                   className="my-4 d-flex justify-content-center "
@@ -60,4 +75,4 @@ const SupprimerSpecialite = (props) => {
   )
 }
 
-export default SupprimerSpecialite
+export default SupprimerGroupe

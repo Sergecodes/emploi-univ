@@ -1,6 +1,6 @@
 import React from 'react';
 import {useDispatch} from "react-redux";
-import{ handleOpenDelete} from "../../../redux/ModalDisplaySlice";
+import{ handleOpenDelete,handleOpenSnackbar,handleAlert} from "../../../redux/ModalDisplaySlice";
 import { Delete } from '@material-ui/icons';
 import axios from "axios";
 import Cookies from "js-cookie";
@@ -20,8 +20,23 @@ const SupprimerFiliere = (props) => {
         headers:headers,
         withCredentials:true
       })
-      .then(res=>console.log(res))
-      .catch(err=>console.error(err))
+      .then(res=>{
+        dispatch(handleOpenDelete());
+        dispatch(handleOpenSnackbar())
+        if(res.status===204){
+          dispatch(handleAlert({type : "success"}))
+        }
+        else{
+          dispatch(handleAlert({type : "error"}));
+        }
+       
+       
+      })
+      .catch(err=>{
+        dispatch(handleOpenDelete());
+        dispatch(handleOpenSnackbar());
+        dispatch(handleAlert({type : "error"}));
+      })
   //  dispatch(handleOpenDelete());
     }
    

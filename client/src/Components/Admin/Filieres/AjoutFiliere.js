@@ -2,14 +2,14 @@ import React, { useState } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
 import {useDispatch} from "react-redux";
-import{ handleOpenAjout} from "../../../redux/ModalDisplaySlice";
+import{ handleOpenAjout,handleOpenSnackbar, handleAlert} from "../../../redux/ModalDisplaySlice"; 
+
 
 
 const AjoutFiliere = () => {
   const [ajoutFiliere, setAjoutFiliere] = useState("");
   const csrftoken = Cookies.get('csrftoken');
   const dispatch=useDispatch();
-
   /* const handleAjout=()=>{
     axios.get("http://localhost:8000/api/salles/AMPHI 500/")
     .then(data=>console.log(data.data))
@@ -18,6 +18,9 @@ const AjoutFiliere = () => {
   const headers={
     'X-CSRFToken': csrftoken
   }
+
+
+
   const handleAjout = () => {
     axios({
       method:'post',
@@ -26,10 +29,28 @@ const AjoutFiliere = () => {
       headers:headers,
       withCredentials:true
     })
-    .then(res=>console.log(res))
-    .catch(err=>console.error(err))
+    .then(res=>{
+      dispatch(handleOpenAjout());
+      dispatch(handleOpenSnackbar())
+      if(res.status===201){
+        dispatch(handleAlert({type : "success"}))
+      }
+      else{
+        dispatch(handleAlert({type : "error"}));
+      }
+     
+     
+    })
+    .catch(err=>{
+      dispatch(handleOpenAjout());
+      dispatch(handleOpenSnackbar());
+      dispatch(handleAlert({type : "error"}));
+    })
+
   };
 
+  
+   
   return (
     <section
       className="d-flex justify-content-center row"
@@ -61,6 +82,7 @@ const AjoutFiliere = () => {
           </button>
         </div>
       </div>
+    
     </section>
   );
 };

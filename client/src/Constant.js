@@ -3,8 +3,8 @@ import Info from "./assets/info.jpg";
 import Chimie from "./assets/chimie.jpg";
 import Physique from "./assets/physique.jpg";
 import Biosciences from "./assets/bios.jpg";
-import { Dashboard ,TableChart, PersonAddRounded, PersonRounded, Computer } from "@material-ui/icons";
-import {BsTable, BsTextIndentLeft,BsTablet,BsPlusCircle,BsBookFill} from "react-icons/bs"
+import { Dashboard , PersonRounded, Computer ,BarChart} from "@material-ui/icons";
+import {BsTablet,BsBookFill} from "react-icons/bs"
 
 export const filiere = [
   {
@@ -115,72 +115,28 @@ export const adminSidenavElements=[
     {
        
         id:"2",     
-        subHeader:"Ajout",
+        subHeader:"Graphique",
         items:[
             {
-                id:"1",
-                icon:<BsTable className="ms-1"/>,
-                name:"Ajout d'un cours",
-                subElements:[
-                    {
-                        id:"1",
-                        icon:<BsTablet/>,
-                        name:"mode graphique"
-                    },
-                    {
-                        id:"2",
-                        icon:<BsTextIndentLeft/>,
-                        name:"mode formulaire"
-                    }
-                ]
-            },
-            {
-                id:"2",
-                icon:<PersonAddRounded/>,
-                name:"Ajout d'un enseignant",
-            },
-            {
-                id:"3",
-                icon:<BsPlusCircle className="ms-1"/>,
-                name:"Ajout d'une filière",
-            },
-            {
-                id:"4",
-                icon:<BsPlusCircle className="ms-1"/>,
-                name:"Ajout d'une salle",
-            },
-            {
-              id:"5",
-              icon:<BsPlusCircle className="ms-1"/>,
-              name:"Ajout d'une UE",
-          }
+              id:"2",
+              icon:<BsTablet/>,
+              name:"Ajout d'un cours"
+            }
         ]
     },
     {
         id:"3",     
-        subHeader:"Consultation, modification",
+        subHeader:"Liste",
         items:[
-            {
-                id:"1",
-                icon:<TableChart/>,
-                name:"Emploi de temps",
-                subElements:[
-                  {
-                      id:"1",
-                      icon:<BsTablet/>,
-                      name:"mode graphique"
-                  },
-                  {
-                      id:"2",
-                      icon:<BsTextIndentLeft/>,
-                      name:"mode formulaire"
-                  }
-              ]
-            },
             {
                 id:"2",
                 icon:<Computer/>,
                 name:"Filieres"
+            },
+            {
+              id:"8",
+              icon:<BarChart/>,
+              name:"Niveaux"
             },
             {
                 id:"3",
@@ -201,7 +157,17 @@ export const adminSidenavElements=[
             id:"6",
             icon:<BsBookFill  className="ms-1"/>,
             name:"Specialités"
-        }
+        },
+        {
+          id:"7",
+          icon:<BsBookFill  className="ms-1"/>,
+          name:"Groupes"
+      },
+      {
+        id:"9",
+        icon:<BsBookFill  className="ms-1"/>,
+        name:"Cours"
+    },
            
         ]
     }
