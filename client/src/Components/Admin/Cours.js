@@ -1,4 +1,170 @@
-import React,{useEffect} from 'react';
+import React, { useState,useEffect} from "react";
+import tableIcons from "../Common/MaterialTableIcons";
+import MaterialTable from "material-table";
+import { Modal, Box } from "@material-ui/core";
+import AjoutCours from "./Cours/AjoutCours";
+import SupprimerCours from "./Cours/SupprimerCours";
+import ModifierCours from "./Cours/ModifierCours";
+import { useSelector, useDispatch } from "react-redux";
+import {
+  handleOpenAjout,
+  handleOpenDelete,
+  handleOpenModify,
+} from "../../redux/ModalDisplaySlice";
+import axios from "axios";
+
+const Salles = () => {
+  const [listeCours, setListeCours] = useState([{}
+  ]);
+  const [coursInfo, setCoursInfo] = useState([]);
+ const [listeEnseignants, setListeEnseignants] =useState([]);
+
+  const data = listeCours;
+  const columns = [
+    { title: "Ue", field: "ue.code", align: "center" },
+    { title: "Journée", field: "jour", align: "center" },
+    { title: "Debut", field: "heure_debut", align: "center" },
+    { title: "Fin", field: "heure_fin", align: "center" },
+    { title: "Salle", field: "salle.nom", align: "center" },
+ //   { title: "enseignant", field: "ue.code", align: "center" },
+    { title: "TD?", field: "is_td", align: "center" },
+    { title: "Virtuel?", field: "is_virtuel", align: "center" },
+    { title: "Decription", field: "description", align: "center" },
+    
+  
+  ];
+
+
+  const dispatch = useDispatch();
+
+  const handleModify = (data) => {
+    let new_coursInfo = { nom: data.nom, capacite: data.capacite };
+    setCoursInfo(new_coursInfo);
+    dispatch(handleOpenModify());
+  };
+
+  const handleDelete = (data) => {
+    setCoursInfo(data.ue.code);
+    dispatch(handleOpenDelete());
+  };
+
+  const files = useSelector((state) => state.ModalDisplay);
+  
+
+  
+  useEffect(() => {
+    axios
+      .get("http://localhost:8000/api/cours/")
+      .then((res) => {setListeCours(res.data);setListeEnseignants(res.data.enseignant);console.log(res.data[0])})
+      .catch((err) => console.log(err));
+  }, []);
+
+
+  return (
+    <section className="materialTableSalle mx-2 my-3">
+      <MaterialTable
+        title="DIFFERENTS COURS DE L'UNIVERSITE"
+        actions={[
+          {
+            icon: tableIcons.Edit,
+            tooltip: "Modifier une cours",
+            onClick: (event, data) => handleModify(data),
+          },
+          {
+            icon: tableIcons.Delete,
+            tooltip: "Supprimer une cours",
+            onClick: (event, data) => handleDelete(data),
+          },
+          {
+            icon: tableIcons.Add,
+            tooltip: "Ajouter une cours",
+            isFreeAction: true,
+            onClick: () => dispatch(handleOpenAjout()),
+
+          },
+        ]}
+        icons={tableIcons}
+        columns={columns}
+        data={data}
+        options={{ paging: false, grouping: true }}
+       
+      />
+
+      {/*Modal pour l'ajout d'une cours*/}
+      <div>
+        <Modal open={files.openAjout} style={{overflow:"scroll"}}>
+          <Box>
+            <AjoutCours />
+          </Box>
+        </Modal>
+      </div>
+
+      {/*Modal pour la suppression d'une cours*/}
+      <div>
+        <Modal open={files.openDelete}>
+          <Box>
+            <SupprimerCours cours={coursInfo} />
+          </Box>
+        </Modal>
+      </div>
+
+      {/* Modal pour la suppression d'une cours */}
+      <div>
+        <Modal open={files.openModify}>
+          <Box>
+            <ModifierCours cours={coursInfo} />
+          </Box>
+        </Modal>
+      </div>
+    </section>
+  );
+};
+
+export default Salles;
+
+
+
+
+
+
+/*
+ detailPanel={[
+          {
+            tooltip: 'Show Name',
+            render: (rowData) => {
+              
+              return (
+                <div>steph</div>
+              )
+            },
+          }]}*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*import React,{useEffect} from 'react';
 import axios from "axios";
 import Cookies from "js-cookie";
 
@@ -65,4 +231,6 @@ const handleDelete=()=>{
   )
 }
 
-export default Cours
+export default Cours*/
+
+
