@@ -1,7 +1,8 @@
+import json
 from django.db import models, connection
 from django.utils.translation import gettext_lazy as _
 
-from .utils import dict_fetchone
+from .utils import dict_fetchone, parse_cours_list
 
 
 class Enseignant(models.Model):
@@ -203,13 +204,21 @@ class Cours(models.Model):
 
     @classmethod
     def get_cours(cls, code_ue):
-        query = "SELECT * FROM cours WHERE code_ue = %s LIMIT 1;"
-        
+        from .serializers import CoursSerializer
+
+        query = "SELECT * FROM cours WHERE code_ue = %s;"
+        raw_qs = cls.objects.raw(query, [code_ue])
         try:
-            obj = cls.objects.raw(query, [code_ue])[0]
+            # Try to get first element in queryset
+            raw_qs[0]
         except IndexError:
             return None
-        return obj
+
+        serializer = CoursSerializer(raw_qs, many=True)
+        res_list = json.loads(json.dumps(serializer.data))
+        
+        # Since code_ue is just one, we should get a list with a single element.
+        return parse_cours_list(res_list)[0]
 
     def __str__(self):
         return str(self.ue)
