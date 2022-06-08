@@ -1,6 +1,10 @@
 import React, { useState } from "react";
 import { Alert } from "@mui/material";
-import { handleOpenModify } from "../../../redux/ModalDisplaySlice";
+import {
+  handleOpenModify,
+  handleOpenSnackbar,
+  handleAlert,
+} from "../../../redux/ModalDisplaySlice";
 import { useDispatch } from "react-redux";
 import axios from "axios";
 import Cookies from "js-cookie";
@@ -21,7 +25,6 @@ const ModifierEnseignant = (props) => {
     setUpdateEnseignant({ ...updateEnseignant, [name]: value });
   };
   const handleUpdate = () => {
-     
     if (
       actual.nom === updateEnseignant.nom &&
       actual.prenom === updateEnseignant.prenom &&
@@ -29,18 +32,34 @@ const ModifierEnseignant = (props) => {
     ) {
       setAlert("warning");
     } else {
-      setAlert("none")
+      setAlert("none");
       axios({
         method: "put",
         url: `http://localhost:8000/api/enseignants/${encodeURIComponent(
           actual.matricule
         )}/`,
-        data: { new_nom: updateEnseignant.nom, new_prenom: updateEnseignant.prenom, new_matricule:updateEnseignant.matricule },
+        data: {
+          new_nom: updateEnseignant.nom,
+          new_prenom: updateEnseignant.prenom,
+          new_matricule: updateEnseignant.matricule,
+        },
         headers: headers,
         withCredentials: true,
       })
-        .then((res) => console.log(res))
-        .catch((err) => console.error(err));
+        .then((res) => {
+          dispatch(handleOpenModify());
+          dispatch(handleOpenSnackbar());
+          if (res.status === 200) {
+            dispatch(handleAlert({ type: "success" }));
+          } else {
+            dispatch(handleAlert({ type: "error" }));
+          }
+        })
+        .catch((err) => {
+          dispatch(handleOpenModify());
+          dispatch(handleOpenSnackbar());
+          dispatch(handleAlert({ type: "error" }));
+        });
     }
   };
 
@@ -100,7 +119,7 @@ const ModifierEnseignant = (props) => {
           <button
             className="btn me-2 cancelButton"
             type="button"
-            onClick={()=>dispatch(handleOpenModify())}
+            onClick={() => dispatch(handleOpenModify())}
           >
             Annuler{" "}
           </button>

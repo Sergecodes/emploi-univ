@@ -109,7 +109,7 @@ class CoursList(APIView):
          )
       else:
          valid_req = is_valid_request(
-            POST, ['jour', 'heure_debut', 'heure_fin', 'nom_niveau']
+            POST, ['jour', 'heure_debut', 'heure_fin', 'nom_niveau', 'description']
          )
 
          if valid_req[0] == False:
@@ -117,7 +117,7 @@ class CoursList(APIView):
 
          res = user.ajouter_cours_virtuel(
             POST['jour'], POST['heure_debut'], POST['heure_fin'], 
-            POST['nom_niveau'], POST.get('nom_filiere'), POST.get('description', '')
+            POST['nom_niveau'], POST.get('nom_filiere'), POST['description'] 
          )
 
       return get_cud_response(res, success_code=status.HTTP_201_CREATED)

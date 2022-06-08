@@ -3,7 +3,7 @@ import TextField from '@mui/material/TextField';
 import Cookies from "js-cookie";
 import axios from "axios";
 import {useDispatch} from "react-redux";
-import{ handleOpenAjout} from "../../../redux/ModalDisplaySlice";
+import{ handleOpenAjout,handleOpenSnackbar, handleAlert} from "../../../redux/ModalDisplaySlice";
 
 
 
@@ -76,8 +76,23 @@ const AjouterUe = () => {
         headers:headers,
         withCredentials:true
       })
-      .then(res=>console.log(res))
-      .catch(err=>console.error(err))
+      .then(res=>{
+        dispatch(handleOpenAjout());
+        dispatch(handleOpenSnackbar())
+        if(res.status===201){
+          dispatch(handleAlert({type : "success"}))
+        }
+        else{
+          dispatch(handleAlert({type : "error"}));
+        }
+       
+       
+      })
+      .catch(err=>{
+        dispatch(handleOpenAjout());
+        dispatch(handleOpenSnackbar());
+        dispatch(handleAlert({type : "error"}));
+      })
     }
   return (
     <section

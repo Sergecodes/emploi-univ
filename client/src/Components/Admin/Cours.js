@@ -55,7 +55,7 @@ const Salles = () => {
   useEffect(() => {
     axios
       .get("http://localhost:8000/api/cours/")
-      .then((res) => {setListeCours(res.data);setListeEnseignants(res.data.enseignant);console.log(res.data[0])})
+      .then((res) => {setListeCours(res.data);setListeEnseignants(res.data.enseignant);console.log(res.data[0],'quelquechose')})
       .catch((err) => console.log(err));
   }, []);
 
@@ -92,7 +92,7 @@ const Salles = () => {
 
       {/*Modal pour l'ajout d'une cours*/}
       <div>
-        <Modal open={files.openAjout} style={{overflow:"scroll"}}>
+        <Modal open={files.openAjout} type={"formulaire"} style={{overflow:"scroll"}}>
           <Box>
             <AjoutCours />
           </Box>

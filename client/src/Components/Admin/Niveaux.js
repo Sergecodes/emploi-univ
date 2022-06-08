@@ -15,7 +15,7 @@ const Niveaux = () => {
 
   useEffect(()=>{
         axios.get('http://localhost:8000/api/niveaux/')
-        .then(res=>{setListeNiveaux(res.data);console.log(res.data)})
+        .then(res=>{setListeNiveaux(res.data)})
         .catch(err=>console.error(err))
   },[])
 

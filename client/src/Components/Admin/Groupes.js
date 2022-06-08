@@ -10,8 +10,11 @@ import {
   handleOpenAjout,
   handleOpenDelete,
   handleOpenModify,
+  handleOpenSnackbar,
 } from "../../redux/ModalDisplaySlice";
 import axios from "axios";
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
 
 const Groupes = () => {
   const [listeGroupes, setListeGroupes] = useState([{}]);
@@ -40,14 +43,40 @@ const Groupes = () => {
   };
 
   const files = useSelector((state) => state.ModalDisplay);
-  
+  const Alert = React.forwardRef(function Alert(props, ref) {
+    return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+  });
+
+  const handleClose = ()=>{
+    if(files.openSnackbar===true){
+      dispatch(handleOpenSnackbar())
+    }
+  }
+
+
+  const alertMessage = ()=>{
+    if(files.alert.type==='success'){
+      return( 
+        <Alert onClose={()=>handleClose()} severity={"success"} sx={{ width: '100%' }}>
+     Opération réussie
+   </Alert>)
+    }
+    else{
+      return(
+        <Alert onClose={()=>handleClose()} severity={"error"} sx={{ width: '100%' }}>
+   Une erreur est survenue lors de l'execution de l'opération
+   </Alert>
+      )
+    }
+   
+  }
   
   useEffect(() => {
     axios
       .get("http://localhost:8000/api/groupes/")
       .then((res) =>{setListeGroupes(res.data); console.log(res.data)})
       .catch((err) => console.log(err));
-  }, []);
+  }, [files.openAjout,files.openModify,files.openDelete]);
 
   
   return (
@@ -79,6 +108,12 @@ const Groupes = () => {
         options={{ paging: false, grouping: true }}
       /> 
 
+   {/*snackbar */}
+   <div>
+      <Snackbar open={files.openSnackbar} autoHideDuration={6000} onClose={()=>handleClose()}>
+         {alertMessage()}
+      </Snackbar>
+      </div>
 
       {/*Modal pour l'ajout d'une specialite*/}
       <div>
@@ -98,7 +133,7 @@ const Groupes = () => {
         </Modal>
       </div>
 
-      {/* Modal pour la suppression d'une groupe  */}
+      {/* Modal pour la modification d'une groupe  */}
       <div>
         <Modal open={files.openModify}>
           <Box>

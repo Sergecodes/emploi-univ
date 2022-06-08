@@ -649,7 +649,7 @@ export default function AjoutCoursGraphique() {
       <div>
         <Modal open={files.openAjout} style={{ overflow: "scroll" }}>
           <Box>
-            <AjoutCours element={choix} activate={activate} />
+            <AjoutCours element={choix} type={'graphique'} activate={activate} />
             <button
               className="btn me-2 cancelButton"
               type="button"

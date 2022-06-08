@@ -38,6 +38,8 @@ const AjoutCours = (props) => {
   const csrftoken = Cookies.get("csrftoken");
   const dispatch = useDispatch();
 
+
+
   useEffect(() => {
     const axiosLinks = [
       "http://localhost:8000/api/filieres/",
@@ -127,26 +129,23 @@ const AjoutCours = (props) => {
     })
       .then((res) => console.log(res))
       .catch((err) => console.error(err));*/
-    console.log(choix,options,choixEnseignants)
+      console.log(choix, options,activate)
   };
-  return (
-    <section
-      className="d-flex justify-content-center row"
-      style={{ width: "100%" }}
-    >
-      <div className="ajout mt-5  px-3 py-2 col-12 col-md-9 col-lg-8">
-        <h4 className="fs-5 fw-light text-center">
-          Vous ètes sur le point d'ajouter des informations relatives à un
-          nouveau cours dans votre emploi de temps
-        </h4>
-        <div className="d-flex justify-content-around align-items-center" style={props.element===undefined?{display:'none'}:{}}>
+  const CoursParams=()=>{
+    if(props.type==='graphique'){
+      return(
+        <div className="d-flex justify-content-around align-items-center" >
           <p>Filiere:<span className="fw-bold">{props.element.nom}</span></p>
           <p>Niveau:<span className="fw-bold">{props.element.nom_niveau}</span></p>
           <p style={props.activate?{display:"none"}:{}}>Specialite:<span className="fw-bold">{props.element.nom_specialite}</span></p>
           <p>Jour:<span className="fw-bold">{props.element.jour}</span></p>
           <p>Heure:<span className="fw-bold">{props.element.heure}</span></p>
         </div>
-        <div className="important" style={props.element!==undefined?{display:'none'}:{}}>
+      )
+    }
+    else{
+      return(
+        <div className="important" >
           <div className="mt-4  d-flex align-items-center justify-content-around" >
             <div className="my-4 d-flex justify-content-center ">
               <label htmlFor="nom">Filiere :</label>
@@ -279,7 +278,20 @@ const AjoutCours = (props) => {
             </p>
          </div>
         </div>
-
+      )
+    }
+  }
+  return (
+    <section
+      className="d-flex justify-content-center row"
+      style={{ width: "100%" }}
+    >
+      <div className="ajout mt-5  px-3 py-2 col-12 col-md-9 col-lg-8">
+        <h4 className="fs-5 fw-light text-center">
+          Vous ètes sur le point d'ajouter des informations relatives à un
+          nouveau cours dans votre emploi de temps
+        </h4>
+        <CoursParams/>
         <div className="d-flex flex-column justify-content-center my-3 align-items-center ">
           <div className="my-3 d-flex align-items-center">
             <label htmlFor="code">Code :</label>
@@ -288,24 +300,17 @@ const AjoutCours = (props) => {
               sx={{ minWidth: "280px", padding: "0px", margin: "0px" }}
             >
               <Autocomplete
-                freeSolo
-                id="free-solo-2-demo"
-                disableClearable
+                id="controllable-states-demo"
                 options={listeFilieres.map((option) => option.nom)}
+               
+                onChange={(event, newValue) => {
+                  setOptions({ ...options, code:newValue })
+                }}
                 renderInput={(params) => (
                   <TextField
                     {...params}
-                    label="code"
-                    name="code"
-                  
-                    InputProps={{
-                      ...params.InputProps,
-                      type: "search",
-                    }}
+                    label="code"                               
                     size="small"
-                    onClick={(e) =>
-                      setOptions({ ...options, [e.target.name]: e.target.value })
-                    }
                   />
                 )}
               />
@@ -333,23 +338,16 @@ const AjoutCours = (props) => {
               sx={{ minWidth: "280px", padding: "0px", margin: "0px" }}
             >
               <Autocomplete
-                freeSolo
-                id="free-solo-2-demo"
-                disableClearable
+                id="controllable-states-demo"
                 options={listeFilieres.map((option) => option.nom)}
+                onChange={(event, newValue) => {
+                  setOptions({ ...options, salle:newValue })
+                }}
                 renderInput={(params) => (
                   <TextField
                     {...params}
-                    label="salle"
-                    name="salle"
-                    InputProps={{
-                      ...params.InputProps,
-                      type: "search",
-                    }}
-                    size="small"
-                    onClick={(e) =>
-                      setOptions({ ...options, [e.target.name]: e.target.value })
-                    }
+                    label="salle"                                     
+                    size="small"                   
                   />
                 )}
               />
@@ -442,8 +440,8 @@ const AjoutCours = (props) => {
             />
           </div>
           <div  className="my-4 d-flex justify-content-center ">
-              <div>
-                <label htmlFor="isTd">TD? :</label>
+              <div className="mx-3">
+                <label htmlFor="isTd">TD? :  </label>
                 <input
                   type="checkbox"
                   name='isTd'
