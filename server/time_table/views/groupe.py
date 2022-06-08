@@ -9,14 +9,22 @@ from ..utils import get_cud_response, is_valid_request
 
 
 @api_view(['GET'])
-def groupes_by_niveau_filiere(self, request, nom_filiere, nom_niveau):
-   query = """
-      SELECT DISTINCT id_regroupement, nom_groupe, nom_filiere, nom_niveau,
-      nom_specialite FROM regroupement WHERE nom_filiere = %s AND nom_niveau = %s;
-   """
-   res = Regroupement.objects.raw(query, [nom_filiere, nom_niveau])
+def groupes_by_fil_niv_special(self, request, nom_filiere, nom_niveau, nom_specialite=None):
+   if not nom_specialite:
+      query = """
+         SELECT DISTINCT id_regroupement, nom_groupe, nom_filiere, nom_niveau,
+         nom_specialite FROM regroupement WHERE nom_filiere = %s AND nom_niveau = %s;
+      """
+      res = Regroupement.objects.raw(query, [nom_filiere, nom_niveau])
+   else:
+      query = """
+         SELECT DISTINCT id_regroupement, nom_groupe, nom_filiere, nom_niveau,
+         nom_specialite FROM regroupement WHERE nom_filiere = %s AND nom_niveau = %s
+         AND nom_specialite = %s;
+      """
+      res = Regroupement.objects.raw(query, [nom_filiere, nom_niveau, nom_specialite])
+      
    serializer = RegroupementSerializer(res, many=True)
-
    return Response(serializer.data)
 
 

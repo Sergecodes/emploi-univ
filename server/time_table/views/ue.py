@@ -1,10 +1,34 @@
 from django.db import connection
 from rest_framework import status
+from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from ..models import UE
 from ..utils import get_cud_response, is_valid_request, dict_fetchall
+
+
+@api_view(['GET'])
+def ue_by_fil_niv_special(request, nom_filiere, nom_niveau, nom_specialite=None):
+   if not nom_specialite:
+      query = """
+         SELECT DISTINCT code_ue, intitule FROM regroupement reg, ue 
+         WHERE reg.code_ue = ue.code AND reg.nom_filiere = %s AND nom_niveau = %s;
+      """
+      with connection.cursor() as cursor:
+         cursor.execute(query, [nom_filiere, nom_niveau])
+         res = dict_fetchall(cursor)
+   else:
+      query = """
+         SELECT DISTINCT code_ue, intitule FROM regroupement reg, ue 
+         WHERE reg.code_ue = ue.code AND reg.nom_filiere = %s AND nom_niveau = %s
+         AND nom_specialite = %s;
+      """
+      with connection.cursor() as cursor:
+         cursor.execute(query, [nom_filiere, nom_niveau, nom_specialite])
+         res = dict_fetchall(cursor)
+      
+   return Response(res)   
 
 
 class UEList(APIView):

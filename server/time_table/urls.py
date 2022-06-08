@@ -19,11 +19,11 @@ cours_urls = [
    path('', cours_views.CoursList.as_view()),
    # path('filieres/<str:nom_filiere>/', cours_views.cours_by_filiere),
    path(
-      'filieres/<str:nom_filiere>/<str:nom_niveau>/',
+      '<str:nom_filiere>/<str:nom_niveau>/',
       cours_views.cours_by_fil_niv_special
    ),
    path(
-      'filieres/<str:nom_filiere>/<str:nom_niveau>/<str:nom_specialite>/',
+      '<str:nom_filiere>/<str:nom_niveau>/<str:nom_specialite>/',
       cours_views.cours_by_fil_niv_special
    ),
    path('<str:code_ue>/', cours_views.CoursDetail.as_view()),
@@ -32,7 +32,7 @@ cours_urls = [
 enseignant_urls = [
    path('', ens_views.EnseignantList.as_view()),
    path('filieres/<str:nom_filiere>/', ens_views.enseignants_by_filiere),
-   path('filieres/<str:nom_niveau>/', ens_views.enseignants_by_niveau),
+   path('niveaux/<str:nom_niveau>/', ens_views.enseignants_by_niveau),
    path('<str:matricule>/', ens_views.EnseignantDetail.as_view()),
 ]
 
@@ -54,12 +54,24 @@ specialite_urls = [
 
 groupe_urls = [
    path('', groupe_views.GroupeList.as_view()),
-   path('<str:nom_filiere>/<str:nom_niveau>/', groupe_views.groupes_by_niveau_filiere),
+   path('<str:nom_filiere>/<str:nom_niveau>/', groupe_views.groupes_by_fil_niv_special),
+   path(
+      '<str:nom_filiere>/<str:nom_niveau>/<str:nom_specialite>/', 
+      groupe_views.groupes_by_fil_niv_special
+   ),
    path('<str:nom>/', groupe_views.GroupeDetail.as_view()),
 ]
 
 ue_urls = [
    path('', ue_views.UEList.as_view()),
+   path(
+      '<str:nom_filiere>/<str:nom_niveau>/',
+      ue_views.ue_by_fil_niv_special
+   ),
+   path(
+      '<str:nom_filiere>/<str:nom_niveau>/<str:nom_specialite>/',
+      ue_views.ue_by_fil_niv_special
+   ),
    path('<str:code>/', ue_views.UEDetail.as_view()),
 ]
 
