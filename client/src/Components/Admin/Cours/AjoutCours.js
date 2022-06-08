@@ -12,9 +12,12 @@ import {BsTrash, BsPlus} from "react-icons/bs";
 const AjoutCours = (props) => {
   const [choixEnseignants, setChoixEnseignants] = useState([]);
   const [listeFilieres, setListeFilieres] = useState([]);
- // const [enseignants, setEnseignants] = useState([]);
+ const [listeEnseignants, setListeEnseignants] = useState([]);
   const [listeNiveaux, setListeNiveaux] = useState([]);
   const [listeSpecialites, setListeSpecialites] = useState([]);
+  const [listeGroupes , setListeGroupes]=useState([])
+  const [listeUe, setListeUe] = useState([]);
+  const [listeSalles,setListeSalles]= useState([])
   const [activate, setActivate] = useState(true);
   const [options, setOptions] = useState({
     intitule: false,
@@ -44,12 +47,16 @@ const AjoutCours = (props) => {
     const axiosLinks = [
       "http://localhost:8000/api/filieres/",
       "http://localhost:8000/api/niveaux/",
+      "http://localhost:8000/api/salles/",
+      "http://localhost:8000/api/enseignants/",
     ];
     Promise.all(axiosLinks.map((link) => axios.get(link)))
       .then(
         axios.spread((...allData) => {
           setListeFilieres(allData[0].data);
           setListeNiveaux(allData[1].data);
+          setListeSalles(allData[2].data);
+          setListeEnseignants(allData[3].data);
           setChoix((prevState) => ({
             ...prevState,
             nom_niveau: allData[1].data[0].nom_bref,
@@ -76,7 +83,27 @@ const AjoutCours = (props) => {
           }
         })
         .catch((err) => console.log(err));
+      
+      axios
+      .get(
+        `http://localhost:8000/api/ue/`
+      )
+      .then((res) => {
+        setListeUe(res.data);
+        console.log(res.data);
+      })
+      .catch((err) => console.log(err));
+      axios
+      .get(
+        `http://localhost:8000/api/groupes/${choix.nom}/${choix.nom_niveau}`
+      )
+      .then((res) => {
+        setListeGroupes(res.data);
+        console.log(res.data)
+      })
+      .catch((err) => console.log(err));
     }
+   
   }, [choix.nom, choix.nom_niveau]);
 
   const handleClick = () => {
@@ -301,7 +328,7 @@ const AjoutCours = (props) => {
             >
               <Autocomplete
                 id="controllable-states-demo"
-                options={listeFilieres.map((option) => option.nom)}
+                options={listeUe.map((option) => option.code)}
                
                 onChange={(event, newValue) => {
                   setOptions({ ...options, code:newValue })
@@ -339,7 +366,7 @@ const AjoutCours = (props) => {
             >
               <Autocomplete
                 id="controllable-states-demo"
-                options={listeFilieres.map((option) => option.nom)}
+                options={listeSalles.map((option) => option.nom)}
                 onChange={(event, newValue) => {
                   setOptions({ ...options, salle:newValue })
                 }}
@@ -383,10 +410,11 @@ const AjoutCours = (props) => {
                       sx={{ minWidth: "280px", padding: "0px", margin: "0px" }}
                     >
                       <Autocomplete
+                      
                         freeSolo
                         id="free-solo-2-demo"
                         disableClearable
-                        options={listeFilieres.map((option) => option.nom)}
+                        options={listeEnseignants.map((option) => option.matricule)}
                         renderInput={(params) => (
                           <TextField
                             {...params}

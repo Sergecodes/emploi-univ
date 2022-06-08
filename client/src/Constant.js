@@ -9,9 +9,9 @@ import {BsTablet,BsBookFill} from "react-icons/bs"
 export const filiere = [
   {
     id: 1,
-    nom: "COMPUTER SCIENCE",
+    nom: "INFORMATIQUE",
     img: Info,
-    url: "/computer-science",
+    url: "/affichage/computer-science",
     specialiteLicense: [
         {
             id:10,
@@ -33,9 +33,9 @@ export const filiere = [
   },
   {
     id: 2,
-    nom: "MATHEMATICS",
+    nom: "MATHEMATIQUE",
     img: Math,
-    url: "/mathematics",
+    url: "/affichage/math",
     specialiteLicense: [
         {
             id:10,
@@ -49,9 +49,9 @@ export const filiere = [
   },
   {
     id: 3,
-    nom: "PHYSICS",
+    nom: "PHYSIQUE",
     img: Physique,
-    url: "/physics",
+    url: "/affichage/physique",
     specialiteLicense: [
         {
             id:10,
@@ -65,9 +65,9 @@ export const filiere = [
   },
   {
     id: 4,
-    nom: "CHEMISTRY",
+    nom: "CHIMIE",
     img: Chimie,
-    url: "/chemistry",
+    url: "/affichage/chimie",
     specialiteLicense: [
         {
             id:10,
@@ -83,7 +83,7 @@ export const filiere = [
     id: 5,
     nom: "BIOSCIENCE",
     img: Biosciences,
-    url: "/bioscience",
+    url: "/affichage/bioscience",
     specialiteLicense: [
         {
             id:10,

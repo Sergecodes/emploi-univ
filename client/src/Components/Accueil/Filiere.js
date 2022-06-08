@@ -7,7 +7,7 @@ const Filiere = () => {
     <section>
       <div className="fs-3 fw-light text-center my-3">
         {" "}
-        SELECT YOUR SPECIALITY
+        SELECTIONNER UNE SPECIALITE
       </div>
       <div className="row d-flex justify-content-center">
         {filiere.map((elt) => {

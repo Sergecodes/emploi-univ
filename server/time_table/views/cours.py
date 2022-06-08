@@ -8,17 +8,13 @@ from rest_framework.views import APIView
 from ..models import Cours
 from ..serializers import CoursSerializer
 from ..utils import (
-   get_cud_response, is_valid_request, 
-   dict_fetchall, parse_cours_list
+   get_cud_response, is_valid_request, parse_cours_list
 )
 
 
 @api_view(['GET'])
 def cours_by_fil_niv_special(request, nom_filiere, nom_niveau, nom_specialite=None):
    if not nom_specialite:
-      def parse_cours():
-         pass
-
       query = """
          SELECT DISTINCT nom_specialite, id_cours, cours.code_ue, intitule, matricule_ens, is_td,
          ens.nom AS nom_ens, ens.prenom AS prenom_ens, salle.nom AS nom_salle, jour, 
@@ -49,7 +45,7 @@ def cours_by_fil_niv_special(request, nom_filiere, nom_niveau, nom_specialite=No
       return Response(parsed_list)      
    else:
       query = """
-         SELECT DISTINCT cours.code_ue, intitule, matricule_ens, is_td,
+         SELECT DISTINCT id_cours, cours.code_ue, intitule, matricule_ens, is_td,
          ens.nom AS nom_ens, ens.prenom AS prenom_ens, salle.nom AS nom_salle, jour, 
          heure_debut, heure_fin FROM cours, ue, enseignant AS ens, salle, regroupement reg
          WHERE cours.code_ue = ue.code AND cours.code_ue = reg.code_ue AND

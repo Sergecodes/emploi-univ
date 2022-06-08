@@ -23,11 +23,11 @@ export default function Caroussel() {
                   <div className="fourthDiv">
                       <div className="contentDiv">
                         <div>
-                            <p className="p-0 m-0" style={{fontSize:"3vw"}}>Welcome to</p>
+                            <p className="p-0 m-0" style={{fontSize:"3vw"}}>Bienvenu à</p>
                             <h2 style={{fontSize:"5vw",fontWeight:"480"}}>TIME TABLE</h2>
                         </div>
                         <div >
-                            The platform dedicated to the edition and consultation of timetables of the faculty of science of University of Yaounde 1
+                            Le plateforme dediée à l'édition et à la consultation des emplois de temps au sein de la faculté des sciences
                         </div>
                       </div>
                   </div>
@@ -56,7 +56,7 @@ export default function Caroussel() {
                             <h2 style={{fontSize:"5vw",fontWeight:"480"}}>TIME TABLE</h2>
                         </div>
                         <div>
-                            Reliable and easy to use service
+                            Service fiable et facile d'utilisation
                         </div>
                       </div>
                   </div>
@@ -84,7 +84,7 @@ export default function Caroussel() {
                             <h2 style={{fontSize:"5vw",fontWeight:"480"}}>TIME TABLE</h2>
                         </div>
                         <div>
-                            Get started now 
+                            Commencez maintenant
                         </div>
                       </div>
                   </div>
