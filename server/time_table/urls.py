@@ -17,7 +17,7 @@ app_name = 'time_table'
 
 cours_urls = [
    path('', cours_views.CoursList.as_view()),
-   path('filieres/<str:nom_filiere>/', cours_views.cours_by_filiere),
+   # path('filieres/<str:nom_filiere>/', cours_views.cours_by_filiere),
    path(
       'filieres/<str:nom_filiere>/<str:nom_niveau>/',
       cours_views.cours_by_fil_niv_special

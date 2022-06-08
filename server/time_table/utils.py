@@ -94,3 +94,47 @@ def validate_cours_heure(heure: str):
    """`heure` should be of the form ahb where a is the hour and b the minutes"""
    hour, minute = heure.split('h')
    # TODO
+
+
+def parse_cours_list(cours_list):
+   """
+   Convert list of cours dictionary to appropriate format. 
+   Such as placing all enseignants in an array, grouping by code_ue etc..
+   Data passed should be serialized(by CoursSerializer)
+   """
+
+   # Get enseignants of each code_ue
+   code_enseignants = {}
+   for cours_dict in cours_list:
+      code_ue = cours_dict['ue']['code']
+
+      if code_ue in code_enseignants:
+         enseignants = code_enseignants[code_ue]
+         enseignants.append(cours_dict['enseignant'])
+         code_enseignants[code_ue] = enseignants
+      else:
+         code_enseignants[code_ue] = [cours_dict['enseignant']]
+
+   # Now add enseignants to each cours info
+   result_list = []
+   traversed_codes = set()
+   for cours_dict in cours_list:
+      code_ue = cours_dict['ue']['code']
+
+      if code_ue not in traversed_codes:
+         result_list.append({
+            'ue': cours_dict['ue'],
+            'salle': cours_dict['salle'],
+            'enseignants': code_enseignants[code_ue],
+            'jour': cours_dict['jour'],
+            'heure_debut': cours_dict['heure_debut'],
+            'heure_fin': cours_dict['heure_fin'],
+            'is_td': cours_dict['is_td'],
+            'is_virtuel': cours_dict['is_virtuel'],
+            'description': cours_dict['description'],
+         })
+
+      traversed_codes.add(code_ue)
+
+   return result_list
+
