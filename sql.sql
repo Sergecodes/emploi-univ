@@ -21,7 +21,7 @@ CREATE TABLE `groupe` (`nom` varchar(20) NOT NULL PRIMARY KEY);
 --
 -- Create model Niveau
 --
-CREATE TABLE `niveau` (`nom_bref` varchar(10) NOT NULL PRIMARY KEY, `nom_complet` varchar(20) NOT NULL UNIQUE, `nb_max` int UNSIGNED NOT NULL CHECK (`nb_max` >= 0));
+CREATE TABLE `niveau` (`nom_bref` varchar(10) NOT NULL PRIMARY KEY, `nom_complet` varchar(20) NOT NULL UNIQUE);
 --
 -- Create model Salle
 --
@@ -37,7 +37,7 @@ CREATE TABLE `ue` (`code` varchar(30) NOT NULL PRIMARY KEY, `intitule` varchar(5
 --
 -- Create model Cours
 --
-CREATE TABLE `cours` (`code_ue` varchar(30) NOT NULL PRIMARY KEY, `jour` varchar(3) NOT NULL, `heure_debut` time(6) NOT NULL, `heure_fin` time(6) NOT NULL, `is_td` bool NOT NULL, `is_virtuel` bool NOT NULL, `description` longtext NOT NULL);
+CREATE TABLE `cours` (`id_cours` bigint AUTO_INCREMENT NOT NULL PRIMARY KEY, `code_ue` varchar(30) NOT NULL PRIMARY KEY, `jour` varchar(3) NOT NULL, `heure_debut` time(6) NOT NULL, `heure_fin` time(6) NOT NULL, `is_td` bool NOT NULL, `is_virtuel` bool NOT NULL, `description` longtext NOT NULL);
 --
 -- Create model Regroupement
 --
@@ -60,3 +60,8 @@ ALTER TABLE `regroupement` ADD CONSTRAINT `regroupement_nom_groupe_0400cbf3_fk_g
 ALTER TABLE `regroupement` ADD CONSTRAINT `regroupement_nom_niveau_f894a562_fk_niveau_nom_bref` FOREIGN KEY (`nom_niveau`) REFERENCES `niveau` (`nom_bref`) ON DELETE RESTRICT ON UPDATE RESTRICT;
 ALTER TABLE `regroupement` ADD CONSTRAINT `regroupement_nom_specialite_3e864e1b_fk_specialite_nom` FOREIGN KEY (`nom_specialite`) REFERENCES `specialite` (`nom`) ON DELETE CASCADE ON UPDATE CASCADE;
 ALTER TABLE `regroupement` ADD CONSTRAINT `regroupement_code_ue_11d1b045_fk_ue_code` FOREIGN KEY (`code_ue`) REFERENCES `ue` (`code`) ON DELETE RESTRICT ON UPDATE CASCADE;
+--
+-- Add constraints to cours 
+--
+ALTER TABLE `cours` ADD CONSTRAINT check_heure_fin_gt_heure_debut CHECK (`heure_fin` > `heure_debut`);
+ALTER TABLE `cours` ADD CONSTRAINT unique_enseignant_salle_jour_heure UNIQUE (`enseignant`, `salle`, `jour`, `heure_debut`, `heure_fin`);

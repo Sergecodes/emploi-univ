@@ -225,12 +225,19 @@ class Cours(models.Model):
         
     class Meta:
         db_table = 'cours'
-        # constraints = [
-        #     models.UniqueConstraint(
-        #         fields=['ue', 'enseignant'],
-        #         name='unique_ue_enseignant'
-        #     ),
-        # ]
+        constraints = [
+            # L'heure de fin du cours doit etre superieure a son heure de debut
+            models.CheckConstraint(
+                check=models.Q(heure_fin__gt=models.F('heure_debut')),
+                name='check_heure_fin_gt_heure_debut'
+            ),
+            # On ne doit pas avoir le meme enseignant dans deux salles differentes
+            # le meme jour et a la meme heure
+            models.UniqueConstraint(
+                fields=['enseignant', 'salle', 'jour', 'heure_debut', 'heure_fin'],
+                name='unique_enseignant_salle_jour_heure'
+            )
+        ]
 
 
 class Regroupement(models.Model):
