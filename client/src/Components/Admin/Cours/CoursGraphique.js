@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
 import { useDispatch } from "react-redux";
-import { handleOpenAjout ,handleOpenSnackbar, handleAlert} from "../../../redux/ModalDisplaySlice";
+import { handleOpenAjout,handleOpenSnackbar, handleAlert } from "../../../redux/ModalDisplaySlice";
 import { horairesDebut, horairesFin, Jour } from "../../../Constant";
 import Stack from "@mui/material/Stack";
 import Autocomplete from "@mui/material/Autocomplete";
@@ -31,7 +31,7 @@ const AjoutCours = (props) => {
   })
   const [changeHour, setChangeHour] = useState(false);
 
-  /*const recognize=(heure)=>{
+  const recognize=(heure)=>{
     let heures= {heure_debut:"",heure_fin:""};
 
     if(heure==="07h-09h55") {  heures.heure_debut='07h00'; heures.heure_fin="09h55"}
@@ -40,42 +40,36 @@ const AjoutCours = (props) => {
     else if( heure ==="16h-18h55") { heures.heure_debut='16h00'; heures.heure_fin="18h55"}
     else if( heure ==="19h-21h55") { heures.heure_debut='19h00'; heures.heure_fin="21h55"}
     return heures;
-}*/
+}
+const graphiqueHour=recognize(props.element.heure);
 
   const [choix, setChoix] = useState({
-    nom:"",
-  nom_niveau: "",
-  nom_specialite: "",
-  jour:"",
-  heureDebut:"" ,
-  heureFin:"" });
+    nom: props.element.nom,
+  nom_niveau: props.element.nom_niveau,
+  nom_specialite: props.element.nom_specialite,
+  jour:props.element.jour ,
+  heureDebut:graphiqueHour.heure_debut ,
+  heureFin: graphiqueHour.heure_fin, });
   const csrftoken = Cookies.get("csrftoken");
   const dispatch = useDispatch();
 
   
 
   useEffect(() => {
+   
       const axiosLinks = [
-        "http://localhost:8000/api/filieres/",
-        "http://localhost:8000/api/niveaux/",
         "http://localhost:8000/api/salles/",
-        "http://localhost:8000/api/enseignants/",
+        "http://localhost:8000/api/enseignants/",    
       ];
       Promise.all(axiosLinks.map((link) => axios.get(link)))
         .then(
           axios.spread((...allData) => {
-            setListeFilieres(allData[0].data);
-            setListeNiveaux(allData[1].data);
-            setListeSalles(allData[2].data);
-            setListeEnseignants(allData[3].data);
-            setChoix((prevState) => ({
-              ...prevState,
-              nom_niveau: allData[1].data[0].nom_bref,
-              nom: allData[0].data[0].nom,
-            }));
+            setListeSalles(allData[0].data);
+            setListeEnseignants(allData[1].data);
           })
         )
         .catch((err) => console.log(err));
+    
   }, [props.type]);
 
   useEffect(() => {
@@ -186,7 +180,9 @@ const AjoutCours = (props) => {
       dispatch(handleOpenSnackbar());
       dispatch(handleAlert({type : "error"}));
     })
+      console.log(data)
   };
+
 
   return (
     <section
@@ -198,142 +194,14 @@ const AjoutCours = (props) => {
           Vous ètes sur le point d'ajouter des informations relatives à un
           nouveau cours dans votre emploi de temps
         </h4>
-        <div className="important" >
-          <div className="mt-4  d-flex align-items-center justify-content-around" >
-            <div className="my-4 d-flex justify-content-center ">
-              <label htmlFor="nom">Filiere :</label>
-              <select name="nom" onChange={(e) => handleSelectChange(e)} value={choix.nom}>
-                {listeFilieres.map((elt, index) => {
-                  return (
-                    <option key={index} name={elt.nom} >
-                      {elt.nom}
-                    </option>
-                  );
-                })}
-              </select>
-            </div>
-            <div className="my-4 d-flex justify-content-center " >
-            <label htmlFor="nom_niveau">Niveau :</label>
-            <select name="nom_niveau" onChange={(e) => handleSelectChange(e)} value={choix.nom_niveau}>
-              {listeNiveaux.map((elt, index) => {
-                return (
-                  <option key={index} name={elt.nom_bref}>
-                    {elt.nom_bref}
-                  </option>
-                );
-              })}
-            </select>
-          </div>
-
-          <div className="my-4 d-flex justify-content-center align-items-center ">
-            <label
-              htmlFor="nom_specialite"
-              style={activate === true ? { color: "GrayText" } : {}}
-            >
-              Specialite :
-            </label>
-            <select
-              name="nom_specialite"
-              onChange={(e) => handleSelectChange(e)}
-              disabled={activate}
-              value={choix.nom_specialite}
-            >
-              {listeSpecialites.map((elt, index) => {
-                return (
-                  <option key={index} name={elt.nom_specialite}>
-                    {elt.nom_specialite}
-                  </option>
-                );
-              })}
-            </select>
-            <input
-              type="checkbox"
-              className="ms-3"
-              value={activate}
-              onChange={() => setActivate(!activate)}
-            />
-          </div>
-          </div>
-         <div className="d-flex justify-content-around align-items-center">
-            
-          <div className="my-4 d-flex justify-content-center ">
-            <label htmlFor="jour">Jour :</label>
-            <select name="jour" onChange={(e) => handleSelectChange(e)} value={choix.jour}>
-              {Jour.map((elt, index) => {
-                return (
-                  <option key={elt.id} name={elt.jour}>
-                    {elt.jour}
-                  </option>
-                );
-              })}
-            </select>
-          </div>
-            <div className="my-4 d-flex">
-              <label htmlFor="heureDebut" className="mx-2">
-                Heure debut :
-              </label>
-              <select
-                name="heureDebut"
-                onChange={(e) => handleSelectChange(e)}
-                style={changeHour ? { display: "none" } : {}}
-                value={choix.heureDebut}
-              >
-                {horairesDebut.map((elt) => {
-                  return (
-                    <option key={elt.id} name={elt.heureDebut}>
-                      {elt.heureDebut}
-                    </option>
-                  );
-                })}
-              </select>
-              <input
-                type="time"
-                onChange={(e) => handleSelectChange(e)}
-                name="heureDebut"
-                style={!changeHour ? { display: "none" } : {}}
-              />
-            </div>
-            <div className="my-4 d-flex  ">
-              <label htmlFor="heureFin" className="mx-2">
-                Heure fin :
-              </label>
-              <select
-                name="heureFin"
-                onChange={(e) => handleSelectChange(e)}
-                style={changeHour ? { display: "none" } : {}}
-                value={choix.heureFin}
-              >
-                {horairesFin.map((elt) => {
-                  return (
-                    <option key={elt.id} name={elt.heureFin} >
-                      {elt.heureFin}
-                    </option>
-                  );
-                })}
-              </select>
-              <input
-                type="time"
-                onChange={(e) => handleSelectChange(e)}
-                name="heureFin"
-                style={!changeHour ? { display: "none" } : {}}
-              />
-            </div>
-            <p
-              onClick={() => setChangeHour(true)}
-              className="changeHeure"
-              style={changeHour ? { display: "none" } : { color: "green" }}
-            >
-              Definir son horaire
-            </p>
-            <p
-              onClick={() => setChangeHour(false)}
-              className="changeHeure"
-              style={!changeHour ? { display: "none" } : { color: "red" }}
-            >
-              Retour
-            </p>
-         </div>
+        <div className="d-flex justify-content-around align-items-center" >
+          <p>Filiere:<span className="fw-bold">{props.element.nom}</span></p>
+          <p>Niveau:<span className="fw-bold">{props.element.nom_niveau}</span></p>
+          <p style={props.activate?{display:"none"}:{}}>Specialite:<span className="fw-bold">{props.element.nom_specialite}</span></p>
+          <p>Jour:<span className="fw-bold">{props.element.jour}</span></p>
+          <p>Heure:<span className="fw-bold">{props.element.heure}</span></p>
         </div>
+        
         <div className="d-flex flex-column justify-content-center my-3 align-items-center ">
           <div className="my-3 d-flex align-items-center">
             <label htmlFor="code">Code :</label>

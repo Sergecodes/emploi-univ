@@ -19,7 +19,7 @@ def cours_by_fil_niv_special(request, nom_filiere, nom_niveau, nom_specialite=No
          SELECT DISTINCT nom_specialite, id_cours, cours.code_ue, intitule, matricule_ens, is_td,
          ens.nom AS nom_ens, ens.prenom AS prenom_ens, salle.nom AS nom_salle, jour, 
          heure_debut, heure_fin FROM cours, ue, enseignant AS ens, salle, regroupement reg
-         WHERE cours.code_ue = ue.code AND cours.code_ue = reg.code_ue AND
+         WHERE cours.code_ue = ue.code AND salle.nom = cours.nom_salle AND cours.code_ue = reg.code_ue AND
          cours.matricule_ens = ens.matricule AND reg.nom_filiere = %s AND reg.nom_niveau = %s;
       """
 
@@ -48,7 +48,7 @@ def cours_by_fil_niv_special(request, nom_filiere, nom_niveau, nom_specialite=No
          SELECT DISTINCT id_cours, cours.code_ue, intitule, matricule_ens, is_td,
          ens.nom AS nom_ens, ens.prenom AS prenom_ens, salle.nom AS nom_salle, jour, 
          heure_debut, heure_fin FROM cours, ue, enseignant AS ens, salle, regroupement reg
-         WHERE cours.code_ue = ue.code AND cours.code_ue = reg.code_ue AND
+         WHERE cours.code_ue = ue.code AND cours.code_ue = reg.code_ue AND salle.nom = cours.nom_salle AND
          cours.matricule_ens = ens.matricule AND reg.nom_filiere = %s AND reg.nom_niveau = %s
          AND reg.nom_specialite = %s;
       """

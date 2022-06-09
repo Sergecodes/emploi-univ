@@ -8,7 +8,10 @@ export const ModalDisplaySlice=createSlice({
         openDelete:false,
         openModify:false,
         openSnackbar:false,
-        alert:{type:"none"}
+        alert:{type:"none"},
+        filiere:{nom:""},
+        specialite:{nom_specialite:""},
+        niveau:{nom_niveau:""}
     },
     reducers:{
         handleOpenAjout:(state)=>{
@@ -25,6 +28,15 @@ export const ModalDisplaySlice=createSlice({
         },
         handleAlert:(state,action)=>{
             state.alert=action.payload
+        },
+        handleFiliere:(state,action)=>{
+            state.filiere=action.payload;
+        },
+        handleSpecialite:(state,action)=>{
+            state.specialite=action.payload;
+        },
+        handleNiveau:(state,action)=>{
+            state.niveau=action.payload;
         }
     }
 })
@@ -34,6 +46,10 @@ export const {handleOpenDelete}=ModalDisplaySlice.actions;
 export const {handleOpenModify}=ModalDisplaySlice.actions;
 export const {handleOpenSnackbar}=ModalDisplaySlice.actions;
 export const {handleAlert}=ModalDisplaySlice.actions;
+export const {handleFiliere}=ModalDisplaySlice.actions;
+export const {handleSpecialite}=ModalDisplaySlice.actions;
+export const {handleNiveau}=ModalDisplaySlice.actions;
+
 
 
 
