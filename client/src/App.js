@@ -3,7 +3,6 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import HeaderFooter from "./Screen/HeaderFooter";
 import Accueil from "./Screen/Accueil";
 import Admin from "./Screen/Admin";
-import ComputerScience from "./Components/Consultation/ComputerScience";
 import Salles from "./Components/Admin/Salles";
 import Enseignants from "./Components/Admin/Enseignants";
 import Filieres from "./Components/Admin/Filieres";
@@ -15,10 +14,6 @@ import Cours from "./Components/Admin/Cours";
 import ConnexionAdminScreen from "./Screen/ConnexionAdminScreen";
 import UniteEnseignement from "./Components/Admin/UniteEnseignement";
 import AffichageEmploi from "./Screen/AffichageEmploi";
-import Bioscience from "./Components/Consultation/Bioscience";
-import Physique from "./Components/Consultation/Physique";
-import Chimie from "./Components/Consultation/Chimie";
-import Mathematique from "./Components/Consultation/Mathematique";
 import Global from "./Components/Consultation/Global"
 
 
