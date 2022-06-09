@@ -11,15 +11,19 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   handleOpenAjout,
   handleOpenDelete,
+  handleOpenSnackbar,
 } from "../../redux/ModalDisplaySlice";
-import AjoutCours from "./Cours/AjoutCours";
+import CoursGraphique from "./Cours/CoursGraphique";
 import SupprimerCours from "./Cours/SupprimerCours";
 import { Modal, Box } from "@material-ui/core";
 import axios from "axios";
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
 
 
 export default function AjoutCoursGraphique() {
   const dispatch = useDispatch();
+  const [deleteList, setDeleteList]=useState([]);
   const [listeFilieres, setListeFilieres] = useState([]);
   const [data, setData] = useState([]);
   const [selectOpen, setSelectOpen] = useState(false);
@@ -35,6 +39,33 @@ export default function AjoutCoursGraphique() {
     ue: "",
   });
   const files = useSelector((state) => state.ModalDisplay);
+  const Alert = React.forwardRef(function Alert(props, ref) {
+    return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+  });
+
+  const handleClose = ()=>{
+    if(files.openSnackbar===true){
+      dispatch(handleOpenSnackbar())
+    }
+  }
+
+
+  const alertMessage = ()=>{
+    if(files.alert.type==='success'){
+      return( 
+        <Alert onClose={()=>handleClose()} severity={"success"} sx={{ width: '100%' }}>
+     Opération réussie
+   </Alert>)
+    }
+    else{
+      return(
+        <Alert onClose={()=>handleClose()} severity={"error"} sx={{ width: '100%' }}>
+   Une erreur est survenue lors de l'execution de l'opération
+   </Alert>
+      )
+    }
+   
+  }
   
   function verification(dataList, jour, heure) {
     let retour = [];
@@ -119,7 +150,7 @@ export default function AjoutCoursGraphique() {
     },
   ]);
   const handleDelete = (heure, jour) => {
-    const data = verification(timetable, jour, heure);
+    const data = verification(deleteList, jour, heure);
     setData(data);
     if (data.length > 1) {
       setSelectOpen(true);
@@ -170,6 +201,7 @@ export default function AjoutCoursGraphique() {
       axios
         .get(`http://localhost:8000/api/cours/${choix.nom}/${choix.nom_niveau}`)
         .then((res) => {
+          setDeleteList(res.data);
             setTimetable([
               {
                 titre: "07h-09h55",
@@ -225,7 +257,7 @@ export default function AjoutCoursGraphique() {
         })
         .catch((err) => console.log(err));
     }
-  }, [choix.nom, choix.nom_niveau]);
+  }, [choix.nom, choix.nom_niveau,files.openAjout,files.openModify,files.openDelete]);
   const handleSelectChange = (e) => {
     const name = e.target.name;
     const value = e.target.value;
@@ -667,14 +699,20 @@ export default function AjoutCoursGraphique() {
           </Table>
         </TableContainer>
       </Paper>
+
+      {/*snackbar */}
+      <div>
+      <Snackbar open={files.openSnackbar} autoHideDuration={6000} onClose={()=>handleClose()}>
+         {alertMessage()}
+      </Snackbar>
+      </div>
       {/*Modal pour l'ajout d'un cours*/}
       
       <div>
         <Modal open={files.openAjout} style={{ overflow: "scroll" }}>
           <Box>
-            <AjoutCours
+            <CoursGraphique
               element={choix}
-              type={"graphique"}
               activate={activate}
             />
             <button

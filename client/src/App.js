@@ -19,6 +19,7 @@ import Bioscience from "./Components/Consultation/Bioscience";
 import Physique from "./Components/Consultation/Physique";
 import Chimie from "./Components/Consultation/Chimie";
 import Mathematique from "./Components/Consultation/Mathematique";
+import Global from "./Components/Consultation/Global"
 
 
 
@@ -34,14 +35,15 @@ const App = () => {
           <Route path="/" element={<HeaderFooter />}>
             <Route path="/accueil" element={<Accueil />} />
             <Route path="/affichage" element={<AffichageEmploi />} >
-                <Route path="/affichage/computer-science" element={<ComputerScience/>}/>
-                <Route path="/affichage/physique" element={<Physique/>}/>
-                <Route path="/affichage/chimie" element={<Chimie/>}/>
-                <Route path="/affichage/math" element={<Mathematique/>}/>
-                <Route path="/affichage/bioscience" element={<Bioscience/>}/>
+                <Route path="/affichage/computer-science" element={<Global nom='Informatique'/>}/>
+                <Route path="/affichage/physique" element={<Global nom='Physique'/>}/>
+                <Route path="/affichage/chimie" element={<Global nom='Chimie'/>}/>
+                <Route path="/affichage/math" element={<Global nom='Mathematique'/>}/>
+                <Route path="/affichage/bioscience" element={<Global nom='Biosciences'/>} />
             </Route>
             
           </Route>
+          <Route path="/global" element={<Global/>}/>
           <Route path="/admin" element={<Admin/>}>
             <Route path="/admin/dashboard" element={<p>Dashboard</p>}/>
             <Route path="/admin/ajout-cours-graphique" element={<AjoutCoursGraphique/>}/>

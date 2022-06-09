@@ -58,7 +58,7 @@ const [choix, setChoix] = useState({
   return (
     <section className="d-flex justify-content-around  align-items-center"> 
         <div className="my-4 d-flex justify-content-center ">
-            <label htmlFor="nom_niveau " className="fw-light fs-5 me-2">Selectionnez en niveau :</label>
+            <label htmlFor="nom_niveau " className="fw-bold me-2">Selectionnez en niveau :</label>
             <select name="nom_niveau" onChange={(e) => handleSelectChange(e)}>
               {listeNiveaux.map((elt, index) => {
                 return (
@@ -73,10 +73,10 @@ const [choix, setChoix] = useState({
           <div className="my-4 d-flex justify-content-center align-items-center ">
             <label
               htmlFor="nom_specialite"
-              style={activate === true ? { color: "GrayText" ,fontStyle:'italic'} : {}}
-              className="fw-light fs-5 me-2"
+              style={activate === true ? { color: "GrayText" } : {}}
+              className="fw-bold me-2"
             >
-              Selectionnez une spécialité :
+              SPECIALITE :
             </label>
             <select
               name="nom_specialite"
@@ -98,7 +98,6 @@ const [choix, setChoix] = useState({
               onChange={() => setActivate(!activate)}
             />
           </div>
-          <button type="button" className="my-4 btn  boutonFill">Generer</button>
     </section>
   )
 }

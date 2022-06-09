@@ -1,15 +1,21 @@
 import React, { useState } from "react";
 import "../Style/connexion.css";
+import {useNavigate} from 'react-router-dom'
 const logo = require("../assets/logo.png");
+
 
 function ConnexionAdminScreen() {
   const [user, setUser] = useState({
     email: "",
     password: "",
   });
+  const navigate=useNavigate();
   const handlesubmit = (e) => {
     if (user.email === "" || user.password === "") {
       alert("renseigner toutes vos informations");
+    }
+    else if(user.email=="admin@gmail.com" && user.password==='admin'){
+        navigate('/admin')
     }
     e.preventDefault();
   };

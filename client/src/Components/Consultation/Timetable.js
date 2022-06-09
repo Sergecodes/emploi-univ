@@ -1,4 +1,4 @@
-import React, { useState  } from "react";
+import React, { useState, useEffect  } from "react";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
@@ -7,10 +7,14 @@ import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
 import { fakeData } from "../../Constant";
+import { useSelector } from "react-redux";
+import axios from "axios"
 
 
 
 const Timetable=React.forwardRef((props, ref)=> {
+ const files = useSelector((state) => state.ModalDisplay);
+
   function verification(fakeData,jour,heure){
     let retour=[];
     for(let i in fakeData){
@@ -126,6 +130,66 @@ const Timetable=React.forwardRef((props, ref)=> {
     }
     return temp;
   }
+
+  useEffect(()=>{
+    axios
+    .get(`http://localhost:8000/api/cours/${files.filiere.nom}/${files.niveau.nom_niveau}`)
+    .then((res) => {
+        setTimetable([
+          {
+            titre: "07h-09h55",
+            lundi: verification(res.data, "LUN", "07h-09h55"),
+            mardi: verification(res.data, "MAR", "07h-09h55"),
+            mercredi: verification(res.data, "MER", "07h-09h55"),
+            jeudi: verification(res.data, "JEU", "07h-09h55"),
+            vendredi: verification(res.data, "VEN", "07h-09h55"),
+            samedi: verification(res.data, "SAM", "07h-09h55"),
+            dimanche: verification(res.data, "DIM", "07h-09h55"),
+          },
+          {
+            titre: "10h-12h55",
+            lundi: verification(res.data, "LUN", "10h-12h55"),
+            mardi: verification(res.data, "MAR", "10h-12h55"),
+            mercredi: verification(res.data, "MER", "10h-12h55"),
+            jeudi: verification(res.data, "JEU", "10h-12h55"),
+            vendredi: verification(res.data, "VEN", "10h-12h55"),
+            samedi: verification(res.data, "SAM", "10h-12h55"),
+            dimanche: verification(res.data, "DIM", "10h-12h55"),
+          },
+          {
+            titre: "13h-15h55",
+            lundi: verification(res.data, "LUN", "13h-15h55"),
+            mardi: verification(res.data, "MAR", "13h-15h55"),
+            mercredi: verification(res.data, "MER", "13h-15h55"),
+            jeudi: verification(res.data, "JEU", "13h-15h55"),
+            vendredi: verification(res.data, "VEN", "13h-15h55"),
+            samedi: verification(res.data, "SAM", "13h-15h55"),
+            dimanche: verification(res.data, "DIM", "13h-15h55"),
+          },
+          {
+            titre: "16h-18h55",
+            lundi: verification(res.data, "LUN", "16h-18h55"),
+            mardi: verification(res.data, "MAR", "16h-18h55"),
+            mercredi: verification(res.data, "MER", "16h-18h55"),
+            jeudi: verification(res.data, "JEU", "16h-18h55"),
+            vendredi: verification(res.data, "VEN", "16h-18h55"),
+            samedi: verification(res.data, "SAM", "16h-18h55"),
+            dimanche: verification(res.data, "DIM", "16h-18h55"),
+          },
+          {
+            titre: "19h-21h55",
+            lundi: verification(res.data, "LUN", "19h-21h55"),
+            mardi: verification(res.data, "MAR", "19h-21h55"),
+            mercredi: verification(res.data, "MER", "19h-21h55"),
+            jeudi: verification(res.data, "JEU", "19h-21h55"),
+            vendredi: verification(res.data, "VEN", "19h-21h55"),
+            samedi: verification(res.data, "SAM", "19h-21h55"),
+            dimanche: verification(res.data, "DIM", "19h-21h55"),
+          },
+        ]);
+    })
+    .catch((err) => console.log(err));
+  },[files.filiere.nom, files.niveau.nom_niveau, files.specialite.nom_specialite])
 
   
   const rows = insertion();
