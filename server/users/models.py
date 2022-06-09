@@ -477,7 +477,7 @@ class UEOps:
 class CoursOps:
    def ajouter_cours_virtuel(
       self, jour, heure_debut, heure_fin, 
-      nom_niveau, nom_filiere=None, description=''
+      nom_niveau, nom_filiere, description=''
    ):
       query1 = "INSERT INTO ue (code, intitule) VALUES (%s, %s);"
       query2 = """
@@ -491,20 +491,16 @@ class CoursOps:
       """
       
       # Generate random code_ue for the virtual cours
-      if nom_filiere:
-         code_ue = f"CV_{nom_niveau}_{nom_filiere}"
-         intitule = f"Cours virtuel de {nom_niveau} de {nom_filiere}"
-      else:
-         code_ue = f"CV_{nom_niveau}_TOUTE_FILIERE"
-         intitule = f"Cours virtuel de {nom_niveau} pour toutes les filières"
+      code_ue = f"CV_{nom_niveau}_{nom_filiere}"
+      intitule = f"Cours virtuel de {nom_niveau} de {nom_filiere}"
 
       try: 
          # Get heure_debut and heure_fin in timefield format
          h_debut, m_debut = heure_debut.split('h')
-         heure_debut = datetime.time(h_debut, m_debut)
+         heure_debut = datetime.time(int(h_debut), int(m_debut))
 
          h_fin, m_fin = heure_fin.split('h')
-         heure_fin = datetime.time(h_fin, m_fin)
+         heure_fin = datetime.time(int(h_fin), int(m_fin))
          
          with transaction.atomic():
             with connection.cursor() as cursor:
@@ -527,7 +523,7 @@ class CoursOps:
 
    def ajouter_cours_normal(
       self, code_ue, mat_enseignants, nom_salle, jour, 
-      heure_debut, heure_fin, is_td=False, description=''
+      heure_debut, heure_fin, description=''
    ):
       """`mat_enseignants` is an array with matricule of enseignants."""
 
@@ -564,7 +560,7 @@ class CoursOps:
          query1 += query1_next
          params1.extend([
             code_ue, matricule, nom_salle, jour, heure_debut,  
-            heure_fin, is_td, False, description
+            heure_fin, False, False, description
          ])
 
       # Remove last ', ' from query string (last two characters of `query1`)
@@ -574,6 +570,55 @@ class CoursOps:
          with transaction.atomic():
             with connection.cursor() as cursor:
                cursor.execute(query1, params1)
+
+            with connection.cursor() as cursor:
+               cursor.execute(
+                  query2, 
+                  [code_ue, reg.filiere_id, reg.niveau_id, reg.specialite_id]
+               )
+      except (IntegrityError, DataError) as err:
+         return err
+
+   def ajouter_td(
+      self, code_ue, nom_salle, jour, 
+      heure_debut, heure_fin, description=''
+   ):
+      """`mat_enseignants` is an array with matricule of enseignants."""
+
+      # Get nom_filiere, nom_niveau and nom_specialite of ue concerned
+      query_ue = """
+         SELECT * FROM regroupement reg WHERE reg.code_ue = %s AND 
+         reg.nom_niveau IS NOT NULL AND reg.nom_filiere IS NOT NULL LIMIT 1;
+      """
+      try:
+         reg = Regroupement.objects.raw(query_ue, [code_ue])[0]
+      except IndexError:
+         return UE.DoesNotExist(f"UE '{code_ue}' not found")
+
+      query1 = """
+         INSERT INTO cours (code_ue, matricule_ens, nom_salle, jour,  
+         heure_debut, heure_fin, is_td, is_virtuel, description) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+      """
+
+      query2 = """
+         INSERT INTO regroupement (code_ue, nom_filiere, nom_niveau, nom_specialite) 
+         VALUES (%s, %s, %s, %s)
+      """
+
+      # Get heure_debut and heure_fin in timefield format
+      h_debut, m_debut = heure_debut.split('h')
+      heure_debut = datetime.time(int(h_debut), int(m_debut))
+
+      h_fin, m_fin = heure_fin.split('h')
+      heure_fin = datetime.time(int(h_fin), int(m_fin))
+
+      try:
+         with transaction.atomic():
+            with connection.cursor() as cursor:
+               cursor.execute(query1, [
+                  code_ue, "000000", nom_salle, jour, heure_debut,  
+                  heure_fin, True, False, description
+               ])
 
             with connection.cursor() as cursor:
                cursor.execute(

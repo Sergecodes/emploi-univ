@@ -27,7 +27,7 @@ class Enseignant(models.Model):
 
 
 class UE(models.Model):
-    code = models.CharField(max_length=10, primary_key=True)
+    code = models.CharField(max_length=30, primary_key=True)
     intitule = models.CharField(max_length=50)
 
     @classmethod
@@ -53,7 +53,7 @@ class UE(models.Model):
 
 
 class Salle(models.Model):
-    nom = models.CharField(max_length=10, primary_key=True)
+    nom = models.CharField(max_length=20, primary_key=True)
     capacite = models.PositiveSmallIntegerField()
 
     @classmethod
@@ -139,7 +139,7 @@ class Filiere(models.Model):
 
 
 class Specialite(models.Model):
-    nom = models.CharField(max_length=20, primary_key=True)
+    nom = models.CharField(max_length=30, primary_key=True)
     
     @classmethod
     def get_specialite(cls, nom):
@@ -225,12 +225,12 @@ class Cours(models.Model):
         
     class Meta:
         db_table = 'cours'
-        constraints = [
-            models.UniqueConstraint(
-                fields=['ue', 'enseignant'],
-                name='unique_ue_enseignant'
-            ),
-        ]
+        # constraints = [
+        #     models.UniqueConstraint(
+        #         fields=['ue', 'enseignant'],
+        #         name='unique_ue_enseignant'
+        #     ),
+        # ]
 
 
 class Regroupement(models.Model):

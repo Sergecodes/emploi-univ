@@ -273,82 +273,240 @@ export const Jour=[{
   jour:'DIM'
 }]
 
-
 export const fakeData = [
   {
-    id_cours: 3,
+    id_cours: 1,
     jour: "LUN",
-    heure_debut: "07:00:00",
-    heure_fin: "09:55:00",
+    heure_debut: "10:05:00",
+    heure_fin: "12:55:00",
     is_td: false,
     is_virtuel: false,
     enseignants: [{
       matricule: "19M2214",
-      nom: "enseignant 1",
-      prenom: "prenom enseignant 1",
+      nom: "KIKI",
+      prenom: "",
     }],
-    salle: { nom: "A 250", capacite: 300 },
-    ue: { code: "inf 176", intitule: "intitulé 1" },
+    salle: { nom: "AII", capacite: 300 },
+    ue: { code: "MAT3096", intitule: "XX" },
     description: "",
-    groupe:null
+    groupe: null
   },
   {
-    id_cours: 3,
+    id_cours: 1,
     jour: "LUN",
-    heure_debut: "07:00:00",
-    heure_fin: "09:55:00",
+    heure_debut: "10:05:00",
+    heure_fin: "12:55:00",
     is_td: false,
     is_virtuel: false,
     enseignants: [{
       matricule: "19O2214",
-      nom: "enseignant 10",
-      prenom: "prenom enseignant 10",
+      nom: "TAKAM",
+      prenom: "SOH",
     }],
-    salle: { nom: "S006", capacite: 300 },
-    ue: { code: "inf 789", intitule: "intitulé 10" },
+    salle: { nom: "AI", capacite: 300 },
+    ue: { code: "MAT3106", intitule: "XX" },
     description: "",
-    groupe:null
+    groupe: null
   },
   {
-    id_cours: 5,
+    id_cours: 2,
+    jour: "MER",
+    heure_debut: "13:05:00",
+    heure_fin: "15:55:00",
+    is_td: false,
+    is_virtuel: false,
+    enseignants: [{
+      matricule: "19M2215",
+      nom: "BEKOLLE",
+      prenom: "",
+    }],
+    salle: { nom: "A350", capacite: 350 },
+    ue: { code: "MAT3076", intitule: "XX" },
+    description: "",
+    groupe: null
+  },
+  {
+    id_cours: 3,
     jour: "JEU",
     heure_debut: "07:00:00",
     heure_fin: "09:55:00",
     is_td: false,
     is_virtuel: false,
     enseignants: [{
-      matricule: "19M2215",
-      nom: "enseignant 2",
-      prenom: "prenom enseignant 2",
+      matricule: "19M2218",
+      nom: "KIAMPI",
+      prenom: "",
     }],
-    salle: { nom: "A 300", capacite: 300 },
-    ue: { code: "inf 17658", intitule: "intitulé 2" },
+    salle: { nom: "A 250", capacite: 250 },
+    ue: { code: "MAT3066", intitule: "XX" },
     description: "",
-    groupe:'G1'
-
+    groupe: null
   },
   {
-    id_cours: 5,
-    jour: "MAR",
+    id_cours: 3,
+    jour: "JEU",
     heure_debut: "10:00:00",
     heure_fin: "12:55:00",
     is_td: false,
     is_virtuel: false,
     enseignants: [{
       matricule: "19M2218",
-      nom: "enseignant 3",
-      prenom: "prenom enseignant 3",
-    },
-    {
-      matricule: "19M2219",
-      nom: "enseignant 4",
-      prenom: "prenom enseignant 3",
+      nom: "MBANG",
+      prenom: "",
     }],
-    salle: { nom: "A 3005", capacite: 300 },
-    ue: { code: "inf 79", intitule: "intitulé 3" },
+    salle: { nom: "A 250", capacite: 250 },
+    ue: { code: "MAT 3086", intitule: "XX" },
     description: "",
-    groupe:null
-
+    groupe: null
+  },
+  {
+    id_cours: 3,
+    jour: "JEU",
+    heure_debut: "13:05:00",
+    heure_fin: "15:55:00",
+    is_td: false,
+    is_virtuel: false,
+    enseignants: [{
+      matricule: "19M2218",
+      nom: "MBIAKOP",
+      prenom: "",
+    }],
+    salle: { nom: "A 250", capacite: 250 },
+    ue: { code: "MAT 3116", intitule: "XX" },
+    description: "",
+    groupe: null
+  },
+  {
+    id_cours: 3,
+    jour: "JEU",
+    heure_debut: "13:05:00",
+    heure_fin: "15:55:00",
+    is_td: false,
+    is_virtuel: false,
+    enseignants: [{
+      matricule: "19M2218",
+      nom: "DOUANLA",
+      prenom: "",
+    }],
+    salle: { nom: "R110", capacite: 300 },
+    ue: { code: "MAT3126", intitule: "XX" },
+    description: "",
+    groupe: null
+  },
+  {
+    id_cours: 3,
+    jour: "VEN",
+    heure_debut: "07:00:00",
+    heure_fin: "09:55:00",
+    is_td: false,
+    is_virtuel: false,
+    enseignants: [{
+      matricule: "19M2218",
+      nom: "NOUNDJEU",
+      prenom: "",
+    }],
+    salle: { nom: "A350", capacite: 300 },
+    ue: { code: "MAT3056", intitule: "XX" },
+    description: "",
+    groupe: null
+  },
+  {
+    id_cours: 3,
+    jour: "DIM",
+    heure_debut: "07:00:00",
+    heure_fin: "09:55:00",
+    is_td: false,
+    is_virtuel: false,
+    enseignants: [{
+      matricule: "19M2218",
+      nom: "TAKAM",
+      prenom: "SOH",
+    }],
+    salle: { nom: "A 350", capacite: 300 },
+    ue: { code: "PPE", intitule: "XX" },
+    description: "",
+    groupe: null
   },
 ];
+
+
+
+
+// export const fakeData = [
+//   {
+//     id_cours: 3,
+//     jour: "LUN",
+//     heure_debut: "07:00:00",
+//     heure_fin: "09:55:00",
+//     is_td: false,
+//     is_virtuel: false,
+//     enseignants: [{
+//       matricule: "19M2214",
+//       nom: "enseignant 1",
+//       prenom: "prenom enseignant 1",
+//     }],
+//     salle: { nom: "A 250", capacite: 300 },
+//     ue: { code: "inf 176", intitule: "intitulé 1" },
+//     description: "",
+//     groupe:null
+//   },
+//   {
+//     id_cours: 3,
+//     jour: "LUN",
+//     heure_debut: "07:00:00",
+//     heure_fin: "09:55:00",
+//     is_td: false,
+//     is_virtuel: false,
+//     enseignants: [{
+//       matricule: "19O2214",
+//       nom: "enseignant 10",
+//       prenom: "prenom enseignant 10",
+//     }],
+//     salle: { nom: "S006", capacite: 300 },
+//     ue: { code: "inf 789", intitule: "intitulé 10" },
+//     description: "",
+//     groupe:null
+//   },
+//   {
+//     id_cours: 5,
+//     jour: "JEU",
+//     heure_debut: "07:00:00",
+//     heure_fin: "09:55:00",
+//     is_td: false,
+//     is_virtuel: false,
+//     enseignants: [{
+//       matricule: "19M2215",
+//       nom: "enseignant 2",
+//       prenom: "prenom enseignant 2",
+//     }],
+//     salle: { nom: "A 300", capacite: 300 },
+//     ue: { code: "inf 17658", intitule: "intitulé 2" },
+//     description: "",
+//     groupe:'G1'
+
+//   },
+//   {
+//     id_cours: 5,
+//     jour: "MAR",
+//     heure_debut: "10:00:00",
+//     heure_fin: "12:55:00",
+//     is_td: false,
+//     is_virtuel: false,
+//     enseignants: [{
+//       matricule: "19M2218",
+//       nom: "enseignant 3",
+//       prenom: "prenom enseignant 3",
+//     },
+//     {
+//       matricule: "19M2219",
+//       nom: "enseignant 4",
+//       prenom: "prenom enseignant 3",
+//     }],
+//     salle: { nom: "A 3005", capacite: 300 },
+//     ue: { code: "inf 79", intitule: "intitulé 3" },
+//     description: "",
+//     groupe:null
+
+//   },
+// ];
 

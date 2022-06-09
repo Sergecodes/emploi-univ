@@ -69,22 +69,36 @@ class CoursList(APIView):
       is_virtuel = POST.get('is_virtuel')
 
       if not is_virtuel:
-         valid_req = is_valid_request(
-            POST, 
-            ['code_ue', 'nom_salle', 'enseignants', 'jour', 'heure_debut', 'heure_fin']
-         )
+         is_td = POST.get('is_td', False)
+
+         if is_td:
+            valid_req = is_valid_request(
+               POST, 
+               ['code_ue', 'nom_salle', 'jour', 'heure_debut', 'heure_fin']
+            )
+         else:
+            valid_req = is_valid_request(
+               POST, 
+               ['code_ue', 'nom_salle', 'jour', 'heure_debut', 'heure_fin', 'enseignants']
+            )
 
          if valid_req[0] == False:
             return valid_req[1]
 
-         res = user.ajouter_cours_normal(
-            POST['code_ue'], POST['enseignants'], 
-            POST['nom_salle'], POST['jour'], POST['heure_debut'], 
-            POST['heure_fin'], POST.get('is_td', False), POST.get('description', '')
-         )
+         if is_td:
+            res = user.ajouter_td(
+               POST['code_ue'], POST['nom_salle'], POST['jour'], POST['heure_debut'], 
+               POST['heure_fin'], POST.get('description', '')
+            )
+         else:
+            res = user.ajouter_cours_normal(
+               POST['code_ue'], POST['enseignants'], 
+               POST['nom_salle'], POST['jour'], POST['heure_debut'], 
+               POST['heure_fin'], POST.get('description', '')
+            )
       else:
          valid_req = is_valid_request(
-            POST, ['jour', 'heure_debut', 'heure_fin', 'nom_niveau', 'description']
+            POST, ['jour', 'heure_debut', 'heure_fin', 'nom_niveau', 'nom_filiere', 'description']
          )
 
          if valid_req[0] == False:
@@ -92,7 +106,7 @@ class CoursList(APIView):
 
          res = user.ajouter_cours_virtuel(
             POST['jour'], POST['heure_debut'], POST['heure_fin'], 
-            POST['nom_niveau'], POST.get('nom_filiere'), POST['description'] 
+            POST['nom_niveau'], POST['nom_filiere'], POST['description'] 
          )
 
       return get_cud_response(res, success_code=status.HTTP_201_CREATED)
@@ -102,6 +116,7 @@ class CoursList(APIView):
       raw_qs = Cours.objects.raw(query)
       serializer = CoursSerializer(raw_qs, many=True)
       res_list = json.loads(json.dumps(serializer.data))
+      print(res_list)
       return Response(parse_cours_list(res_list))
 
 

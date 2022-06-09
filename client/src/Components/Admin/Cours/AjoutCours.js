@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
 import { useDispatch } from "react-redux";
-import { handleOpenAjout } from "../../../redux/ModalDisplaySlice";
+import { handleOpenAjout,handleOpenSnackbar, handleAlert } from "../../../redux/ModalDisplaySlice";
 import { horairesDebut, horairesFin, Jour } from "../../../Constant";
 import Stack from "@mui/material/Stack";
 import Autocomplete from "@mui/material/Autocomplete";
@@ -30,42 +30,70 @@ const AjoutCours = (props) => {
     groupeData:""
   })
   const [changeHour, setChangeHour] = useState(false);
+
+  const recognize=(heure)=>{
+    let heures= {heure_debut:"",heure_fin:""};
+
+    if(heure==="07h-09h55") {  heures.heure_debut='07h00'; heures.heure_fin="09h55"}
+    else if( heure ==="10h-12h55") { heures.heure_debut='10h00'; heures.heure_fin="12h55"}
+    else if( heure ==="13h-15h55") { heures.heure_debut='13h00'; heures.heure_fin="15h55"}
+    else if( heure ==="16h-18h55") { heures.heure_debut='16h00'; heures.heure_fin="18h55"}
+    else if( heure ==="19h-21h55") { heures.heure_debut='19h00'; heures.heure_fin="21h55"}
+    return heures;
+}
+const graphiqueHour=recognize(props.element.heure);
+
   const [choix, setChoix] = useState({
-    nom: "",
-    nom_niveau: "",
-    nom_specialite: "",
-    jour: "",
-    heureDebut: "",
-    heureFin: "",
-  });
+    nom: props.type==="graphique"?props.element.nom:"",
+  nom_niveau: props.type==="graphique"?props.element.nom_niveau:"",
+  nom_specialite: props.type==="graphique"?props.element.nom_specialite:"",
+  jour:props.type==="graphique"?props.element.jour:"" ,
+  heureDebut:props.type==="graphique"?graphiqueHour.heure_debut:"" ,
+  heureFin: props.type==="graphique"?graphiqueHour.heure_fin:"", });
   const csrftoken = Cookies.get("csrftoken");
   const dispatch = useDispatch();
 
-
+  
 
   useEffect(() => {
-    const axiosLinks = [
-      "http://localhost:8000/api/filieres/",
-      "http://localhost:8000/api/niveaux/",
-      "http://localhost:8000/api/salles/",
-      "http://localhost:8000/api/enseignants/",
-    ];
-    Promise.all(axiosLinks.map((link) => axios.get(link)))
-      .then(
-        axios.spread((...allData) => {
-          setListeFilieres(allData[0].data);
-          setListeNiveaux(allData[1].data);
-          setListeSalles(allData[2].data);
-          setListeEnseignants(allData[3].data);
-          setChoix((prevState) => ({
-            ...prevState,
-            nom_niveau: allData[1].data[0].nom_bref,
-            nom: allData[0].data[0].nom,
-          }));
-        })
-      )
-      .catch((err) => console.log(err));
-  }, []);
+    if(props.type==="formulaire"){
+      const axiosLinks = [
+        "http://localhost:8000/api/filieres/",
+        "http://localhost:8000/api/niveaux/",
+        "http://localhost:8000/api/salles/",
+        "http://localhost:8000/api/enseignants/",
+      ];
+      Promise.all(axiosLinks.map((link) => axios.get(link)))
+        .then(
+          axios.spread((...allData) => {
+            setListeFilieres(allData[0].data);
+            setListeNiveaux(allData[1].data);
+            setListeSalles(allData[2].data);
+            setListeEnseignants(allData[3].data);
+            setChoix((prevState) => ({
+              ...prevState,
+              nom_niveau: allData[1].data[0].nom_bref,
+              nom: allData[0].data[0].nom,
+            }));
+          })
+        )
+        .catch((err) => console.log(err));
+    }
+    else{
+      const axiosLinks = [
+        "http://localhost:8000/api/salles/",
+        "http://localhost:8000/api/enseignants/",    
+      ];
+      Promise.all(axiosLinks.map((link) => axios.get(link)))
+        .then(
+          axios.spread((...allData) => {
+            setListeSalles(allData[0].data);
+            setListeEnseignants(allData[1].data);
+          })
+        )
+        .catch((err) => console.log(err));
+    }
+  }, [props.type]);
 
   useEffect(() => {
     if (choix.nom !== "" && choix.nom_niveau !== "") {
@@ -86,11 +114,10 @@ const AjoutCours = (props) => {
       
       axios
       .get(
-        `http://localhost:8000/api/ue/`
+        `http://localhost:8000/api/ue/${choix.nom}/${choix.nom_niveau}`
       )
       .then((res) => {
-        setListeUe(res.data);
-        console.log(res.data);
+        setListeUe(res.data)
       })
       .catch((err) => console.log(err));
       axios
@@ -98,8 +125,9 @@ const AjoutCours = (props) => {
         `http://localhost:8000/api/groupes/${choix.nom}/${choix.nom_niveau}`
       )
       .then((res) => {
-        setListeGroupes(res.data);
         console.log(res.data)
+        setListeGroupes(res.data);
+        
       })
       .catch((err) => console.log(err));
     }
@@ -136,27 +164,46 @@ const AjoutCours = (props) => {
     "X-CSRFToken": csrftoken,
   };
   const handleAjout = () => {
-    /*let new_cours = [];
-    for (let i in cours) {
-      new_cours.push(cours[i].nom_cours);
+    //code_ue , nom_salle, enseignants , jour,heure_debut , heure_fin
+    let data ={};
+    if(options.isVirtuel){
+      data={is_virtuel:options.isVirtuel,is_td:options.isTd,jour:choix.jour,nom_filiere:choix.nom, heure_debut:choix.heureDebut, heure_fin:choix.heureFin,nom_niveau:choix.nom_niveau,description:options.description}
+    }else if(options.isTd){
+      data ={is_td:options.isTd,is_virtuel:options.isVirtuel,code_ue:options.code, nom_salle:options.salle,jour:choix.jour, heure_debut:choix.heureDebut, heure_fin:choix.heureFin}
     }
-    console.log(new_cours);
-    console.log(choix);
-    axios({
+    else{
+      let matriculeEnseignants=[];
+      for(let i in choixEnseignants){
+        matriculeEnseignants.push(choixEnseignants[i].matricule_enseignant);
+      }
+       data ={is_virtuel:options.isVirtuel,is_td:options.isTd,code_ue:options.code, nom_salle:options.salle,jour:choix.jour, heure_debut:choix.heureDebut, heure_fin:choix.heureFin,enseignants:matriculeEnseignants}
+    }
+    console.log(data)
+      axios({
       method: "post",
       url: "http://localhost:8000/api/cours/",
-      data: {
-        nom_filiere: choix.nom,
-        nom_niveau: choix.nom_niveau,
-        nom_specialite: activate ? null : choix.nom_specialite,
-        groupes: new_groupe,
-      },
+      data: data,
       headers: headers,
       withCredentials: true,
     })
-      .then((res) => console.log(res))
-      .catch((err) => console.error(err));*/
-      console.log(choix, options,activate)
+    .then(res=>{
+      dispatch(handleOpenAjout());
+      dispatch(handleOpenSnackbar())
+      if(res.status===201){
+        dispatch(handleAlert({type : "success"}))
+      }
+      else{
+        dispatch(handleAlert({type : "error"}));
+      }
+     
+     
+    })
+    .catch(err=>{
+      dispatch(handleOpenAjout());
+      dispatch(handleOpenSnackbar());
+      dispatch(handleAlert({type : "error"}));
+    })
+      console.log(data)
   };
   const CoursParams=()=>{
     if(props.type==='graphique'){
@@ -176,19 +223,19 @@ const AjoutCours = (props) => {
           <div className="mt-4  d-flex align-items-center justify-content-around" >
             <div className="my-4 d-flex justify-content-center ">
               <label htmlFor="nom">Filiere :</label>
-              <select name="nom" onChange={(e) => handleSelectChange(e)}>
+              <select name="nom" onChange={(e) => handleSelectChange(e)} value={choix.nom}>
                 {listeFilieres.map((elt, index) => {
                   return (
-                    <option key={index} name={elt.nom}>
+                    <option key={index} name={elt.nom} >
                       {elt.nom}
                     </option>
                   );
                 })}
               </select>
             </div>
-            <div className="my-4 d-flex justify-content-center ">
+            <div className="my-4 d-flex justify-content-center " >
             <label htmlFor="nom_niveau">Niveau :</label>
-            <select name="nom_niveau" onChange={(e) => handleSelectChange(e)}>
+            <select name="nom_niveau" onChange={(e) => handleSelectChange(e)} value={choix.nom_niveau}>
               {listeNiveaux.map((elt, index) => {
                 return (
                   <option key={index} name={elt.nom_bref}>
@@ -210,6 +257,7 @@ const AjoutCours = (props) => {
               name="nom_specialite"
               onChange={(e) => handleSelectChange(e)}
               disabled={activate}
+              value={choix.nom_specialite}
             >
               {listeSpecialites.map((elt, index) => {
                 return (
@@ -231,7 +279,7 @@ const AjoutCours = (props) => {
             
           <div className="my-4 d-flex justify-content-center ">
             <label htmlFor="jour">Jour :</label>
-            <select name="jour" onChange={(e) => handleSelectChange(e)}>
+            <select name="jour" onChange={(e) => handleSelectChange(e)} value={choix.jour}>
               {Jour.map((elt, index) => {
                 return (
                   <option key={elt.id} name={elt.jour}>
@@ -249,6 +297,7 @@ const AjoutCours = (props) => {
                 name="heureDebut"
                 onChange={(e) => handleSelectChange(e)}
                 style={changeHour ? { display: "none" } : {}}
+                value={choix.heureDebut}
               >
                 {horairesDebut.map((elt) => {
                   return (
@@ -273,6 +322,7 @@ const AjoutCours = (props) => {
                 name="heureFin"
                 onChange={(e) => handleSelectChange(e)}
                 style={changeHour ? { display: "none" } : {}}
+                value={choix.heureFin}
               >
                 {horairesFin.map((elt) => {
                   return (
@@ -328,7 +378,7 @@ const AjoutCours = (props) => {
             >
               <Autocomplete
                 id="controllable-states-demo"
-                options={listeUe.map((option) => option.code)}
+                options={listeUe.map((option) => option.code_ue)}
                
                 onChange={(event, newValue) => {
                   setOptions({ ...options, code:newValue })
@@ -448,11 +498,11 @@ const AjoutCours = (props) => {
             <label htmlFor="groupeData">Groupes :</label>
             <select name="groupeData"  onChange={(e) =>
                       setOptions({ ...options, [e.target.name]:e.target.value})
-                    }>
-              {listeNiveaux.map((elt, index) => {
+                    } >
+              {listeGroupes.map((elt, index) => {
                 return (
-                  <option key={index} name={elt.nom_bref} disabled={options.groupe?false:true} >
-                    {elt.nom_bref}
+                  <option key={index} name={elt.groupe.nom} disabled={options.groupe?false:true} >
+                    {elt.groupe.nom}
                   </option>
                 );
               })}

@@ -9,18 +9,19 @@ from ..utils import get_cud_response, is_valid_request
 
 
 @api_view(['GET'])
-def groupes_by_fil_niv_special(self, request, nom_filiere, nom_niveau, nom_specialite=None):
+def groupes_by_fil_niv_special(request, nom_filiere, nom_niveau, nom_specialite=None):
    if not nom_specialite:
       query = """
          SELECT DISTINCT id_regroupement, nom_groupe, nom_filiere, nom_niveau,
-         nom_specialite FROM regroupement WHERE nom_filiere = %s AND nom_niveau = %s;
+         nom_specialite FROM regroupement WHERE nom_filiere = %s AND nom_niveau = %s
+         AND nom_groupe IS NOT NULL;
       """
       res = Regroupement.objects.raw(query, [nom_filiere, nom_niveau])
    else:
       query = """
          SELECT DISTINCT id_regroupement, nom_groupe, nom_filiere, nom_niveau,
          nom_specialite FROM regroupement WHERE nom_filiere = %s AND nom_niveau = %s
-         AND nom_specialite = %s;
+         AND nom_specialite = %s AND nom_groupe IS NOT NULL;
       """
       res = Regroupement.objects.raw(query, [nom_filiere, nom_niveau, nom_specialite])
       

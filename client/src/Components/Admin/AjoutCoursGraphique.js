@@ -7,7 +7,6 @@ import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
 import { BsPencilFill, BsTrashFill } from "react-icons/bs";
-import { fakeData } from "../../Constant";
 import { useDispatch, useSelector } from "react-redux";
 import {
   handleOpenAjout,
@@ -17,6 +16,7 @@ import AjoutCours from "./Cours/AjoutCours";
 import SupprimerCours from "./Cours/SupprimerCours";
 import { Modal, Box } from "@material-ui/core";
 import axios from "axios";
+
 
 export default function AjoutCoursGraphique() {
   const dispatch = useDispatch();
@@ -32,26 +32,28 @@ export default function AjoutCoursGraphique() {
     nom_specialite: "",
     jour: "",
     heure: "",
-    ue:""
+    ue: "",
   });
   const files = useSelector((state) => state.ModalDisplay);
-  function verification(fakeData, jour, heure) {
+  
+  function verification(dataList, jour, heure) {
     let retour = [];
-    for (let i in fakeData) {
+    for (let i in dataList) {
       if (
-        fakeData[i].jour === jour &&
-        fakeData[i].heure_debut[0] === heure[0] &&
-        fakeData[i].heure_debut[1] === heure[1]
+        dataList[i].jour === jour &&
+        dataList[i].heure_debut[0] === heure[0] &&
+        dataList[i].heure_debut[1] === heure[1]
       ) {
         retour.push({
-          code: fakeData[i].ue.code,
-          salle: fakeData[i].salle.nom,
-          enseignants: fakeData[i].enseignants,
-          description: fakeData[i].description,
-          groupe: fakeData[i].groupe === null ? "" : fakeData[i].groupe,
+          code: dataList[i].ue.code,
+          salle: dataList[i].salle.nom,
+          enseignants: dataList[i].enseignants,
+          description: dataList[i].description,
+          groupe: dataList[i].groupe === null ? "" : dataList[i].groupe,
         });
       }
     }
+
     if (retour.length === 0) {
       retour.push({
         code: "",
@@ -63,107 +65,67 @@ export default function AjoutCoursGraphique() {
     }
     return retour;
   }
+
   const [timetable, setTimetable] = useState([
     {
       titre: "07h-09h55",
-      lundi: verification(fakeData, "LUN", "07h-09h55"),
-      mardi: verification(fakeData, "MAR", "07h-09h55"),
-      mercredi: verification(fakeData, "MER", "07h-09h55"),
-      jeudi: verification(fakeData, "JEU", "07h-09h55"),
-      vendredi: verification(fakeData, "VEN", "07h-09h55"),
-      samedi: verification(fakeData, "SAM", "07h-09h55"),
-      dimanche: verification(fakeData, "DIM", "07h-09h55"),
+      lundi: verification([], "LUN", "07h-09h55"),
+      mardi: verification([], "MAR", "07h-09h55"),
+      mercredi: verification([], "MER", "07h-09h55"),
+      jeudi: verification([], "JEU", "07h-09h55"),
+      vendredi: verification([], "VEN", "07h-09h55"),
+      samedi: verification([], "SAM", "07h-09h55"),
+      dimanche: verification([], "DIM", "07h-09h55"),
     },
     {
       titre: "10h-12h55",
-      lundi: verification(fakeData, "LUN", "10h-12h55"),
-      mardi: verification(fakeData, "MAR", "10h-12h55"),
-      mercredi: verification(fakeData, "MER", "10h-12h55"),
-      jeudi: verification(fakeData, "JEU", "10h-12h55"),
-      vendredi: verification(fakeData, "VEN", "10h-12h55"),
-      samedi: verification(fakeData, "SAM", "10h-12h55"),
-      dimanche: verification(fakeData, "DIM", "10h-12h55"),
+      lundi: verification([], "LUN", "10h-12h55"),
+      mardi: verification([], "MAR", "10h-12h55"),
+      mercredi: verification([], "MER", "10h-12h55"),
+      jeudi: verification([], "JEU", "10h-12h55"),
+      vendredi: verification([], "VEN", "10h-12h55"),
+      samedi: verification([], "SAM", "10h-12h55"),
+      dimanche: verification([], "DIM", "10h-12h55"),
     },
     {
       titre: "13h-15h55",
-      lundi: verification(fakeData, "LUN", "13h-15h55"),
-      mardi: verification(fakeData, "MAR", "13h-15h55"),
-      mercredi: verification(fakeData, "MER", "13h-15h55"),
-      jeudi: verification(fakeData, "JEU", "13h-15h55"),
-      vendredi: verification(fakeData, "VEN", "13h-15h55"),
-      samedi: verification(fakeData, "SAM", "13h-15h55"),
-      dimanche: verification(fakeData, "DIM", "13h-15h55"),
+      lundi: verification([], "LUN", "13h-15h55"),
+      mardi: verification([], "MAR", "13h-15h55"),
+      mercredi: verification([], "MER", "13h-15h55"),
+      jeudi: verification([], "JEU", "13h-15h55"),
+      vendredi: verification([], "VEN", "13h-15h55"),
+      samedi: verification([], "SAM", "13h-15h55"),
+      dimanche: verification([], "DIM", "13h-15h55"),
     },
     {
       titre: "16h-18h55",
-      lundi: verification(fakeData, "LUN", "16h-18h55"),
-      mardi: verification(fakeData, "MAR", "16h-18h55"),
-      mercredi: verification(fakeData, "MER", "16h-18h55"),
-      jeudi: verification(fakeData, "JEU", "16h-18h55"),
-      vendredi: verification(fakeData, "VEN", "16h-18h55"),
-      samedi: verification(fakeData, "SAM", "16h-18h55"),
-      dimanche: verification(fakeData, "DIM", "16h-18h55"),
+      lundi: verification([], "LUN", "16h-18h55"),
+      mardi: verification([], "MAR", "16h-18h55"),
+      mercredi: verification([], "MER", "16h-18h55"),
+      jeudi: verification([], "JEU", "16h-18h55"),
+      vendredi: verification([], "VEN", "16h-18h55"),
+      samedi: verification([], "SAM", "16h-18h55"),
+      dimanche: verification([], "DIM", "16h-18h55"),
     },
     {
       titre: "19h-21h55",
-      lundi: verification(fakeData, "LUN", "19h-21h55"),
-      mardi: verification(fakeData, "MAR", "19h-21h55"),
-      mercredi: verification(fakeData, "MER", "19h-21h55"),
-      jeudi: verification(fakeData, "JEU", "19h-21h55"),
-      vendredi: verification(fakeData, "VEN", "19h-21h55"),
-      samedi: verification(fakeData, "SAM", "19h-21h55"),
-      dimanche: verification(fakeData, "DIM", "19h-21h55"),
+      lundi: verification([], "LUN", "19h-21h55"),
+      mardi: verification([], "MAR", "19h-21h55"),
+      mercredi: verification([], "MER", "19h-21h55"),
+      jeudi: verification([], "JEU", "19h-21h55"),
+      vendredi: verification([], "VEN", "19h-21h55"),
+      samedi: verification([], "SAM", "19h-21h55"),
+      dimanche: verification([], "DIM", "19h-21h55"),
     },
   ]);
-  function createData(
-    titre,
-    lundi,
-    mardi,
-    mercredi,
-    jeudi,
-    vendredi,
-    samedi,
-    dimanche
-  ) {
-    return {
-      titre,
-      lundi,
-      mardi,
-      mercredi,
-      jeudi,
-      vendredi,
-      samedi,
-      dimanche,
-    };
-  }
-  function insertion() {
-    let temp = [];
-    for (let i in timetable) {
-      temp.push(
-        createData(
-          timetable[i].titre,
-          timetable[i].lundi,
-          timetable[i].mardi,
-          timetable[i].mercredi,
-          timetable[i].jeudi,
-          timetable[i].vendredi,
-          timetable[i].samedi,
-          timetable[i].dimanche
-        )
-      );
-    }
-    return temp;
-  }
-
   const handleDelete = (heure, jour) => {
-    const data = verification(fakeData, jour, heure);
+    const data = verification(timetable, jour, heure);
     setData(data);
     if (data.length > 1) {
       setSelectOpen(true);
-    } 
-    else if(data[0].code!==""){
-      setChoix({...choix,ue:data[0].code})
-      dispatch(handleOpenDelete())
+    } else if (data[0].code !== "") {
+      setChoix({ ...choix, ue: data[0].code });
+      dispatch(handleOpenDelete());
     }
   };
 
@@ -171,6 +133,8 @@ export default function AjoutCoursGraphique() {
     const axiosLinks = [
       "http://localhost:8000/api/filieres/",
       "http://localhost:8000/api/niveaux/",
+      "http://localhost:8000/api/cours/",
+
     ];
     Promise.all(axiosLinks.map((link) => axios.get(link)))
       .then(
@@ -203,6 +167,63 @@ export default function AjoutCoursGraphique() {
           }
         })
         .catch((err) => console.log(err));
+      axios
+        .get(`http://localhost:8000/api/cours/${choix.nom}/${choix.nom_niveau}`)
+        .then((res) => {
+            setTimetable([
+              {
+                titre: "07h-09h55",
+                lundi: verification(res.data, "LUN", "07h-09h55"),
+                mardi: verification(res.data, "MAR", "07h-09h55"),
+                mercredi: verification(res.data, "MER", "07h-09h55"),
+                jeudi: verification(res.data, "JEU", "07h-09h55"),
+                vendredi: verification(res.data, "VEN", "07h-09h55"),
+                samedi: verification(res.data, "SAM", "07h-09h55"),
+                dimanche: verification(res.data, "DIM", "07h-09h55"),
+              },
+              {
+                titre: "10h-12h55",
+                lundi: verification(res.data, "LUN", "10h-12h55"),
+                mardi: verification(res.data, "MAR", "10h-12h55"),
+                mercredi: verification(res.data, "MER", "10h-12h55"),
+                jeudi: verification(res.data, "JEU", "10h-12h55"),
+                vendredi: verification(res.data, "VEN", "10h-12h55"),
+                samedi: verification(res.data, "SAM", "10h-12h55"),
+                dimanche: verification(res.data, "DIM", "10h-12h55"),
+              },
+              {
+                titre: "13h-15h55",
+                lundi: verification(res.data, "LUN", "13h-15h55"),
+                mardi: verification(res.data, "MAR", "13h-15h55"),
+                mercredi: verification(res.data, "MER", "13h-15h55"),
+                jeudi: verification(res.data, "JEU", "13h-15h55"),
+                vendredi: verification(res.data, "VEN", "13h-15h55"),
+                samedi: verification(res.data, "SAM", "13h-15h55"),
+                dimanche: verification(res.data, "DIM", "13h-15h55"),
+              },
+              {
+                titre: "16h-18h55",
+                lundi: verification(res.data, "LUN", "16h-18h55"),
+                mardi: verification(res.data, "MAR", "16h-18h55"),
+                mercredi: verification(res.data, "MER", "16h-18h55"),
+                jeudi: verification(res.data, "JEU", "16h-18h55"),
+                vendredi: verification(res.data, "VEN", "16h-18h55"),
+                samedi: verification(res.data, "SAM", "16h-18h55"),
+                dimanche: verification(res.data, "DIM", "16h-18h55"),
+              },
+              {
+                titre: "19h-21h55",
+                lundi: verification(res.data, "LUN", "19h-21h55"),
+                mardi: verification(res.data, "MAR", "19h-21h55"),
+                mercredi: verification(res.data, "MER", "19h-21h55"),
+                jeudi: verification(res.data, "JEU", "19h-21h55"),
+                vendredi: verification(res.data, "VEN", "19h-21h55"),
+                samedi: verification(res.data, "SAM", "19h-21h55"),
+                dimanche: verification(res.data, "DIM", "19h-21h55"),
+              },
+            ]);
+        })
+        .catch((err) => console.log(err));
     }
   }, [choix.nom, choix.nom_niveau]);
   const handleSelectChange = (e) => {
@@ -211,7 +232,8 @@ export default function AjoutCoursGraphique() {
     setChoix({ ...choix, [name]: value });
   };
 
-  const rows = insertion();
+  
+
   return (
     <section className="my-3 mx-2  listeTableau">
       <h4 className="text-center mx-2 my-3 fw-bold fs-5">
@@ -303,7 +325,7 @@ export default function AjoutCoursGraphique() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {rows.map((row) => (
+              {timetable.map((row) => (
                 <TableRow
                   key={row.titre}
                   sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
@@ -344,7 +366,7 @@ export default function AjoutCoursGraphique() {
                             dispatch(handleOpenAjout());
                             setChoix({
                               ...choix,
-                              jour: "LUNDI",
+                              jour: "LUN",
                               heure: row.titre,
                             });
                           }}
@@ -392,7 +414,7 @@ export default function AjoutCoursGraphique() {
                             dispatch(handleOpenAjout());
                             setChoix({
                               ...choix,
-                              jour: "MARDI",
+                              jour: "MAR",
                               heure: row.titre,
                             });
                           }}
@@ -438,7 +460,7 @@ export default function AjoutCoursGraphique() {
                             dispatch(handleOpenAjout());
                             setChoix({
                               ...choix,
-                              jour: "MERCREDI",
+                              jour: "MER",
                               heure: row.titre,
                             });
                           }}
@@ -484,7 +506,7 @@ export default function AjoutCoursGraphique() {
                             dispatch(handleOpenAjout());
                             setChoix({
                               ...choix,
-                              jour: "JEUDI",
+                              jour: "JEU",
                               heure: row.titre,
                             });
                           }}
@@ -530,7 +552,7 @@ export default function AjoutCoursGraphique() {
                             dispatch(handleOpenAjout());
                             setChoix({
                               ...choix,
-                              jour: "VENDREDI",
+                              jour: "VEN",
                               heure: row.titre,
                             });
                           }}
@@ -576,7 +598,7 @@ export default function AjoutCoursGraphique() {
                             dispatch(handleOpenAjout());
                             setChoix({
                               ...choix,
-                              jour: "SAMEDI",
+                              jour: "SAM",
                               heure: row.titre,
                             });
                           }}
@@ -626,7 +648,7 @@ export default function AjoutCoursGraphique() {
                             dispatch(handleOpenAjout());
                             setChoix({
                               ...choix,
-                              jour: "DIMANCHE",
+                              jour: "DIM",
                               heure: row.titre,
                             });
                           }}
@@ -646,10 +668,15 @@ export default function AjoutCoursGraphique() {
         </TableContainer>
       </Paper>
       {/*Modal pour l'ajout d'un cours*/}
+      
       <div>
         <Modal open={files.openAjout} style={{ overflow: "scroll" }}>
           <Box>
-            <AjoutCours element={choix} type={'graphique'} activate={activate} />
+            <AjoutCours
+              element={choix}
+              type={"graphique"}
+              activate={activate}
+            />
             <button
               className="btn me-2 cancelButton"
               type="button"
@@ -665,35 +692,37 @@ export default function AjoutCoursGraphique() {
       <div>
         <Modal open={selectOpen}>
           <Box>
-           
-          <div className="ajout mt-5   px-3 py-2 col-12 col-md-9 col-lg-8" style={{marginLeft:"20%"}}>
-              
-              <h4 className="fs-5 fw-light text-center">
-          Selectionnez l'ue 
-        </h4>
-                <div className="d-flex justify-content-around">
-                  {data.map((elt, index) => {
-                    return (
-                      <button
-                        key={index}
-                        className="btn addButton"
-                        type="button"
-                        onClick={()=>{setChoix({...choix,ue:elt.code});setSelectOpen(false);dispatch(handleOpenDelete())}}
-                      >
-                        {elt.code}
-                      </button>
-                    );
-                  })}
-                </div>
-                <button
-                  className="btn my-2   d-flex justify-content-center cancelButton"
-                  type="button"
-                  onClick={() => setSelectOpen(false)}
-                >
-                  Annuler{" "}
-                </button>
+            <div
+              className="ajout mt-5   px-3 py-2 col-12 col-md-9 col-lg-8"
+              style={{ marginLeft: "20%" }}
+            >
+              <h4 className="fs-5 fw-light text-center">Selectionnez l'ue</h4>
+              <div className="d-flex justify-content-around">
+                {data.map((elt, index) => {
+                  return (
+                    <button
+                      key={index}
+                      className="btn addButton"
+                      type="button"
+                      onClick={() => {
+                        setChoix({ ...choix, ue: elt.code});
+                        setSelectOpen(false);
+                        dispatch(handleOpenDelete());
+                      }}
+                    >
+                      {elt.code}
+                    </button>
+                  );
+                })}
               </div>
-           
+              <button
+                className="btn my-2   d-flex justify-content-center cancelButton"
+                type="button"
+                onClick={() => setSelectOpen(false)}
+              >
+                Annuler{" "}
+              </button>
+            </div>
           </Box>
         </Modal>
       </div>
