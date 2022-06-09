@@ -4,7 +4,7 @@ import map from "../../assets/map.jpeg";
 const Map = () => {
   return (
     <section >
-        <p className="fs-3 fw-light text-center my-3">LOCATION</p>
+        <p className="fs-3 fw-light text-center my-3">LOCALISATION</p>
         <div className="row" style={{color:"rgb(71, 68, 68)"}}>
             <div className="col-12 col-sm-6">
                 <div className="m-3">

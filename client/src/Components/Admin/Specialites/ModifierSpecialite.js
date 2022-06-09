@@ -1,6 +1,6 @@
 import React,{useState} from 'react';
 import { Alert } from '@mui/material';
-import{ handleOpenModify} from "../../../redux/ModalDisplaySlice";
+import{ handleOpenModify,handleOpenSnackbar, handleAlert} from "../../../redux/ModalDisplaySlice";
 import {useDispatch} from "react-redux";
 import axios from "axios";
 import Cookies from "js-cookie";
@@ -30,9 +30,23 @@ const ModifierSpecialite = (props) => {
         headers:headers,
         withCredentials:true
       })
-      .then(res=>console.log(res))
-      .catch(err=>console.error(err))
-      console.log(updateSpecialite)
+      .then(res=>{
+        dispatch(handleOpenModify());
+        dispatch(handleOpenSnackbar())
+        if(res.status===200){
+          dispatch(handleAlert({type : "success"}))
+        }
+        else{
+          dispatch(handleAlert({type : "error"}));
+        }
+       
+       
+      })
+      .catch(err=>{
+        dispatch(handleOpenModify());
+        dispatch(handleOpenSnackbar());
+        dispatch(handleAlert({type : "error"}));
+      })
     }
   }
 

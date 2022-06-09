@@ -130,3 +130,9 @@ border: 1px solid rgba(84, 130, 154, 0.18);
 .filt:hover{
     opacity: 0.8;
 }
+
+.steph{
+    @media print {
+        @page { size: landscape; }
+      }
+}

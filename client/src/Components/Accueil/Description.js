@@ -26,9 +26,9 @@ const Description = () => {
         <div className="col-12 col-sm-6 pt-5 pb-3">
           <div>
             <p className="fs-4 functionalityDescription">
-              Search for your corresponding <br />
-              timetable, view and export either <br />
-              on pdf format or on JPG format <br />
+              Recherchez votre emploi de temps  <br />
+              corespondant, visualisez et exportez <br />
+              sous format PDF ou JPG <br />
               🎉🎉🎉🎉🎉🎉
             </p>
           </div>
@@ -47,9 +47,9 @@ const Description = () => {
         <div className="col-12 col-sm-6 py-3 ">
           <div>
             <p className="fs-4 functionalityDescription">
-              Use the filter option <br />
-              to get a specify information <br />
-              based on your need
+              Utilisez l'option filtre pour<br />
+              avoir un information spécifique<br />
+              basée selon vos besoins
               <br />
             </p>
             <div className=" functionalityButton ">
@@ -63,7 +63,7 @@ const Description = () => {
                   }}
                 >
 
-                  <RiMenuUnfoldLine className="me-2" /> Filter
+                  <RiMenuUnfoldLine className="me-2" /> Filtre
                 </button>
               </Link>
             </div>

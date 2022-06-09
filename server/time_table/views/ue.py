@@ -47,10 +47,8 @@ class UEList(APIView):
       
    def get(self, request):
       query = """
-         SELECT regroupement.code_ue, intitule, matricule_enseignant, enseignant.nom AS nom_enseignant, 
-         enseignant.prenom AS prenom_ens, nom_filiere, nom_niveau, nom_specialite 
-         FROM regroupement, cours, enseignant WHERE regroupement.code_ue = cours.code_ue 
-         AND cours.matricule_ens = enseignant.matricule;
+        SELECT DISTINCT code, intitule, nom_niveau, nom_filiere, nom_specialite 
+        FROM regroupement reg, ue WHERE reg.code_ue = ue.code;
       """
       with connection.cursor() as cursor:
          cursor.execute(query)

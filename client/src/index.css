@@ -1,3 +1,10 @@
+/* ceci est a ne pas toucher variables globale */
+:root {
+  --primary-color: rgb(91, 37, 185);
+  --secondary-color: rgb(30, 165, 89);
+  --third-color: #13084d;
+  /* --secondary-color: rgb(47, 172, 102); */
+}
 
 .header{
   background-color: var(--primaryBlue);

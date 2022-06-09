@@ -9,9 +9,9 @@ import {BsTablet,BsBookFill} from "react-icons/bs"
 export const filiere = [
   {
     id: 1,
-    nom: "COMPUTER SCIENCE",
+    nom: "INFORMATIQUE",
     img: Info,
-    url: "/computer-science",
+    url: "/affichage/computer-science",
     specialiteLicense: [
         {
             id:10,
@@ -33,9 +33,9 @@ export const filiere = [
   },
   {
     id: 2,
-    nom: "MATHEMATICS",
+    nom: "MATHEMATIQUE",
     img: Math,
-    url: "/mathematics",
+    url: "/affichage/math",
     specialiteLicense: [
         {
             id:10,
@@ -49,9 +49,9 @@ export const filiere = [
   },
   {
     id: 3,
-    nom: "PHYSICS",
+    nom: "PHYSIQUE",
     img: Physique,
-    url: "/physics",
+    url: "/affichage/physique",
     specialiteLicense: [
         {
             id:10,
@@ -65,9 +65,9 @@ export const filiere = [
   },
   {
     id: 4,
-    nom: "CHEMISTRY",
+    nom: "CHIMIE",
     img: Chimie,
-    url: "/chemistry",
+    url: "/affichage/chimie",
     specialiteLicense: [
         {
             id:10,
@@ -83,7 +83,7 @@ export const filiere = [
     id: 5,
     nom: "BIOSCIENCE",
     img: Biosciences,
-    url: "/bioscience",
+    url: "/affichage/bioscience",
     specialiteLicense: [
         {
             id:10,
@@ -195,66 +195,318 @@ export const listeSalles=[{
   name:"S006"
 }]
 
-/* table
+
+
+export const horairesDebut =[{
+  id:1,
+  heureDebut:"7h00"
+},
+{
+  id:2,
+  heureDebut:"10h00"
+},
+{
+  id:3,
+  heureDebut:"13h00"
+},
+{
+  id:4,
+  heureDebut:"16h00"
+},
+{
+  id:5,
+  heureDebut:"19h00"
+},
 
 
 
-import * as React from 'react';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
+]
 
-function createData(name, calories, fat, carbs, protein) {
-  return { name, calories, fat, carbs, protein };
-}
+export const horairesFin =[{
+  id:1,
+  heureFin:"9h55"
+},
+{
+  id:2,
+  heureFin:"12h55"
+},
+{
+  id:3,
+  heureFin:"15h55"
+},
+{
+  id:4,
+  heureFin:"18h55"
+},
+{
+  id:5,
+  heureFin:"21h55"
+}]
 
-const rows = [
-  createData('Frozen yoghurt', 159, 6.0, 24, 4.0),
-  createData('Ice cream sandwich', 237, 9.0, 37, 4.3),
-  createData('Eclair', 262, 16.0, 24, 6.0),
-  createData('Cupcake', 305, 3.7, 67, 4.3),
-  createData('Gingerbread', 356, 16.0, 49, 3.9),
+
+export const Jour=[{
+    id:1,
+    jour:'LUN'
+},
+{
+  id:2,
+  jour:'MAR'
+},
+{
+  id:3,
+  jour:'MER'
+},
+{
+  id:4,
+  jour:'JEU'
+},
+{
+  id:5,
+  jour:'VEN'
+},
+{
+  id:6,
+  jour:'SAM'
+},
+{
+  id:7,
+  jour:'DIM'
+}]
+
+export const fakeData = [
+  {
+    id_cours: 1,
+    jour: "LUN",
+    heure_debut: "10:05:00",
+    heure_fin: "12:55:00",
+    is_td: false,
+    is_virtuel: false,
+    enseignants: [{
+      matricule: "19M2214",
+      nom: "KIKI",
+      prenom: "",
+    }],
+    salle: { nom: "AII", capacite: 300 },
+    ue: { code: "MAT3096", intitule: "XX" },
+    description: "",
+    groupe: null
+  },
+  {
+    id_cours: 1,
+    jour: "LUN",
+    heure_debut: "10:05:00",
+    heure_fin: "12:55:00",
+    is_td: false,
+    is_virtuel: false,
+    enseignants: [{
+      matricule: "19O2214",
+      nom: "TAKAM",
+      prenom: "SOH",
+    }],
+    salle: { nom: "AI", capacite: 300 },
+    ue: { code: "MAT3106", intitule: "XX" },
+    description: "",
+    groupe: null
+  },
+  {
+    id_cours: 2,
+    jour: "MER",
+    heure_debut: "13:05:00",
+    heure_fin: "15:55:00",
+    is_td: false,
+    is_virtuel: false,
+    enseignants: [{
+      matricule: "19M2215",
+      nom: "BEKOLLE",
+      prenom: "",
+    }],
+    salle: { nom: "A350", capacite: 350 },
+    ue: { code: "MAT3076", intitule: "XX" },
+    description: "",
+    groupe: null
+  },
+  {
+    id_cours: 3,
+    jour: "JEU",
+    heure_debut: "07:00:00",
+    heure_fin: "09:55:00",
+    is_td: false,
+    is_virtuel: false,
+    enseignants: [{
+      matricule: "19M2218",
+      nom: "KIAMPI",
+      prenom: "",
+    }],
+    salle: { nom: "A 250", capacite: 250 },
+    ue: { code: "MAT3066", intitule: "XX" },
+    description: "",
+    groupe: null
+  },
+  {
+    id_cours: 3,
+    jour: "JEU",
+    heure_debut: "10:00:00",
+    heure_fin: "12:55:00",
+    is_td: false,
+    is_virtuel: false,
+    enseignants: [{
+      matricule: "19M2218",
+      nom: "MBANG",
+      prenom: "",
+    }],
+    salle: { nom: "A 250", capacite: 250 },
+    ue: { code: "MAT 3086", intitule: "XX" },
+    description: "",
+    groupe: null
+  },
+  {
+    id_cours: 3,
+    jour: "JEU",
+    heure_debut: "13:05:00",
+    heure_fin: "15:55:00",
+    is_td: false,
+    is_virtuel: false,
+    enseignants: [{
+      matricule: "19M2218",
+      nom: "MBIAKOP",
+      prenom: "",
+    }],
+    salle: { nom: "A 250", capacite: 250 },
+    ue: { code: "MAT 3116", intitule: "XX" },
+    description: "",
+    groupe: null
+  },
+  {
+    id_cours: 3,
+    jour: "JEU",
+    heure_debut: "13:05:00",
+    heure_fin: "15:55:00",
+    is_td: false,
+    is_virtuel: false,
+    enseignants: [{
+      matricule: "19M2218",
+      nom: "DOUANLA",
+      prenom: "",
+    }],
+    salle: { nom: "R110", capacite: 300 },
+    ue: { code: "MAT3126", intitule: "XX" },
+    description: "",
+    groupe: null
+  },
+  {
+    id_cours: 3,
+    jour: "VEN",
+    heure_debut: "07:00:00",
+    heure_fin: "09:55:00",
+    is_td: false,
+    is_virtuel: false,
+    enseignants: [{
+      matricule: "19M2218",
+      nom: "NOUNDJEU",
+      prenom: "",
+    }],
+    salle: { nom: "A350", capacite: 300 },
+    ue: { code: "MAT3056", intitule: "XX" },
+    description: "",
+    groupe: null
+  },
+  {
+    id_cours: 3,
+    jour: "DIM",
+    heure_debut: "07:00:00",
+    heure_fin: "09:55:00",
+    is_td: false,
+    is_virtuel: false,
+    enseignants: [{
+      matricule: "19M2218",
+      nom: "TAKAM",
+      prenom: "SOH",
+    }],
+    salle: { nom: "A 350", capacite: 300 },
+    ue: { code: "PPE", intitule: "XX" },
+    description: "",
+    groupe: null
+  },
 ];
 
-export default function BasicTable() {
-  return (
-    <TableContainer component={Paper}>
-      <Table sx={{ minWidth: 650 }} aria-label="simple table">
-        <TableHead>
-          <TableRow>
-            <TableCell>Dessert (100g serving)</TableCell>
-            <TableCell align="right">Calories</TableCell>
-            <TableCell align="right">Fat&nbsp;(g)</TableCell>
-            <TableCell align="right">Carbs&nbsp;(g)</TableCell>
-            <TableCell align="right">Protein&nbsp;(g)</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {rows.map((row) => (
-            <TableRow
-              key={row.name}
-              sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-            >
-              <TableCell component="th" scope="row">
-                {row.name}
-              </TableCell>
-              <TableCell align="right">{row.calories}</TableCell>
-              <TableCell align="right">{row.fat}</TableCell>
-              <TableCell align="right">{row.carbs}</TableCell>
-              <TableCell align="right">{row.protein}</TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
-  );
-}
 
 
 
+// export const fakeData = [
+//   {
+//     id_cours: 3,
+//     jour: "LUN",
+//     heure_debut: "07:00:00",
+//     heure_fin: "09:55:00",
+//     is_td: false,
+//     is_virtuel: false,
+//     enseignants: [{
+//       matricule: "19M2214",
+//       nom: "enseignant 1",
+//       prenom: "prenom enseignant 1",
+//     }],
+//     salle: { nom: "A 250", capacite: 300 },
+//     ue: { code: "inf 176", intitule: "intitulé 1" },
+//     description: "",
+//     groupe:null
+//   },
+//   {
+//     id_cours: 3,
+//     jour: "LUN",
+//     heure_debut: "07:00:00",
+//     heure_fin: "09:55:00",
+//     is_td: false,
+//     is_virtuel: false,
+//     enseignants: [{
+//       matricule: "19O2214",
+//       nom: "enseignant 10",
+//       prenom: "prenom enseignant 10",
+//     }],
+//     salle: { nom: "S006", capacite: 300 },
+//     ue: { code: "inf 789", intitule: "intitulé 10" },
+//     description: "",
+//     groupe:null
+//   },
+//   {
+//     id_cours: 5,
+//     jour: "JEU",
+//     heure_debut: "07:00:00",
+//     heure_fin: "09:55:00",
+//     is_td: false,
+//     is_virtuel: false,
+//     enseignants: [{
+//       matricule: "19M2215",
+//       nom: "enseignant 2",
+//       prenom: "prenom enseignant 2",
+//     }],
+//     salle: { nom: "A 300", capacite: 300 },
+//     ue: { code: "inf 17658", intitule: "intitulé 2" },
+//     description: "",
+//     groupe:'G1'
 
-*/
+//   },
+//   {
+//     id_cours: 5,
+//     jour: "MAR",
+//     heure_debut: "10:00:00",
+//     heure_fin: "12:55:00",
+//     is_td: false,
+//     is_virtuel: false,
+//     enseignants: [{
+//       matricule: "19M2218",
+//       nom: "enseignant 3",
+//       prenom: "prenom enseignant 3",
+//     },
+//     {
+//       matricule: "19M2219",
+//       nom: "enseignant 4",
+//       prenom: "prenom enseignant 3",
+//     }],
+//     salle: { nom: "A 3005", capacite: 300 },
+//     ue: { code: "inf 79", intitule: "intitulé 3" },
+//     description: "",
+//     groupe:null
+
+//   },
+// ];
+

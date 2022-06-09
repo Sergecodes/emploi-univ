@@ -10,11 +10,6 @@ const AjoutFiliere = () => {
   const [ajoutFiliere, setAjoutFiliere] = useState("");
   const csrftoken = Cookies.get('csrftoken');
   const dispatch=useDispatch();
-  /* const handleAjout=()=>{
-    axios.get("http://localhost:8000/api/salles/AMPHI 500/")
-    .then(data=>console.log(data.data))
-    .catch(err=>console.log(err))
-  };*/
   const headers={
     'X-CSRFToken': csrftoken
   }

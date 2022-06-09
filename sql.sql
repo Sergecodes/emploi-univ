@@ -29,19 +29,19 @@ CREATE TABLE `salle` (`nom` varchar(10) NOT NULL PRIMARY KEY, `capacite` smallin
 --
 -- Create model Specialite
 --
-CREATE TABLE `specialite` (`nom` varchar(20) NOT NULL PRIMARY KEY);
+CREATE TABLE `specialite` (`nom` varchar(30) NOT NULL PRIMARY KEY);
 --
 -- Create model UE
 --
-CREATE TABLE `ue` (`code` varchar(10) NOT NULL PRIMARY KEY, `intitule` varchar(50) NOT NULL);
+CREATE TABLE `ue` (`code` varchar(30) NOT NULL PRIMARY KEY, `intitule` varchar(50) NOT NULL);
 --
 -- Create model Cours
 --
-CREATE TABLE `cours` (`code_ue` varchar(10) NOT NULL PRIMARY KEY, `jour` varchar(3) NOT NULL, `heure_debut` time(6) NOT NULL, `heure_fin` time(6) NOT NULL, `is_td` bool NOT NULL, `is_virtuel` bool NOT NULL);
+CREATE TABLE `cours` (`code_ue` varchar(30) NOT NULL PRIMARY KEY, `jour` varchar(3) NOT NULL, `heure_debut` time(6) NOT NULL, `heure_fin` time(6) NOT NULL, `is_td` bool NOT NULL, `is_virtuel` bool NOT NULL, `description` longtext NOT NULL);
 --
 -- Create model Regroupement
 --
-CREATE TABLE `regroupement` (`id_regroupement` bigint AUTO_INCREMENT NOT NULL PRIMARY KEY, `nom_filiere` varchar(20) NOT NULL, `nom_groupe` varchar(20) NULL, `nom_niveau` varchar(10) NOT NULL, `nom_specialite` varchar(20) NULL, `code_ue` varchar(10) NULL, `effectif_max` int(10) unsigned NULL CHECK (`effectif_max` >= 0)); 
+CREATE TABLE `regroupement` (`id_regroupement` bigint AUTO_INCREMENT NOT NULL PRIMARY KEY, `nom_filiere` varchar(20) NOT NULL, `nom_groupe` varchar(20) NULL, `nom_niveau` varchar(10) NOT NULL, `nom_specialite` varchar(30) NULL, `code_ue` varchar(30) NULL, `effectif_max` int(10) unsigned NULL CHECK (`effectif_max` >= 0)); 
 --
 -- Create constraint unique_ue_grp_fil_niv_spec on model regroupement
 --

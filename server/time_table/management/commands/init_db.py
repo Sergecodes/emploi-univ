@@ -5,7 +5,7 @@ from django.core.management.base import BaseCommand, CommandError
 
 
 class Command(BaseCommand):
-   help = 'Insert initial filieres and niveaux into database'
+   help = 'Insert initial values like filieres and niveaux into database'
 
    def handle(self, *args, **options):
       USE_PROD_DB = config('USE_PROD_DB', cast=bool, default=False)
@@ -27,9 +27,19 @@ class Command(BaseCommand):
             INSERT /*+ IGNORE_ROW_ON_DUPKEY_INDEX(niveau, nom_bref) */ 
             INTO niveau (nom_bref, nom_complet) VALUES 
          """
+         query3 = """
+            INSERT /*+ IGNORE_ROW_ON_DUPKEY_INDEX(enseignant, matricule) */ 
+            INTO enseignant (matricule, nom, prenom) VALUES (%s, %s, %s) 
+         """
+         query4 = """
+            INSERT /*+ IGNORE_ROW_ON_DUPKEY_INDEX(salle, nom) */ 
+            INTO salle (nom, capacite) VALUES (%s, %s) 
+         """
       else:
          query1_start = "INSERT IGNORE INTO filiere (nom) VALUES "
          query2_start = "INSERT IGNORE INTO niveau (nom_bref, nom_complet) VALUES "
+         query3 = "INSERT IGNORE INTO enseignant (matricule, nom, prenom) VALUES (%s, %s, %s)"
+         query4 = "INSERT INTO salle (nom, capacite) VALUES (%s, %s)"
 
       query1_next, query2_next = "(%s), ", "(%s, %s), "
       query1, query2 = query1_start, query2_start
@@ -54,6 +64,14 @@ class Command(BaseCommand):
 
             with connection.cursor() as cursor:
                cursor.execute(query2, params2)
+
+            with connection.cursor() as cursor:
+               # Filler for enseignant 
+               cursor.execute(query3, ["000000", "000000", "000000"])
+
+            with connection.cursor() as cursor:
+               # Filler for salle 
+               cursor.execute(query4, ["000000", "000000"])
       except IntegrityError as err:
          raise CommandError(
             "There would be duplicate entries if this command were executed. "
@@ -65,7 +83,7 @@ class Command(BaseCommand):
 
       self.stdout.write(
          self.style.SUCCESS(
-            f"Successfully inserted filieres {filieres} and niveaux {niveaux}"
+            f"Successfully inserted filieres {filieres}, niveaux {niveaux} and filler salles and enseignants."
          )
       )
 

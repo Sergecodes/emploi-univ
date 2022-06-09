@@ -1,42 +1,24 @@
-import React,{useEffect, useState} from "react";
+import React,{useState} from "react";
 import TextField from '@mui/material/TextField';
 import { Alert } from "@mui/material";
-/*import Cookies from "js-cookie";*/
+import Cookies from "js-cookie";
 import axios from "axios";
 import {useDispatch} from "react-redux";
-import{ handleOpenModify} from "../../../redux/ModalDisplaySlice";
+import{ handleOpenModify,handleOpenSnackbar,handleAlert} from "../../../redux/ModalDisplaySlice";
 
 
 
 const ModifierUe = (props) => {
   const [alert, setAlert] = useState("none");
-    const [listeFilieres, setListeFilieres]=useState([{}]);
-   const niveaux =[{nom:'niveau 1'},{nom:'niveau 2'},{nom:'niveau 3'}];
-   const specialites =[{nom:'data science'},{nom:'genie logiciel'},{nom:'reseaux'}];
    const actual = props.ue;
-   const [activate ,setActivate] =useState(props.ue.nom_specialite.trim().length===0?false:true)
    const [updateUe, setUpdateUe]=useState(props.ue) 
    const dispatch = useDispatch()
-   // const [niveau,setNiveau]=useState([{}])
-  /*   const csrftoken = Cookies.get('csrftoken');
+  const csrftoken = Cookies.get('csrftoken');
 
     const headers={
       'X-CSRFToken': csrftoken
-    }*/
+    }
 
-    useEffect(()=>{
-
-       
-      axios.get("http://localhost:8000/api/filieres/")
-      .then(res=>setListeFilieres(res.data))
-      .catch(err=>console.log(err))
-
-    /*  axios.get("http://localhost:8000/api/Niveau/all/")
-      .then(res=>setNiveau(res.data))
-      .catch(err=>console.log(err))*/
-
-      
-    },[])
 
     const handleChange=(e)=>{
       const name= e.target.name;
@@ -45,7 +27,36 @@ const ModifierUe = (props) => {
     }
 
     const handleUpdate=()=>{    
-        console.log(actual,updateUe)
+        if(actual === updateUe){
+          setAlert("warning")
+        }
+        else{
+          setAlert('none')
+          axios({
+            method:'put',
+            url:`http://localhost:8000/api/ue/${encodeURIComponent(actual.code)}/`,
+            data:{new_code:updateUe.code, intitule:updateUe.intitule},
+            headers:headers,
+            withCredentials:true
+          })
+          .then(res=>{
+            dispatch(handleOpenModify());
+            dispatch(handleOpenSnackbar())
+            if(res.status===200){
+              dispatch(handleAlert({type : "success"}))
+            }
+            else{
+              dispatch(handleAlert({type : "error"}));
+            }
+           
+           
+          })
+          .catch(err=>{
+            dispatch(handleOpenModify());
+            dispatch(handleOpenSnackbar());
+            dispatch(handleAlert({type : "error"}));
+          })
+        }
     }
   return (
     <section
@@ -76,46 +87,15 @@ const ModifierUe = (props) => {
          
           <div className="my-3">
             <label htmlFor="nom_filiere">Filiere :</label>
-            <select name="nom_filiere" onChange={handleChange} >
-            {
-                listeFilieres.map((elt,index)=>{
-                  return(
-                  
-                      <option key={index} name={elt.nom} selected={updateUe.nom_filiere===elt.nom?true:false}>{elt.nom}</option>
-      
-                  )
-                })
-              }
-            </select>
+            <input type='text' name="nom_filiere" defaultValue={props.ue.nom_filiere} disabled={true}/>
           </div>
           <div className="my-3">
             <label htmlFor="nom_niveau">Niveau :</label>
-            <select name="nom_niveau" onChange={handleChange}  >
-              {
-                niveaux.map((elt,index)=>{
-                 return(
-                  <option  key={index} name={elt.nom} selected={updateUe.nom_niveau===elt.nom?true:false}>{elt.nom}</option>
-                 )
-                })
-              }
-            </select>
+            <input type='text' name="nom_niveau"  defaultValue={props.ue.nom_niveau} disabled={true}/>
           </div>
           <div className="my-3 d-flex">
-              <div>
-              <label htmlFor="nom_specialite" style={activate?{}:{color:"GrayText"}} >Specialite :</label>
-            <select name="nom_specialite" onChange={handleChange} disabled={!activate}>
-              {
-                specialites.map((elt,index)=>{
-                  return(
-                    <option  key={index} name={elt.nom}  selected={updateUe.nom_specialite===elt.nom?true:false}>{elt.nom}</option>
-                  )
-                })
-              }
-            </select>
-              </div>
-              <div className="ms-4">
-                <input type="checkbox" name="activate"  checked={activate} onChange={()=>setActivate(!activate)}/>
-              </div>
+          <label htmlFor="nom_specialite">Specialite :</label>
+            <input type='text' name="nom_specialite" defaultValue={props.ue.nom_specialite} disabled={true}/>
           </div>
         </div>
         <div

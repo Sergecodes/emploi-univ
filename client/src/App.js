@@ -11,10 +11,15 @@ import Specialites from "./Components/Admin/Specialites";
 import Groupes from "./Components/Admin/Groupes";
 import Niveaux from "./Components/Admin/Niveaux"
 import AjoutCoursGraphique from "./Components/Admin/AjoutCoursGraphique";
-import Cours from "./Components/Admin/Cours"
-
-
+import Cours from "./Components/Admin/Cours";
+import ConnexionAdminScreen from "./Screen/ConnexionAdminScreen";
 import UniteEnseignement from "./Components/Admin/UniteEnseignement";
+import AffichageEmploi from "./Screen/AffichageEmploi";
+import Bioscience from "./Components/Consultation/Bioscience";
+import Physique from "./Components/Consultation/Physique";
+import Chimie from "./Components/Consultation/Chimie";
+import Mathematique from "./Components/Consultation/Mathematique";
+
 
 
 
@@ -28,7 +33,13 @@ const App = () => {
           <Route path="/admin" element={<Navigate replace to="/admin/dashboard" />} />
           <Route path="/" element={<HeaderFooter />}>
             <Route path="/accueil" element={<Accueil />} />
-            <Route path="/computer-science" element={<ComputerScience />} />
+            <Route path="/affichage" element={<AffichageEmploi />} >
+                <Route path="/affichage/computer-science" element={<ComputerScience/>}/>
+                <Route path="/affichage/physique" element={<Physique/>}/>
+                <Route path="/affichage/chimie" element={<Chimie/>}/>
+                <Route path="/affichage/math" element={<Mathematique/>}/>
+                <Route path="/affichage/bioscience" element={<Bioscience/>}/>
+            </Route>
             
           </Route>
           <Route path="/admin" element={<Admin/>}>
@@ -42,11 +53,8 @@ const App = () => {
             <Route path="/admin/liste-groupes" element={<Groupes/>}/>
             <Route path="/admin/liste-niveaux" element={<Niveaux/>}/>
             <Route path="/admin/liste-cours" element={<Cours/>}/>
-
-
-
-
           </Route>
+          <Route path="/connexion" element={<ConnexionAdminScreen />} />
         </Routes>
       </div>
     </BrowserRouter>

@@ -4,9 +4,9 @@ import { Link } from 'react-router-dom';
 
 const Footer = () => {
   return (
-    <section className=" py-3"style={{backgroundColor:"var(--primaryBlue)",color:"white"}}>
+    <section className=" py-3"style={{backgroundColor:"var(--secondaryBlue)",color:"white"}}>
         <div className="d-flex justify-content-around">
-            <p className="text-center">University of Yaoundé 1- Faculty of Science</p>
+            <p className="text-center">Université de Yaoundé 1 - Faculté des sciences</p>
             <div >
                 <Link to="/accueil"><BsFacebook className="me-3" style={{cursor:"pointer",color:"white"}}/></Link>
                 <Link to="/accueil" style={{cursor:"pointer",color:"white"}}><BsTwitter/></Link>

@@ -1,19 +1,14 @@
-import React, { useState,useEffect } from "react";
+import React, { useState } from "react";
 import { Alert } from "@mui/material";
-import { handleOpenModify } from "../../../redux/ModalDisplaySlice";
+import { handleOpenModify,handleOpenSnackbar, handleAlert } from "../../../redux/ModalDisplaySlice";
 import { useDispatch } from "react-redux";
 import axios from "axios";
 import Cookies from "js-cookie";
 
 const ModifierGroupe = (props) => {
-
   const [alert, setAlert] = useState("none");
-  const modified=  {nom_filiere:props.groupeInfo.nom_filiere.nom, nom_niveau:props.groupeInfo.nom_niveau.nom_bref,nom_specialite:props.groupeInfo.nom_specialite.nom,new_nom:props.groupeInfo.new_nom.nom};
+  const modified=  {nom_filiere:props.groupeInfo.nom_filiere.nom, nom_niveau:props.groupeInfo.nom_niveau.nom_bref,nom_specialite:props.groupeInfo.nom_specialite===null?null:props.groupeInfo.nom_specialite.nom,new_nom:props.groupeInfo.new_nom.nom};
   const actual = modified;
-  const [listeFilieres, setListeFilieres]= useState([]);
-  const [listeNiveaux, setListeNiveaux]= useState([]);
-  const [listeSpecialites, setListeSpecialites]=useState([]);
-  const [activate,setActivate]=useState(true);
   const [updateGroupe, setUpdateGroupe] = useState( modified);
   const dispatch = useDispatch();
   const csrftoken = Cookies.get("csrftoken");
@@ -22,37 +17,11 @@ const ModifierGroupe = (props) => {
   };
 
 
-  useEffect(()=>{
-    const axiosLinks =[
-      'http://localhost:8000/api/filieres/',
-      'http://localhost:8000/api/niveaux/'
-    ]
-    Promise.all(axiosLinks.map((link) => axios.get(link)))
-    .then(
-      axios.spread((...allData) => {
-        setListeFilieres(allData[0].data);
-        setListeNiveaux(allData[1].data);
-        setUpdateGroupe(prevState=>({...prevState,nom_niveau:allData[1].data[0].nom_bref,nom_filiere:allData[0].data[0].nom}));
-      }))
-      .catch(err=>console.log(err))
-
-  },[])
-
-  useEffect(()=>{
-    if(updateGroupe.nom_filiere!=="" && updateGroupe.nom_niveau!==""){
-      axios
-    .get(`http://localhost:8000/api/specialites/${updateGroupe.nom_filiere}/${updateGroupe.nom_niveau}`)
-    .then((res) =>{setListeSpecialites(res.data); if(res.data.length!==0){
-      setUpdateGroupe(prevState=>({...prevState, nom_specialite:res.data[0].nom_specialite}))
-    }})
-    .catch((err) => console.log(err));
-    }
-    
-  },[updateGroupe.nom_filiere, updateGroupe.nom_niveau])
+  
 
   const handleUpdate = () => {
     if (actual === updateGroupe) {
-      setAlert("warning");
+      setAlert("warning"); 
     } else {
       setAlert("none");
       axios({
@@ -64,8 +33,23 @@ const ModifierGroupe = (props) => {
         headers: headers,
         withCredentials: true,
       })
-        .then((res) => console.log(res))
-        .catch((err) => console.error(err));
+      .then(res=>{
+        dispatch(handleOpenModify());
+        dispatch(handleOpenSnackbar())
+        if(res.status===200){
+          dispatch(handleAlert({type : "success"}))
+        }
+        else{
+          dispatch(handleAlert({type : "error"}));
+        }
+       
+       
+      })
+      .catch(err=>{
+        dispatch(handleOpenModify());
+        dispatch(handleOpenSnackbar());
+        dispatch(handleAlert({type : "error"}));
+      })
     }
     console.log(updateGroupe)
   };
@@ -94,70 +78,27 @@ const ModifierGroupe = (props) => {
               severity="warning"
               style={alert !== "warning" ? { display: "none" } : {}}
             >
-              Veuillez effectuez un changement avant de cliquer sur modifier
+              Veuillez effectuez un changement avant de cliquer sur modifier 
             </Alert>
           </div>
         </h4>
-        <div className="mt-4">
-          <div className="my-4 d-flex justify-content-center ">
+        <div className="my-3">
             <label htmlFor="nom_filiere">Filiere :</label>
-            <select name="nom_filiere" onChange={(e) => handleChange(e)}>
-              {listeFilieres.map((elt, index) => {
-                return (
-                  <option key={index} name={elt.nom} >
-                    {elt.nom}
-                  </option>
-                );
-              })}
-            </select>
+            <input type='text' name="nom_filiere" defaultValue={updateGroupe.nom_filiere} disabled={true}/>
           </div>
-          <div className="my-4 d-flex justify-content-center ">
+          <div className="my-3">
             <label htmlFor="nom_niveau">Niveau :</label>
-            <select name="nom_niveau" onChange={e=>handleChange(e)}>
-            {
-                listeNiveaux.map((elt,index)=>{
-                  return(
-                  
-                      <option key={index} name={elt.nom_bref} >{elt.nom_bref}</option>
-      
-                  )
-                })
-              }
-            </select>
+            <input type='text' name="nom_niveau"  defaultValue={updateGroupe.nom_niveau} disabled={true}/>
           </div>
-          <div className="my-4 d-flex justify-content-center align-items-center ">
-            <label
-              htmlFor="nom_specialite"
-              style={activate === true ? { color: "GrayText" } : {}}
-            >
-              Specialite :
-            </label>
-            <select
-              name="nom_specialite"
-              onChange={(e) => handleChange(e)}
-              disabled={activate}
-            >
-              {listeSpecialites.map((elt, index) => {
-                return (
-                  <option key={index} name={elt.nom_specialite} >
-                    {elt.nom_specialite}
-                  </option>
-                );
-              })}
-            </select>
-            <input
-              type="checkbox"
-              className="ms-3"
-              value={activate}
-              onChange={() => setActivate(!activate)}
-            />
+          <div className="my-3 d-flex">
+          <label htmlFor="nom_specialite">Specialite :</label>
+            <input type='text' name="nom_specialite" defaultValue={updateGroupe.nom_specialite} disabled={true}/>
           </div>
           <div className="my-3 d-flex align-items-center">
             <label htmlFor="new_nom">Groupe :</label>
               <input type="text" name="new_nom" value={updateGroupe.new_nom} onChange={e=>handleChange(e)}  style={{ minWidth: "70%" }}/>
           </div>
          
-        </div>
         <div
           className="my-3 d-flex justify-content-end "
           style={{ width: "100%" }}

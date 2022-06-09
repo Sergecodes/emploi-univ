@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
 import {useDispatch} from "react-redux";
-import{ handleOpenAjout} from "../../../redux/ModalDisplaySlice";
+import{ handleOpenAjout,handleOpenSnackbar, handleAlert} from "../../../redux/ModalDisplaySlice";
 
 
 const AjoutSalle = () => {
@@ -32,8 +32,23 @@ const AjoutSalle = () => {
       headers:headers,
       withCredentials:true
     })
-    .then(res=>console.log(res),() => dispatch(handleOpenAjout()))
-    .catch(err=>console.error(err))
+    .then(res=>{
+      dispatch(handleOpenAjout());
+      dispatch(handleOpenSnackbar())
+      if(res.status===201){
+        dispatch(handleAlert({type : "success"}))
+      }
+      else{
+        dispatch(handleAlert({type : "error"}));
+      }
+     
+     
+    })
+    .catch(err=>{
+      dispatch(handleOpenAjout());
+      dispatch(handleOpenSnackbar());
+      dispatch(handleAlert({type : "error"}));
+    })
   };
 
   return (

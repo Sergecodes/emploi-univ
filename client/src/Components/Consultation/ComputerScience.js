@@ -1,17 +1,15 @@
-import React,{useState} from 'react';
-import TextField from '@mui/material/TextField';
+import React from "react";
+import ListeNiveauxFilieres from "./ListeNiveauxFilieres";
 
 
-export default function ComputerScience() {
+const ComputerScience=()=>{
 
-  const [test,setTest]=useState('rien')
-
-  return (
-   <section className="d-flex justify-content-center my-5">
-      <TextField id="outlined-basic" label="test" variant="outlined" size="small" value={test} onChange={(e)=>setTest(e.target.value)} name="test" />
-   </section>
-  );
+  return(
+    <div className="my-3">
+      <h4 className="text-center fs-2 fw-bold my-2" style={{color:"var(--primaryBlue"}}> INFORMATIQUE</h4>
+      <ListeNiveauxFilieres nom={'Informatique'}/>
+    </div>
+  )
 }
 
-// Top 100 films as rated by IMDb users. http://www.imdb.com/chart/top
-
+export default ComputerScience
