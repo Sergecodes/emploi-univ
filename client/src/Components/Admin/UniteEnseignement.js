@@ -2,7 +2,7 @@ import React, { useState,useEffect} from "react";
 import tableIcons from "../Common/MaterialTableIcons";
 import MaterialTable from "material-table";
 import { Modal, Box } from "@material-ui/core";
-import AjouterUe from "./Unite_Enseignement/AjouterUe";
+import AjouterUniteEnseignement from "./Unite_Enseignement/AjouterUniteEnseignement";
 import SupprimerUe from "./Unite_Enseignement/SupprimerUe";
 import ModifierUe from "./Unite_Enseignement/ModifierUe";
 import { useSelector, useDispatch } from "react-redux";
@@ -123,7 +123,7 @@ const UniteEnseignement = () => {
       <div>
         <Modal open={files.openAjout}>
           <Box>
-            <AjouterUe />
+            <AjouterUniteEnseignement />
           </Box>
         </Modal>
       </div>
