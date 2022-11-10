@@ -29,29 +29,16 @@ if PRODUCTION:
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
-
-if USE_PROD_DB:
-	DATABASES = {
-		'default': {
-			'ENGINE': 'django.db.backends.oracle',
-			'NAME': DB_NAME,
-			'USER': DB_USER,
-			'PASSWORD': DB_PASSWORD,
-			# 'HOST': DB_HOST,
-			# 'PORT': DB_PORT,
-		}
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': DB_NAME,
+        'USER': DB_USER,
+        'PASSWORD': DB_PASSWORD,
+        'HOST': DB_HOST,
+        'PORT': DB_PORT,
     }
-else:
-	DATABASES = {
-		'default': {
-			'ENGINE': 'django.db.backends.mysql',
-			'NAME': DB_NAME,
-			'USER': DB_USER,
-			'PASSWORD': DB_PASSWORD,
-			'HOST': DB_HOST,
-			'PORT': DB_PORT,
-		}
-    }
+}
 
 
 if USE_CONSOLE_EMAIL:
@@ -72,7 +59,6 @@ if USE_CONSOLE_EMAIL:
 	# broken link notifications when BrokenLinkEmailsMiddleware is enabled.
 	MANAGERS = []
 else:
-	# TODO  set up email
 	# EMAIL_HOST = config('EMAIL_HOST', default='localhost')
 	# EMAIL_PORT = config('EMAIL_PORT', default=25, cast=int)
 	# EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
@@ -80,7 +66,6 @@ else:
 	# EMAIL_USE_TLS = config('EMAIL_USE_TLS', default=False, cast=bool)
 	ADMINS = [('John', 'john@example.com'), ('Mary', 'mary@example.com')]
 	MANAGERS = []
-
 
 
 # Application definition
@@ -105,7 +90,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    "corsheaders.middleware.CorsMiddleware",
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
