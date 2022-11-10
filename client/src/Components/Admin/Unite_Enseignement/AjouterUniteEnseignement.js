@@ -5,9 +5,7 @@ import axios from "axios";
 import {useDispatch} from "react-redux";
 import{ handleOpenAjout,handleOpenSnackbar, handleAlert} from "../../../redux/ModalDisplaySlice";
 
-
-
-const AjouterUe = () => {
+const AjouterUniteEnseignement = () => {
   
     const [listeFilieres, setListeFilieres]=useState([]);
    const [listeNiveaux,setListeNiveaux]=useState([])
@@ -178,7 +176,7 @@ const AjouterUe = () => {
   );
 };
 
-export default AjouterUe;
+export default AjouterUniteEnseignement;
 
 /*
 import Stack from '@mui/material/Stack';
