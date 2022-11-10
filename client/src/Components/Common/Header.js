@@ -28,7 +28,6 @@ const Header = () => {
               </Dropdown.Menu>
             </Dropdown>
           </li>
-          <li><Link to="/filter">Filtre</Link></li>
         </ul>
       </div>
       <div className="col-3 col-lg-2 d-flex align-items-center">

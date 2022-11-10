@@ -15,12 +15,11 @@ import ConnexionAdminScreen from "./Screen/ConnexionAdminScreen";
 import UniteEnseignement from "./Components/Admin/UniteEnseignement";
 import AffichageEmploi from "./Screen/AffichageEmploi";
 import Global from "./Components/Consultation/Global"
-
-
-
-
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+
 const App = () => {
+  document.title = 'Time table';
+
   return (
     <BrowserRouter>
       <div className="app">
